@@ -1,449 +1,339 @@
 <?php
 
+// app/Http/Controllers/VeiculoController.php
 namespace App\Http\Controllers;
 
-use App\Models\Anexo;
-use App\Models\CadastroEmpresa;
-use App\Models\CadastroObra;
-use App\Models\MarcaMaquina;
-use App\Models\ModeloMaquina;
-use App\Models\Veiculo;
-use App\Models\VeiculoAbastecimento;
-use App\Models\VeiculoDepreciacao;
-use App\Models\VeiculoIpva;
-use App\Models\VeiculoManutencao;
-use App\Models\VeiculoQuilometragem;
-use App\Models\VeiculoSeguro;
+use App\Interfaces\VeiculoManutencaoRepositoryInterface;
+use App\Interfaces\VeiculoRepositoryInterface;
+use App\Interfaces\VeiculoCategoriaRepositoryInterface;
+use App\Interfaces\VeiculoSubCategoriaRepositoryInterface;
+use App\Interfaces\VeiculosDocsLegaisRepositoryInterface;
+use App\Interfaces\TiposVeiculosRepositoryInterface;
+use App\Interfaces\VeiculoPreventivaRepositoryInterface;
+use App\Interfaces\CheckListManutPreventivaRepositoryInterface;
+use App\Interfaces\VeiculosDocsTecnicosRepositoryInterface;
+use App\Interfaces\VeiculoQuilometragemRepositoryInterface;
 use App\Models\VeiculoImagens;
-use App\Models\VeiculoCategoria;
-use App\Models\VeiculoHorimetro;
 use App\Models\VeiculoSubCategoria;
-
+use App\Models\Veiculo;
+use App\Models\VeiculoQuilometragem;
 use Illuminate\Http\Request;
-
-
-use App\Traits\{
-    Configuracao,
-    FuncoesAdaptadas
-};
-
-use Illuminate\Support\Facades\File;
-
-use Illuminate\Support\Facades\{
-    Auth,
-    Storage,
-    Log
-
-};
+use Illuminate\Support\Facades\Log;
+use Toastr;
 
 class VeiculoController extends Controller
-
 {
+    protected $veiculoRepository;
+    protected $categorias;
+    protected $subCateborias;
+    protected $preventivaRepository;
+    protected $checkListRepository;
+    protected $manutencoes;
+    protected $veiculo_quilometragem;
+    protected $docs_legais;
+    protected $docs_tecnicos;
+    protected $tipo;
 
-    use Configuracao, FuncoesAdaptadas;
+    public function __construct(
+        VeiculoRepositoryInterface $veiculoRepository,
+        VeiculoCategoriaRepositoryInterface $categorias,
+        VeiculoSubCategoriaRepositoryInterface $subCateborias,
+        VeiculoManutencaoRepositoryInterface $manutencoes,
+        VeiculosDocsLegaisRepositoryInterface $docs_legais,
+        VeiculosDocsTecnicosRepositoryInterface $docs_tecnicos,
+        TiposVeiculosRepositoryInterface $tipo,
+        VeiculoPreventivaRepositoryInterface $preventivaRepository,
+        CheckListManutPreventivaRepositoryInterface $checkListRepository,
+        VeiculoQuilometragemRepositoryInterface $veiculo_quilometragem
 
-    protected $ativoExternoEstoque;
-    protected $ativoExternoEstoque_report;
+    ) {
+        $this->veiculoRepository = $veiculoRepository;
+        $this->manutencoes = $manutencoes;
+        $this->veiculo_quilometragem = $veiculo_quilometragem;
+        $this->categorias = $categorias;
+        $this->subCateborias = $subCateborias;
+        $this->docs_legais = $docs_legais;
+        $this->docs_tecnicos = $docs_tecnicos;
+        $this->tipo = $tipo;
+        $this->preventivaRepository = $preventivaRepository;
+        $this->checkListRepository = $checkListRepository;
+    }
 
-    public function __construct(Veiculo $ativoExternoEstoque, Veiculo $ativoExternoEstoque_report)
-
-    {      
-        $this->ativoExternoEstoque = $ativoExternoEstoque;
-        $this->ativoExternoEstoque_report = $ativoExternoEstoque_report;
-    }   
-
-    public function index()
+    public function index(Request $request)
     {
-
-        $listPage = request('lista') ?? 15;
-
-        $veiculos = Veiculo::with('manutencaos', 'obra', 'quilometragens', 'horimetro')->when(request('search') != null, function ($query) {
-
-            return  $query->where('placa', 'like', '%' . request('search') . '%')
-                ->orWhere('marca', 'LIKE', '%' . request('search') . '%')
-                ->orWhere('modelo', 'LIKE', '%' . request('search') . '%')
-                ->orWhere('codigo_da_maquina', 'LIKE', '%' . request('search') . '%')
-                ->orWhere('tipo', 'LIKE', '%' . request('search') . '%')
-                ->orWhere('veiculo', 'LIKE', '%' . request('search') . '%')
-                ->with('manutencaos', 'obra');
-
-        })
-        ->orderBy('veiculos.id','DESC')
-        ->paginate($listPage);        
-
-        $count_veiculos_list = Veiculo::selectRaw("COUNT(*) as total_veiculos")->whereNull("deleted_at")->get();
+        //$search = $request->input('search');        
+        //$listPage = $request->input('lista', 12); // Padrão para 10 itens por página se 'lista' não estiver definido
+    
+        // Paginar os resultados com base no método paginate do repositório
+        $veiculos = $this->veiculoRepository->getAll();
+    
+        // Adiciona o termo de pesquisa às URLs de paginação
+        //$veiculos->appends($request->except('page'));
+    
+        // Contagem total de veículos
+        $count_veiculos_list = Veiculo::whereNull('deleted_at')->count();
+    
+        // Pegue o quilometragem do veículo com ID 51, caso seja necessário para a view
         $quilometragem = VeiculoQuilometragem::where('veiculo_id', 51)->first();
-        $horimetro = VeiculoHorimetro::where('veiculo_id', 51)->first();
-        $buscaTotalVeiculos = Veiculo::obterDados();
-        return view('pages.ativos.veiculos.partials.list', compact('veiculos', 'buscaTotalVeiculos', 'quilometragem', 'horimetro', 'count_veiculos_list'));
-
+    
+        // Retorne a view com os dados
+        return view('pages.ativos.veiculos.index', compact('veiculos', 'quilometragem', 'count_veiculos_list'));
     }
-
-
-    public function pesquisarSubcategoria(Request $request)
-    {
-        $selecao = $request->selecao;      
-
-        $categoria = VeiculoSubCategoria::where('id_categoria', $selecao)->get();   
-
-        return response()->json($categoria);
-    }
+    
 
     public function create()
     {
+        $categorias =  $this->categorias->getAll();
+        $tipos_veiculos =  $this->tipo->index();
+        $preventivas = $this->preventivaRepository->getAll();
 
-        $obras = CadastroObra::select('id', 'codigo_obra', 'razao_social')->get();
-        $marcas = MarcaMaquina::orderBy('marca')->get();
-        $modelos = ModeloMaquina::orderBy('modelo')->get();      
-        $categorias = VeiculoCategoria::orderBy('nomeCategoria')->get();
-        $subCategorias = VeiculoSubCategoria::orderBy('nomeSubCategoria')->get();
-        $empresas = CadastroEmpresa::where('status', 'Ativo')->get();
-
-        return view('pages.ativos.veiculos.form', compact('obras', 'marcas', 'modelos', 'empresas', 'categorias', 'subCategorias'));
-
+        return view('pages.ativos.veiculos.create', compact('categorias', 'tipos_veiculos', 'preventivas'));
     }
 
     public function store(Request $request)
     {
-        if ($request->tipo == 'maquinas') {
+        try {
 
-            $modelo = $request->input('modelo_da_maquina');
-            $ano = $request->input('ano_da_maquina');
-            $veiculo = $request->input('veiculo_maquina');
-            $marca = $request->input('marca_da_maquina');
+            $veiculo = $this->veiculoRepository->create($request->all(), $request->file('imagem'));
 
-        } else {
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Cadastro efetuado com sucesso!",
+                'type' => 'success'
+            );
 
-            $modelo = $request->input('modelo_nome');
-            $ano = $request->input('ano');
-            $veiculo = $request->input('veiculo');
-            $marca = $request->input('marca_nome');
+            Log::info('Veículo criado: ', ['veiculo' => $veiculo]);
+            return redirect()->route('veiculos.index')->with($notification);
 
-        }        
+        } catch (\Exception $e) {
 
-        if ($request->file("imagem")) {
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao cadastrar a quilometragem.",
+                'type' => 'warning'
+            );
 
-            $file = $request->file("imagem");
-            $imageName = time() . '_' . $file->getClientOriginalName();
-            $file->move(\public_path("veiculo/"), $imageName);           
+            Log::error('Erro ao cadastrar veículo: ', ['error' => $e->getMessage()]);
 
-        }else{
-
-            $imageName = "";
+            return redirect()->back()->with($notification);
         }
-
-        $veiculo = Veiculo::create(
-            [
-                'obra_id'               => $request->input('obra')?? 0,
-                'idCategoria'           => $request->input('idCategoria'),
-                'idSubCategoria'        => $request->input('idSubCategoria'),
-                'tipo'                  => $request->input('tipo'),
-                'marca'                 => $marca,
-                'modelo'                => $modelo,
-                'ano'                   => $ano,
-                'veiculo'               => $veiculo,
-                'valor_fipe'            => str_replace('R$ ', '', $request->input('valor_fipe')),
-                'codigo_fipe'           => $request->input('codigo_fipe'),
-                'fipe_mes_referencia'   => $request->input('fipe_mes_referencia'),
-                'codigo_da_maquina'     => $request->input('codigo_da_maquina'),
-                'placa'                 => strtoupper($request->placa),
-                'renavam'               => $request->input('renavam'),
-                'horimetro_inicial'     => $request->input('horimetro_inicial'),
-                'quilometragem_inicial' => $request->input('quilometragem_inicial'),
-                'observacao'            => $request->input('observacao'),
-                'situacao'              => $request->input('situacao'),
-                'imagem'                => $imageName,
-                'usuario'                => Auth::user()->email,
-            ]
-
-        );
-
-       if ($request->tipo == 'maquinas') {
-            VeiculoHorimetro::create([
-                'veiculo_id' => $veiculo->id,
-                'horimetro_atual'   => $request->horimetro_inicial ?? 0,
-                'horimetro_novo'    => $request->horimetro_inicial ?? 0,
-                'usuario'           => Auth::user()->email,
-            ]);
-
-        } else {
-
-            VeiculoQuilometragem::create([
-                'veiculo_id'            => $veiculo->id,
-                'quilometragem_atual'   => $request->quilometragem_inicial ?? 0,
-                'quilometragem_nova'    => $request->quilometragem_inicial ?? 0,
-                'usuario'           => Auth::user()->email,
-
-            ]);
-
-        }
-
-        if ($request->file("imagens")) {
-
-            $files = [];
-            $files = $request->file("imagens");
-
-            foreach ($files as $file) {
-
-                $cadImagem = new VeiculoImagens();
-                $imageName = time() . '_' . $file->getClientOriginalName();
-                $cadImagem->veiculo_id = $veiculo->id;
-                $cadImagem->imagens = $imageName;
-                $file->move(\public_path("/imagens/veiculos"), $imageName);
-                $cadImagem->save();
-            }
-        }
-
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | ADD VEICULO | Placa: ' . $veiculo->veiculo);
-        return redirect(url('admin/ativo/veiculo'))->with('success', 'Registro cadastrado com sucesso.');
-
     }
-
 
 
     public function edit($id)
-
     {
 
-        VeiculoSubCategoria::with('categorias')->find($id);
-        $veiculo = Veiculo::with('subCategorias', 'categorias', 'obra')->find($id);
-        $obras = CadastroObra::select('id', 'codigo_obra', 'razao_social')->orderByDesc('id')->get();
-        $empresas = CadastroEmpresa::where('status', 'Ativo')->get();
-        $marcas = MarcaMaquina::all();
-        $modelos = ModeloMaquina::all();     
-        $categorias = VeiculoCategoria::orderBy('nomeCategoria')->get();       
-        $subCategorias = VeiculoSubCategoria::orderBy('nomeSubCategoria')->get();
-
-        if ($veiculo->tipo == 'maquinas') {
-
-            return view('pages.ativos.veiculos.edit-maquina', compact('veiculo', 'obras', 'marcas', 'modelos', 'empresas', 'categorias', 'subCategorias'));
-
-        } else {
-
-            return view('pages.ativos.veiculos.edit-veiculo', compact('veiculo', 'obras', 'marcas', 'modelos', 'empresas' , 'categorias', 'subCategorias'));
-
-        }
-
-    }    
-
-    public function show($id)
-
-    {
-        $veiculos = Veiculo::find($id);
-        $obras = CadastroObra::select('id', 'codigo_obra', 'razao_social')->orderByDesc('id')->get();
-        $empresas = CadastroEmpresa::where('status', 'Ativo')->get();  
+        $tipos_veiculos =  $this->tipo->index();
+        $veiculo = $this->veiculoRepository->getById($id);
+        $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
+        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);
+        $categorias =  $this->categorias->getAll();
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
-        $marcas = MarcaMaquina::all();
-        $modelos = ModeloMaquina::all();      
+        $preventivas = $this->preventivaRepository->getAll();
 
-            return view('pages.ativos.veiculos.show', compact('veiculos', 'obras', 'marcas', 'modelos', 'empresas', 'imagens'));
-
+        return view('pages.ativos.veiculos.edit', compact('veiculo', 'manutencoes', 'docs_legais', 'imagens', 'id', 'categorias', 'preventivas', 'tipos_veiculos'));
     }
-
 
     public function update(Request $request, $id)
-
     {
+        try {
 
-        if (! $save = Veiculo::find($id)) {
+            $veiculo = $this->veiculoRepository->update($id, $request->all());
 
-            return redirect()->route('ativo.interno.index')->with('fail', 'O veículo não foi encontrado.');
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Registro atualizado",
+                'type' => 'success'
+            );
+            
+            Log::info('Veículo atualizado: ', ['veiculo' => $veiculo]);
 
-        }             
+            return redirect()->route('veiculo.index')->with($notification);
 
-    
-        if ($request->tipo == 'maquinas') {
+        } catch (\Exception $e) {
 
-            $data = $request->all();
-            $data['obra_id'] =              $request->input('obra');
-            $data['idCategoria'] =          $request->input('idCategoria');
-            $data['idSubCategoria'] =       $request->input('idSubCategoria');
-            $data['marca'] =                $request->input('marca_da_maquina');
-            $data['modelo'] =               $request->input('modelo_da_maquina');
-            $data['ano'] =                  $request->input('ano_da_maquina');
-            $data['horimetro_inicial'] =    $request->input('horimetro_inicial');
-            $data['veiculo'] =              $request->input('veiculo_maquina');
-            $data['valor_fipe'] =           str_replace('R$ ', '', $request->valor_fipe);
-            $data['usuario_update'] =       Auth::user()->email;
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar.",
+                'type' => 'warning'
+            );
 
-            $save->update($data);
-            $userLog = Auth::user()->email;
-            Log::channel('main')->info($userLog . ' | EDIT MAQUINA | ID: ' . $id);
+            Log::error('Erro ao atualizar veículo: ', ['error' => $e->getMessage()]);
 
-            return redirect(url('admin/ativo/veiculo'))->with('success', 'Registro editado com sucesso.');
-
-        } else {
-
-            $data = $request->all();
-            $data['obra_id'] =                  $request->obra;
-            $data['idCategoria'] =              $request->input('idCategoria');
-            $data['idSubCategoria'] =           $request->input('idSubCategoria');
-            $data['marca'] =                    $request->marca_nome ?? $request->marca;
-            $data['modelo'] =                   $request->modelo_nome ?? $request->modelo;
-            $data['ano'] =                      substr($request->ano, 0, 4);
-            $data['valor_fipe'] =               str_replace('R$ ', '', $request->valor_fipe);
-            $data['placa'] =                    strtoupper($request->placa);
-            $data['quilometragem_inicial'] =    $request->input('quilometragem_inicial');
-            $data['usuario_update'] =           Auth::user()->email;
-            $save->update($data);
-
-            $userLog = Auth::user()->email;
-            Log::channel('main')->info($userLog . ' | EDIT VEICULO | ID: ' . $id);
-            return redirect(url('admin/ativo/veiculo'))->with('success', 'Registro editado com sucesso.');
-
+            return redirect()->back()->with($notification);
         }
-
     }
 
-    public function adicionarMarca(Request $request)
-
+    public function show($id)
     {
-        MarcaMaquina::create([
-            'marca' => $request->input('add_marca_da_maquina')
-        ]);
+        $veiculo = $this->veiculoRepository->getById($id);
+        
+        $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
 
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | ADD MARCA MÁQUINA: ' . $request->marca);
+        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);
+        
+        $docs_tecnicos = $veiculo->documentosTecnicos()->orderBy('id', 'desc')->paginate(7);
 
-        return redirect()->back()->withInput();
+        //$this->docs_tecnicos
 
+        $preventiva = $this->preventivaRepository->getById($veiculo->id_preventiva);
+        
+        $checkLists = $this->checkListRepository->getByIdVeiculo($veiculo->id);
+
+        $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
+
+        return view('pages.ativos.veiculos.show', compact('veiculo', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id'));
     }
-
 
     public function delete($id)
     {
-        $veiculo = Veiculo::findOrFail($id);
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | DELETE VEÍCULO: ' . $veiculo->id);
+        try {
 
-        VeiculoQuilometragem::where('veiculo_id', $id)->delete();
-        VeiculoAbastecimento::where('veiculo_id', $id)->delete();
-        VeiculoDepreciacao::where('veiculo_id', $id)->delete();
-        VeiculoIpva::where('veiculo_id', $id)->delete();
-        VeiculoManutencao::where('veiculo_id', $id)->delete();
-        VeiculoSeguro::where('veiculo_id', $id)->delete();
+            $this->veiculoRepository->delete($id);
 
-        if ($veiculo->delete()) {
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Registro deletado.",
+                'type' => 'success'
+            );
+            
+            Log::info('Veículo deletado: ', ['id' => $id]);
 
-            return redirect(url('admin/ativo/veiculo'))->with('success', 'Registro excluído com sucesso.');
+            return redirect()->back()->with($notification);
 
-        } else {
+        } catch (\Exception $e) {
 
-            return redirect(url('admin/ativo/veiculo'))->with('fail', 'Problemas ao excluir registro.');
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar.",
+                'type' => 'warning'
+            );
 
+            Log::error('Erro ao deletar veículo: ', ['error' => $e->getMessage()]);
+
+             return redirect()->back()->with($notification);
         }
-
     }
 
-    // INICIO DA GALERIA DE IMAGENS
-
-    public function storeimagem(Request $request)
-
+    public function storeImage(Request $request, $id)
     {
+        try {
 
-       //dd($request->imagens1);
+            $this->veiculoRepository->storeImage($request->veiculo_id, $request->file('imagens'));
 
-        if ($request->file("imagens1")) {
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Imagem cadastrada com sucesso!",
+                'type' => 'success'
+            );
 
-            $files = [];
-            $files = $request->file("imagens1");
+            return redirect()->route('veiculo.show', $request->veiculo_id)->with($notification);
 
-            foreach ($files as $file) {
+        } catch (\Exception $e) {
+            
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao criar a imagem.",
+                'type' => 'warning'
+            );
 
-               $cadImagem = new VeiculoImagens();
-                $imageName = time() . '_' . $file->getClientOriginalName();
-                $cadImagem->veiculo_id = $request->veiculo_id;
-                $cadImagem->imagens = $imageName;
-                $file->move(\public_path("/imagens/veiculos"), $imageName);
-                $cadImagem->save();               
+            Log::error('Erro ao criar a imagem: ', ['error' => $e->getMessage()]);
 
+            return redirect()->back()->with($notification);
+        }
+    }
+
+    public function updateImage(Request $request, $id)
+    {
+        
+        try {
+
+            if ($request->file('imagem') or $request->descricao) {
+
+                $veiculo = $this->veiculoRepository->updateImage($id, $request->file('imagem'), $request->all());
+
+                $notification = array(
+                    'title' => "Sucesso!!!",
+                    'message' => "Imagem atualizada com sucesso!",
+                    'type' => 'success'
+                );
+
+                Log::info('Imagem atualizada: ', ['veiculo' => $veiculo]);
+
+                return redirect()->back()->with($notification);
+
+            }else{
+
+                $notification = array(
+                    'title' => "Atenção!!!",
+                    'message' => "Escolha uma imagem para alterar",
+                    'type' => 'warning'
+                );
+
+                return redirect()->back()->with($notification);
             }
+        } catch (\Exception $e) {
 
-        }        
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar a imagem.",
+                'type' => 'warning'
+            );
 
-       return redirect()->route('ativo.veiculo.detalhes', $request->veiculo_id)->with('success', 'Imagem adicionada com sucesso.');
+            Log::error('Erro ao atualizar a imagem: ', ['error' => $e->getMessage()]);
 
-    }    
-
-    public function updateImagem(Request $request, $id)
-    {
-
-        $updateImagem = VeiculoImagens::find($id);
-        $data = $request->all();
-
-        if ($request->file("imagens")) {            
-
-            $files = $request->file("imagens");          
-
-                $imageName = time() . '_' . $files->getClientOriginalName();
-                $data["veiculo_id"] = $request->veiculo_id;
-                $data["imagens"] = $imageName;
-                $files->move(\public_path("/imagens/veiculos"), $imageName);
-                $updateImagem->update($data);
+            return redirect()->back()->with($notification);
         }
-
-       return redirect()->route('ativo.veiculo.detalhes', $request->veiculo_id)->with('success', 'Imagem Editado com sucesso.');
-
-    }    
-
-    public function deleteimage($id)
-    {       
-
-        $images = VeiculoImagens::findOrFail($id);
-
-        if (File::exists("imagens/veiculos/" . $images->image)) {
-            File::delete("imagens/veiculos/" . $images->image);
-        }        
-
-        if (VeiculoImagens::find($id)->delete()) {
-            return redirect()->route('ativo.veiculo.detalhes', $images->veiculo_id)->with('success', 'Imagem excluído com sucesso.');
-
-        } else {
-            return redirect()->route('ativo.veiculo.detalhes', $images->veiculo_id)->with('fail', 'Problemas ao excluir a imagem.');
-
-        }
-
-    }    
-
-    // FIM DA GALERIA DE IMAGENS   
-
-    public function storeMarca(Request $request)
-    {
-        $data = $request->all();
-        $save = MarcaMaquina::create($data);
-        $userLog = Auth::user()->email;
-
-        Log::channel('main')->info($userLog .' | ADD MARCA MÁQUINA: ' . $save->marca);
-
-        if ($save) {
-            return response()->json(['success' => true]);
-        } else {
-            return response()->json(['fail' => true]);            
-        }
-
-    }    
-
-    public function anexo($id_ativo_externo = null)
-    {
-
-        if (!$id_ativo_externo) {
-            return redirect()->url('admin/ativo/veiculo')->with('fail', 'Problemas para localizar o ativo.');
-        }
-
-        $anexo = Anexo::where('id_item', $id_ativo_externo)
-        ->where('id_modulo', 14 )
-        ->get();
-
-        if (!$anexo) {
-           echo "Deu ruim!!!!!!!";
-        }
-
-        if ($anexo) {
-            return view('components.anexo.lista_anexo', compact('anexo'));
-        }
-
     }
 
-}
+    public function deleteImage(Request $request, $id)
+    {
+        try {
 
+            $this->veiculoRepository->deleteImage($id);
+
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Imagem deletada com sucesso!",
+                'type' => 'success'
+            );
+
+            Log::info('Imagem do Veículo deletado: ', ['id' => $id]);
+
+            return redirect()->back()->with($notification);
+
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar a imagem.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao deletar a imagem: ', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->whit($notification);
+        }
+    }
+
+    public function pesquisarSubcategoria(Request $request)
+    {
+        $selecao = $request->selecao;
+
+        $categoria = VeiculoSubCategoria::where('id_categoria', $selecao)->get();
+
+        if ($categoria->isEmpty()) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Nenhuma subcategoria encontrada",
+                'type' => 'warning'
+            );
+
+            return redirect()->back()->whit($notification);
+    
+        }
+
+        return response()->json($categoria);
+    }
+}

@@ -11,9 +11,7 @@ class VeiculoAbastecimento extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'veiculo_abastecimentos';
-
     protected $dates = ['deleted_at'];
-
     protected $fillable = [
         'veiculo_id',
         'id_funcionario',
@@ -28,15 +26,5 @@ class VeiculoAbastecimento extends Model
         'valor_total',
         'nome_anexo',
         'arquivo',
-    ];
-
-    public function veiculo()
-    {
-        return $this->belongsTo(Veiculo::class, 'veiculo_id');
-    }
-
-    public function funcionario()
-    {
-        return $this->belongsTo(CadastroFuncionario::class, 'id_funcionario');
-    }
+    ]; 
 }

@@ -2,523 +2,290 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Veiculo;
+use App\Interfaces\VeiculoManutencaoRepositoryInterface;
+use App\Interfaces\VeiculoRepositoryInterface;
 use App\Models\CadastroFornecedor;
-use App\Models\Preventiva;
-use App\Models\Servico;
-use App\Models\VeiculoManutencao;
-use App\Models\VeiculoQuilometragem;
 use App\Models\CadastroObra;
-use App\Models\VeiculoImagens;
-use App\Models\Anexo;
-use App\Models\VeiculoHorimetro;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Models\Servico;
+use App\Models\Veiculo;
+use App\Models\VeiculoManutencaoImagens;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class VeiculoManutencaoController extends Controller
 {
+    protected $repository;
+    protected $repository_veiculo;
 
-    public function index(Request $request, Veiculo $veiculo)
-    {
-        $fornecedores = CadastroFornecedor::orderBy('id')->get();
-        $idManutencoes = VeiculoManutencao::where('veiculo_id', $veiculo->id)->get();
-    
-        // Obter a data atual
-        $dataAtual = Carbon::now();
-    
-        // Obter o número de meses até a data atual
-        $mesesAtuais = $dataAtual->month ?? $request->mes;
-    
-        // Obter o ano atual
-        $anoAtual = $request->ano ?? Carbon::now()->year;
-    
-        // Calcular o custo anual dos valores do serviço
-        $custoAnualManutencao = VeiculoManutencao::selectRaw('YEAR(data_de_execucao) as mesCustoAnoManut')
-            ->selectRaw('SUM(CAST(REPLACE(REPLACE(valor_do_servico, ".", ""), ",", ".") AS DECIMAL(13,2))) as custoAnoManut')
-            ->where('veiculo_id', $veiculo->id)
-            ->groupBy('mesCustoAnoManut')
-            ->get();
-    
-        // Calcular a média dos valores do serviço
-        $mediaCustoManutencao = VeiculoManutencao::select(DB::raw('SUM(CAST(REPLACE(REPLACE(valor_do_servico, ".", ""), ",", ".") AS DECIMAL(13,4))) as mediaCustoManutencao'))
-            ->whereNull('deleted_at')
-            ->where('veiculo_id', $veiculo->id)
-            ->whereYear('data_de_execucao', $anoAtual)
-            ->get();
-    
-        // Dividir a média pelo número de meses atuais
-        if ($mesesAtuais > 0) {
-            $mediaCustoManutencao[0]->mediaCustoManutencao /= 12;
-        }
-    
-        $custoManutencao = VeiculoManutencao::select(DB::raw('SUM(CAST(REPLACE(REPLACE(valor_do_servico, ".", ""), ",", ".") AS DECIMAL(13,2))) as count'))
-            ->selectRaw('MONTH(data_de_execucao) as month')
-            ->where('veiculo_id', $veiculo->id)
-            ->whereYear('data_de_execucao', $anoAtual)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
-    
-        $labels = [];
-        $data = [];
-        $colors = ['#6495ED', '#228B22', '#6C7B8B', '#96CDCD', '#DB7093', '#FFA500', '#FFD700', '#8B658B', '#008B8B', '#CD661D', '#FFD700', '#90EE90'];
-    
-        for ($i = 1; $i <= 12; $i++) {
-            $month = date('M', mktime(0, 0, 0, $i, 1));
-            $count = 0;
-    
-            foreach ($custoManutencao as $custoManutencaoMes) {
-                if ($custoManutencaoMes->month == $i) {
-                    $count = $custoManutencaoMes->count;
-                    break;
-                }
-            }
-    
-            array_push($data, $count);
-        }
-    
-        $mesesEmIngles = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-        $mesesFormatados = array_map(function ($mes) {
-            return Carbon::createFromFormat('M', $mes)->translatedFormat('M');
-        }, $mesesEmIngles);
-    
-        $TestemediaCustoManutencao = $mediaCustoManutencao[0]->mediaCustoManutencao;
-        $mesesMediaCustoManutencao = array_fill(0, 12, $TestemediaCustoManutencao);
-    
-        $dataSets = [
-            [
-                'label' => 'Custo mensal',
-                'data' => $data,
-                'backgroundColor' => $colors,
-                'type' => "bar",
-            ],
-           /* [
-                'label' => "Media acumulada",
-                'type' => "line",
-                'borderColor' => "#FFA500",
-                'backgroundColor' => "#FFA500",
-                'data' => $mesesMediaCustoManutencao,
-                'fill' => false,
-            ],*/
-        ];
-    
-        return view('pages.ativos.veiculos.manutencao.index', compact('idManutencoes', 'veiculo', 'fornecedores', 'dataSets', 'mesesFormatados', 'mediaCustoManutencao', 'mesesMediaCustoManutencao', 'custoAnualManutencao'));
+    public function __construct(
+        VeiculoManutencaoRepositoryInterface $repository,
+        VeiculoRepositoryInterface $repository_veiculo
+    ) {
+        $this->repository = $repository;
+        $this->repository_veiculo = $repository_veiculo;
     }
 
-
-
-    public function list(Request $request, Veiculo $veiculo)
+    public function index()
     {
-
-        $listPage = request('lista') ?? 7;
-
-        $data_inicio = $request->data_inicio ?? null;
-
-        $data_fim = $request->data_fim ?? null;
-
-        $search = $request->search;
-
-        $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
-
-        $servicos = Servico::select('id', 'nomeServico')->get();
-
-        if ($data_inicio) {
-
-            $manutencoes = VeiculoManutencao::where('veiculo_id', $veiculo->id)
-                ->whereDate('data_de_execucao', '>=', $data_inicio)
-                ->whereDate('data_de_execucao', '<=', $data_fim)
-                ->orderBy('data_de_execucao', 'DESC')
-                ->with('veiculo', 'servico', 'fornecedor')
-                ->paginate($listPage);
-
-        } elseif ($search) {
-            $manutencoes = VeiculoManutencao::where('veiculo_id', $veiculo->id)->when(request('search') != null, function ($query) {
-                return  $query->where('fornecedor_id', 'like', '%' . request('search') . '%');
-            })
-            ->with('veiculo', 'servico', 'fornecedor')
-            ->paginate($listPage);
-        } else {
-
-
-            $manutencoes = VeiculoManutencao::where('veiculo_id', $veiculo->id)->when(request('search') != null, function ($query) {
-                return  $query->where('fornecedor_id', 'like', '%' . request('search') . '%');
-            })
-            ->with('veiculo','servico', 'fornecedor')
-            ->paginate($listPage);
-        }
-
-
-        // Retorna as duas views
-        return  view('pages.ativos.veiculos.manutencao.partials.list', compact('veiculo', 'servicos', 'manutencoes'));
+        $manutencoes = $this->repository->getAll();
+        return view('pages.ativos.veiculos.manutencao.index', compact('manutencoes'));
     }
 
-    public function create(Veiculo $veiculo, Request $request)
+    public function create(Veiculo $veiculo,)
     {
-        $veiculos = VeiculoManutencao::orderby('veiculo_id', 'DESC')->get();;
 
         $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
-
         $servicos = Servico::select('id', 'nomeServico')->get();
-
         $obras = CadastroObra::all();
 
         $maiorValorQuilometragem = DB::table('veiculo_quilometragems')->where('veiculo_id', $veiculo->id)
             ->whereNull('deleted_at')
             ->max('quilometragem_nova');
 
-        return view('pages.ativos.veiculos.manutencao.create', compact('veiculo', 'fornecedores', 'servicos', 'obras', 'maiorValorQuilometragem'));
+        return view('pages.ativos.veiculos.manutencao.create', compact('veiculo', 'obras', 'fornecedores', 'servicos', 'maiorValorQuilometragem'));
     }
 
     public function store(Request $request)
     {
+        try {
+            //dd($request->veiculo_id);
+            $manutencao = $this->repository->create($request->all(), $request->file('arquivo'));
 
-        $dataAtual = Carbon::now();
-
-        $request->validate(
-            [
-                'veiculo_id' => ['required'],
-                'fornecedor_id' => ['required'],
-                'servico_id' => ['required'],                
-                'id_obra' => ['required'],
-                'tipo' => ['required'],
-                'data_de_execucao' => ['required'],
-                'data_de_vencimento' => ['required'],
-                'descricao' => ['required'],
-                'valor_do_servico' => ['required'],
-                'situacao' => ['required'],
-            ]
-        );
-
-        $saveManutencao = VeiculoManutencao::create(
-            [
-                'veiculo_id' => $request->veiculo_id,
-                'fornecedor_id' => $request->fornecedor_id,
-                'servico_id' => $request->servico_id,
-                'id_usuario' => Auth::user()->id,
-                'id_obra' => $request->id_obra,
-                'tipo' => $request->tipo,
-                'quilometragem_atual' => $request->quilometragem_atual ?? null,
-                'quilometragem_nova' => $request->quilometragem_nova ?? null,
-                'horimetro_atual' => $request->horimetro_atual ?? null,
-                'horimetro_proximo' => $request->horimetro_proximo ?? null,
-                'data_de_execucao' => $request->data_de_execucao,
-                'data_de_vencimento' => $request->data_de_vencimentov ?? now(),
-                'descricao' => $request->descricao,
-                'valor_do_servico' => str_replace('R$ ', '', $request->valor_do_servico),
-                'situacao' => $request->situacao,
-            ]
-        );
-
-        $saveManutencao->save();
-
-        //cadastrar na tebale de horimetro
-        if ($request->veiculo_tipo == 'maquinas') {
-
-            $saveHorimetro =  VeiculoHorimetro::create([
-                'veiculo_id' => $request->veiculo_id,
-                'horimetro_atual' => $request->horimetro_atual ?? 0,
-                'horimetro_novo' => $request->horimetro_proximo ?? 0,
-                'data_horimetro' => $dataAtual->format('d/m/y'),
-                'usuario' => Auth::user()->id,
-            ]);
-
-            $saveHorimetro->save();
-        } else { // cadastrar na tabela de quilometragem
-
-            $saveQuilometragem =  VeiculoQuilometragem::create([
-                'veiculo_id' => $request->veiculo_id,
-                'quilometragem_atual' => $request->quilometragem_atual ?? 0,
-                'quilometragem_nova' => $request->quilometragem_nova ?? 0,
-                'data_cadastro' => $dataAtual->format('d/m/y'),
-                'usuario' => Auth::user()->email,
-            ]);
-
-            $saveQuilometragem->save();
-        }
-
-        //verificar se tem serviço de preventiva = 4
-        if ($request->servico_id == 4) {
-
-            $servico = Servico::find($request->servico_id);
-
-            $descricao = 'Serviço realizado: ' . $servico->nomeServico . ' | Preventiva: ' . $request->tipo;
-
-            $preventiva = Preventiva::create(
-                [
-                    'veiculo_id' => $request->veiculo_id,
-                    'user_id' => Auth::user()->id,
-                    'manutencao_id' => $saveManutencao->id,
-                    'preventiva' => $request->quilometragem_nova,
-                    'descricao' =>  $descricao,
-                ]
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Manutenção cadastrada com sucesso!",
+                'type' => 'success'
             );
 
-            $preventiva->save();
-        } else { // se não tiver não faz nada
+            Log::info('Manutenção cadastrada', ['manutencao' => $manutencao]);
 
+            return redirect()->route('veiculo.show', $request->veiculo_id . "#manutencoes")->with($notification);
+        } catch (\Exception $e) {
 
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Erro ao cadastrar manutenção.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao cadastrar manutenção', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);;
         }
-
-        //salvar as imagens da manutençãpo
-        if ($request->hasFile("imagens")) {
-
-            $files = [];
-            $files = $request->file("imagens");
-
-            foreach ($files as $file) {
-
-                $cadImagem = new VeiculoImagens();
-                $cadImagem->idServico = $saveManutencao->id;
-                $imageName = time() . '_' . $file->getClientOriginalName();
-                $cadImagem->veiculo_id = $request->veiculo_id;
-                $cadImagem->imagens = $imageName;
-                $file->move(\public_path("/imagens/manutencao_veiculos"), $imageName);
-
-                $cadImagem->save();
-            }
-        }
-
-
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | STORE MANUTENCAO: ' . $saveManutencao->id);
-
-        if ($saveManutencao) {
-
-
-            return redirect()->route('ativo.veiculo.manutencao.show', $saveManutencao->id)->with('success', 'Registro salvo com sucesso.');
-        } else {
-
-            return redirect()->route('ativo.veiculo.manutencao.index', $request->veiculo_id)->with('fail', 'Erro ao salvar registro.');
-        }
-    }
-
-
-    public function show(Veiculo $veiculos, $id)
-    {
-
-        $manutencoes = VeiculoManutencao::with('veiculo', 'fornecedor', 'servico', 'funcionario', 'obra', 'situacoes')->find($id);
-
-        $obras = CadastroObra::select('id', 'codigo_obra', 'razao_social')->orderByDesc('id')->get();
-
-        $imagens = VeiculoImagens::where('idServico', $id)
-            ->get();
-
-        return view('pages.ativos.veiculos.manutencao.show', compact('veiculos', 'obras', 'imagens', 'manutencoes'));
     }
 
     public function edit($id)
     {
-        if (!$manutencao = VeiculoManutencao::with('veiculo', 'fornecedor', 'servico')->find($id)) {
-            return redirect()->route('ativo.veiculo')->with('fail', 'Manutenção não encontrada');
-        }
+        $manutencao = $this->repository->getById($id);
 
-        $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
+        return view('pages.ativos.veiculos.manutencao.edit', compact('manutencao'));
+    }
 
-        $servicos = Servico::select('id', 'nomeServico')->get();
+    public function show($id)
+    {
 
-        return view('pages.ativos.veiculos.manutencao.edit', compact('manutencao', 'fornecedores', 'servicos'));
+        $manutencoes = $this->repository->getById($id);
+
+        $obras = CadastroObra::select('id', 'codigo_obra', 'razao_social')->orderByDesc('id')->get();
+
+        $imagens = VeiculoManutencaoImagens::where('manutencao_id', $id)->get();
+
+        return view('pages.ativos.veiculos.manutencao.show', compact('obras', 'imagens', 'manutencoes'));
     }
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
 
-        if (!$save = VeiculoManutencao::find($id)) {
-            return redirect()->route('ativo.veiculo.manutencao.editar', $id)->with('fail', 'Problemas para localizar o registro.');
-        }
-        $data = $request->all();
-        $data['valor_do_servico'] = str_replace('R$ ', '', $request->valor_do_servico);
+        try {
+            $manutencao = $this->repository->update($id, $request->all(), $request->file('arquivos'));
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Manutenção atualizada com sucesso!",
+                'type' => 'success'
+            );
 
-        $save->update($data);
+            Log::info('Manutenção atualizada', ['manutencao' => $manutencao]);
 
-        $servico = Servico::find($request->servico_id);
+            return redirect()->route('veiculo_manutencoes.index')->with($notification);
+        } catch (\Exception $e) {
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar manutenção.",
+                'type' => 'warning'
+            );
 
-        Preventiva::firstOrCreate([
-
-            'manutencao_id' => $request->id
-
-        ]);
-
-
-
-        $up_preventiva = Preventiva::where('manutencao_id', $save->id)->first();
-
-        $preventiva['veiculo_id'] = $request->veiculo_id;
-        $preventiva['manutencao_id'] = $request->id;
-
-
-        if ($request->veiculo_tipo == 'maquinas') {
-            $preventiva['preventiva'] = $request->horimetro_proximo ?? 0;
-
-
-            VeiculoQuilometragem::firstOrCreate([
-                'veiculo_id' => $request->veiculo_id,
-                'quilometragem_atual' => $request->horimetro_atual,
-                'quilometragem_nova' => $request->horimetro_atual
-            ]);
-        } else {
-
-            $preventiva['preventiva'] = $request->quilometragem_nova ?? 0;
-
-            VeiculoQuilometragem::firstOrCreate([
-                'veiculo_id' => $request->veiculo_id,
-                'quilometragem_atual' => $request->quilometragem_atual,
-                'quilometragem_nova' => $request->quilometragem_atual
-            ]);
-        }
-
-        $preventiva['descricao'] = 'Serviço realizado: ' . $servico->nomeServico . ' | Preventiva: ' . $request->tipo;
-
-
-
-        $up_preventiva->update($preventiva);
-
-
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | EDIT MANUTENCAO: ' . $save->id);
-
-        if ($save && $up_preventiva) {
-            return redirect()->route('ativo.veiculo.manutencao.index', $request->veiculo_id)->with('success', 'Registro salvo com sucesso.');
-        } else {
-            return redirect()->route('ativo.veiculo.manutencao.index', $request->veiculo_id)->with('fail', 'Erro ao salvar registro.');
+            Log::error('Erro ao atualizar manutenção', ['error' => $e->getMessage()]);
+            return redirect()->back()->with($notification);;
         }
     }
 
-    public function delete($id)
+    public function upload(Request $request, $id)
     {
-        $manutencao = VeiculoManutencao::findOrFail($id);
+        try {
+            $manutencao = $this->repository->upload($id, $request->all(), $request->file('arquivo'));
 
-        Preventiva::where('manutencao_id', $manutencao->id)->delete();
+            Log::info('Adicionado arquivo', ['manutencao' => $manutencao]);
+            return response()->json('ok');
 
-        if ($manutencao->delete()) {
+        } catch (\Exception $e) {
 
-            $userLog = Auth::user()->email;
-            Log::channel('main')->info($userLog . ' | DELETE MANUTENCAO: ' . $manutencao->id);
-
-            return redirect()->route('ativo.veiculo.manutencao.index', $manutencao->veiculo_id)->with('success', 'Registro excluído com sucesso');
-        } else {
-            return redirect()->route('ativo.veiculo.manutencao.index', $manutencao->veiculo_id)->with('fail', 'Problema nas exclusão do registro');
+            Log::error('Erro ao atualizar arquivo', ['error' => $e->getMessage()]);
+            return response()->json('ok');
         }
     }
 
-    public function cancel($id)
+    public function destroy($id)
     {
+        try {
+            $this->repository->delete($id);
 
-        if (!$save = VeiculoManutencao::find($id)) {
-            return redirect()->route('ativo.veiculo.manutencao.index', $save->veiculo_id)->with('fail', 'Problemas para localizar o registro.');
-        }
-        $save->update(['situacao' => 4]);
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Manutenção deletada com sucesso!",
+                'type' => 'success'
+            );
 
-        if ($save) {
-            $userLog = Auth::user()->email;
-            Log::channel('main')->info($userLog . ' | CANCEL MANUTENCAO: ' . $save->id);
-            return redirect()->route('ativo.veiculo.manutencao.index', $save->veiculo_id)->with('success', 'Registro salvo com sucesso.');
-        } else {
-            return redirect()->route('ativo.veiculo.manutencao.index', $save->veiculo_id)->with('fail', 'Erro ao salvar registro.');
+            Log::info('Manutenção deletada', ['id' => $id]);
+
+            return redirect()->route('veiculo_manutencoes.index')->with($notification);
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar manutenção.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao deletar manutenção', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);;
         }
     }
 
-    public function storeServico(Request $request)
+    public function storeImage(Request $request, $id)
     {
-        $data = $request->all();
-        $save = Servico::create($data);
+        try {
 
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog . ' | ADD SERVICO MANUTENCAO: ' . $save->nomeServico);
+            $this->repository->storeImage($request->manutencao_id, $request->file('imagens'));
 
-        if ($save) {
-            return response()->json(['success' => true, 'servico_id' => $save->id, 'servico' => $save->nomeServico]);
-        } else {
-            return response()->json(['fail' => true]);
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Imagem cadastrada com sucesso!",
+                'type' => 'success'
+            );
+
+            return redirect()->route('veiculo.show', $request->veiculo_id)->with($notification);
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao criar a imagem.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao criar a imagem: ', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);
         }
     }
 
-    public function anexo($id_ativo_externo = null)
+    public function updateImage(Request $request, $id)
     {
-        if (!$id_ativo_externo) {
-            return redirect()->route('ativo.veiculo.index')->with('fail', 'Problemas para localizar o ativo.');
-        }
 
-        $anexo = Anexo::where('id_item', $id_ativo_externo)
-            ->where('id_modulo', 28)
-            ->get();
+        try {
 
-        if (!$anexo) {
-            return [];
-        }
 
-        if ($anexo) {
-            return view('components.anexo.lista_anexo', compact('anexo'));
-        }
-    }
+            dd($request->all());
 
-    // INICIO DA GALERIA DE IMAGENS
+            if ($request->file('imagem') or $request->descricao) {
 
-    public function storeimagem(Request $request, $id)
-    {
-        //dd($request->imagens1);
-        if ($request->hasFile("imagens1")) {
+                $veiculo = $this->repository->updateImage($id, $request->file('imagem'), $request->all());
 
-            $files = [];
-            $files = $request->file("imagens1");
+                $notification = array(
+                    'title' => "Sucesso!!!",
+                    'message' => "Imagem atualizada com sucesso!",
+                    'type' => 'success'
+                );
 
-            foreach ($files as $file) {
+                Log::info('Imagem atualizada: ', ['veiculo' => $veiculo]);
 
-                $cadImagem = new VeiculoImagens();
-                $imageName = time() . '_' . $file->getClientOriginalName();
-                $cadImagem->veiculo_id = $request->veiculo_id;
-                $cadImagem->imagens = $imageName;
-                $cadImagem->idServico = $id;
-                $file->move(\public_path("/imagens/manutencao_veiculos"), $imageName);
+                return redirect()->back()->with($notification);
+            } else {
 
-                $cadImagem->save();
+                $notification = array(
+                    'title' => "Atenção!!!",
+                    'message' => "Escolha uma imagem para alterar",
+                    'type' => 'warning'
+                );
+
+                return redirect()->back()->with($notification);
             }
-        }
+        } catch (\Exception $e) {
 
-        return redirect()->route('ativo.veiculo.manutencao.show', $id)->with('success', 'Imagem adicionada com sucesso.');
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar a imagem.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao atualizar a imagem: ', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);
+        }
     }
 
-    public function updateImagem(Request $request, $id)
+    public function deleteImage(Request $request, $id)
     {
-        //dd($id);
-        $updateImagem = VeiculoImagens::find($id);
-        $data = $request->all();
+        try {
 
-        if ($request->hasFile("imagens")) {
+            $this->repository->deleteImage($id);
 
-            $files = $request->file("imagens");
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Imagem deletada com sucesso!",
+                'type' => 'success'
+            );
 
-            $imageName = time() . '_' . $files->getClientOriginalName();
-            $data["veiculo_id"] = $request->veiculo_id;
-            $data["imagens"] = $imageName;
-            $files->move(\public_path("/imagens/manutencao_veiculos"), $imageName);
+            Log::info('Imagem do Veículo deletado: ', ['id' => $id]);
 
-            $updateImagem->update($data);
+            return redirect()->back()->with($notification);
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar a imagem.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao deletar a imagem: ', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->whit($notification);
         }
-
-        return redirect()->route('ativo.veiculo.manutencao.show', $updateImagem->idServico)->with('success', 'Imagem Editado com sucesso.');
     }
 
-    public function deleteimage($id)
+    public function download($id)
     {
+        try {
+            // Obter o documento
+            $doc = $this->repository->getAll()->where('id', $id)->first();
 
-        $deleteImages = VeiculoImagens::findOrFail($id);
-        if (File::exists("imagens/manutencao_veiculos/" . $deleteImages->image)) {
-            File::delete("imagens/manutencao_veiculos/" . $deleteImages->image);
-        }
+            if ($doc->arquivo)
 
-        if (VeiculoImagens::find($id)->delete()) {
-            return redirect()->route('ativo.veiculo.manutencao.show', $deleteImages->idServico)->with('success', 'Imagem excluído com sucesso.');
-        } else {
-            return redirect()->route('ativo.veiculo.manutencao.show', $deleteImages->idServico)->with('fail', 'Problemas ao excluir a imagem.');
+                // Executar o download através do método do repositório
+                return $this->repository->download($id);
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Download efetuado com sucesso!",
+                'type' => 'success'
+            );
+
+            return redirect()->back()->whit($notification);
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao fazer o download: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Erro ao fazer o download');
         }
     }
-
-    // FIM DA GALERIA DE IMAGENS
-
 }

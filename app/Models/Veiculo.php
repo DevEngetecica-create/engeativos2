@@ -5,32 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 
 class Veiculo extends Model
 {
-    use HasFactory;
-
-    use SoftDeletes;
-
-    protected $table = 'veiculos';
-
-    protected $dates = ['deleted_at'];
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'obra_id',
         'idCategoria',
         'idSubCategoria',
-        //'periodo_inicial',
-        //'periodo_final',
+        'id_preventiva',
+        'user_create',
+        'user_edit',
         'tipo',
         'marca',
         'modelo',
         'ano',
         'veiculo',
         'valor_fipe',
+        'valor_aquisicao',
         'codigo_fipe',
         'fipe_mes_referencia',
+        'mes_aquisicao',
         'codigo_da_maquina',
         'placa',
         'renavam',
@@ -38,105 +34,43 @@ class Veiculo extends Model
         'quilometragem_inicial',
         'observacao',
         'situacao',
-        'usuario',
-        'usuario_update'
+        'imagem',
+        'usuario'
     ];
-    
-    public static function obterDados()
+
+    public function tipos()
     {
-        $valorVeiculos = Veiculo::select('tipo', DB::raw('SUM(CAST(REPLACE(valor_fipe, ".", "") AS DECIMAL(13, 2))) as sumtotalVeiculos'))
-        ->groupBy('tipo')
-        ->get();
+        return $this->belongsTo(TiposVeiculos::class, 'tipo', 'id');
+    }   
 
-        
-        if ($valorVeiculos->count()) {
-
-            
-            $incI = 0;
-            foreach($valorVeiculos AS $arrKey => $arrData){
-                $somaVeiculos[$incI] = $arrData;
-               
-                $incI++;
-            }
-            
-            //Convert array to json form...
-            return json_encode($somaVeiculos);
-          
-            foreach (($valorVeiculos) as $chave => $key) {
-                
-                
-                $dadosVeiculos = json_decode($key, true);
-                
-                //dd($valorVeiculos);
-                $somaVeiculos = [];
-                $incI = 0;
-                foreach ($dadosVeiculos as $chaveValoresVeiculo => $valor) {
-                    $somaVeiculos[$chaveValoresVeiculo] = $valor['tipo'];
-                    $somaVeiculos[$chaveValoresVeiculo] = $valor['sumtotalVeiculos'];
-                    $incI++;
-                }
-
-               
-            }
-
-            return $somaVeiculos;
-
-        } else {
-
-            return null;
-
-        }
-    }
-    
-    public function quilometragens()
-    {
-        return $this->hasMany(VeiculoQuilometragem::class, 'veiculo_id');
-    
-    }
-    public function horimetro()
-    {
-        return $this->hasMany(VeiculoHorimetro::class, 'veiculo_id');
-    }
-
-    public function abastecimentos()
-    {
-        return $this->hasMany(VeiculoAbastecimento::class);
-    }
-
-    public function depreciacaos()
-    {
-        return $this->hasMany(VeiculoDepreciacao::class);
-    }
-
-    public function manutencaos()
+    public function manutencoes()
     {
         return $this->hasMany(VeiculoManutencao::class, 'veiculo_id');
     }
 
-    public function seguros()
+    public function quilometragem()
     {
-        return $this->hasMany(VeiculoSeguro::class);
-    }
-
-    public function ipvas()
-    {
-        return $this->hasMany(VeiculoIpva::class);
-    }
-
-    public function obra()
-    {
-        return $this->belongsTo(CadastroObra::class, 'obra_id');
+        return $this->belongsTo(VeiculoQuilometragem::class, 'veiculo_id');
     }
     
     public function categorias()
     {
         return $this->belongsTo(VeiculoCategoria::class, 'idCategoria');
     }
-    
-    public function subCategorias()
+   
+    public function checkli_preventiva()
     {
-        return $this->belongsTo(VeiculoSubCategoria::class, 'idSubCategoria');
+        return $this->belongsTo(CheckListManutPreventiva::class, 'id_veiculo');
     }
-
-
+   
+    public function documentosLegais()
+    {
+        return $this->hasMany(VeiculosDocsLegais::class, 'id_veiculo');
+    }
+    
+    public function documentosTecnicos()
+    {
+        return $this->hasMany(VeiculosDocsTecnicos::class, 'id_veiculo');
+    }
+    
 }

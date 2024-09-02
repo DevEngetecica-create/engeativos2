@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VeiculoSeguro extends Model
 {
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $dates = ['deleted_at'];
-
     protected $fillable = [
         'veiculo_id',
         'nome_seguradora',
@@ -21,6 +18,7 @@ class VeiculoSeguro extends Model
         'carencia_final',
         'valor'
     ];
+
     public function veiculo()
     {
         return $this->belongsTo(Veiculo::class);

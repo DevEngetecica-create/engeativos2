@@ -1,0 +1,222 @@
+    $(document).ready(function() {
+        var id_retirada = '{{ @$detalhes->id }}';
+
+        var url = "{{route('ferramental/retirada/consultarCredenciaisTermo', ['id' => ':id'])}}";
+        url = url.replace(':id', id_retirada);
+
+        var urlAssinar = "{{route('ferramental/retirada/termo_assinar', ['id' => ':id'])}}";
+        urlAssinar = urlAssinar.replace(':id', id_retirada);
+
+        $('#digital').click(function() {
+
+            var assinatura = $('#form_assinatura_digital').serialize();
+
+            console.log(assinatura);
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                data: assinatura
+
+            }).done(function(data) {
+
+                if (data == 'success') {
+
+
+                    Swal.fire({
+                        title: 'Atenção!',
+                        text: "Você está prestes a assinar um documento confidencial para liberação dos itens já descritos. Esta operação não poderá ser revertida.",
+                        icon: 'warning',
+                        footer: 'Em caso de dúvidas, entre em contato com seu gestor.',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Assinar Documento'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            let timerInterval
+                            Swal.fire({
+                                title: 'Aguarde.',
+                                html: 'Estamos autenticando o documento em <b></b> milisegundos.',
+                                timer: 2000,
+                                timerProgressBar: true,
+                                didOpen: () => {
+                                    Swal.showLoading()
+                                    const b = Swal.getHtmlContainer()
+                                        .querySelector('b')
+                                    timerInterval = setInterval(() => {
+                                        b.textContent = Swal
+                                            .getTimerLeft()
+                                    }, 100)
+                                },
+                                willClose: () => {
+                                    clearInterval(timerInterval)
+                                }
+                            }).then((result) => {
+
+                                if (result.dismiss === Swal.DismissReason
+                                    .timer) {
+
+                                    var id_retirada = '{{ @$detalhes->id }}';
+
+                                    var assinatura = $('#form_assinatura_digital').serialize();
+                                    $.ajaxSetup({
+                                        headers: {
+                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                        }
+                                    });
+
+                                    // salvar autenticidade
+                                    $.ajax({
+                                        type: 'post',
+                                        url: urlAssinar,
+                                        data: {
+                                            assinatura: assinatura
+                                        },
+                                        success: function(result) {
+
+                                            if (result == 0) {
+                                                Swal.fire(
+                                                    'Eita!',
+                                                    'Algo deu errado na assinatura.',
+                                                    'error'
+                                                )
+                                            }
+
+                                            Swal.fire({
+                                                title: 'Sucesso!',
+                                                text: "O Termo de responsabilidade foi assinado com sucesso!",
+                                                icon: 'success',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                cancelButtonText: 'Fechar',
+                                                confirmButtonText: 'Baixar Documento'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    window.open(BASE_URL + '/ferramental/retirada/termo/' + id_retirada);
+
+                                                    $("#assinar_termo_digital").modal("hide");
+
+                                                    $("#gerarTermoModal").modal("hide");
+                                                }
+                                            })
+                                        }
+                                    });
+                                }
+                            })
+                        }
+                    })
+
+                } else {
+
+                    Swal.fire({
+                        title: "Atenção",
+                        text: data,
+                        icon: "warning"
+                    });
+                }
+
+            });
+        });
+
+    });
+
+    <script>
+    $("#digitalyyyyyyyyyyyyy").on('click', function(e) {
+
+        console.log('Autenticar Digitalmente')
+
+        Swal.fire({
+            title: 'Atenção!',
+            text: "Você está prestes a assinar um documento confidencial para liberação dos itens já descritos. Esta operação não poderá ser revertida.",
+            icon: 'warning',
+            footer: 'Em caso de dúvidas, entre em contato com seu gestor.',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Assinar Documento'
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                let timerInterval
+                Swal.fire({
+                    title: 'Aguarde.',
+                    html: 'Estamos autenticando o documento em <b></b> milisegundos.',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        const b = Swal.getHtmlContainer()
+                            .querySelector('b')
+                        timerInterval = setInterval(() => {
+                            b.textContent = Swal
+                                .getTimerLeft()
+                        }, 100)
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval)
+                    }
+                }).then((result) => {
+
+                    if (result.dismiss === Swal.DismissReason
+                        .timer) {
+
+                        var id_retirada = '{{ @$detalhes->id }}';
+
+                        var assinatura = $('#form_assinatura_digital').serialize();
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                        });
+
+                        // salvar autenticidade
+                        $.ajax({
+                            type: 'post',
+                            url: BASE_URL + '/ferramental/retirada/termo_assinar/' + id_retirada,
+                            data: {
+                                assinatura: assinatura
+                            },
+                            success: function(result) {
+
+                                if (result == 0) {
+                                    Swal.fire(
+                                        'Eita!',
+                                        'Algo deu errado na assinatura.',
+                                        'error'
+                                    )
+                                }
+
+                                Swal.fire({
+                                    title: 'Sucesso!',
+                                    text: "O Termo de responsabilidade foi assinado com sucesso!",
+                                    icon: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    cancelButtonText: 'Fechar',
+                                    confirmButtonText: 'Baixar Documento'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.open(BASE_URL + '/ferramental/retirada/termo/' + id_retirada);
+
+                                        $("#assinar_termo_digital").modal("hide");
+                                    }
+                                })
+                            }
+                        });
+                    }
+                })
+            }
+        })
+
+    })
+</script>

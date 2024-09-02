@@ -1,23 +1,24 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 class VeiculoQuilometragem extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'veiculo_quilometragems';
     protected $dates = ['deleted_at'];
-   
+    
     protected $fillable = [
         'veiculo_id',
         'id_abastecimento',
         'id_funcionario',
-        'usuario',
+        'id_obra',
+        'user_create',
+        'user_edit',
         'data_quilometragem',
         'quilometragem_atual',
         'quilometragem_nova',
@@ -32,5 +33,4 @@ class VeiculoQuilometragem extends Model
     {
         return $this->belongsTo(User::class, 'usuario');
     }
-
 }

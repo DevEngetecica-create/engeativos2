@@ -1,0 +1,705 @@
+@extends('dashboard')
+@section('title')
+    @lang('translation.settings')
+@endsection
+@section('content')
+    <div class="position-relative mx-n4 mt-n4">
+        <div class="profile-wid-bg profile-setting-img" style="height:220px">
+            <img src="{{ URL::asset('build/images/icones/logo_engetecnica.svg') }}" class="profile-wid-img" alt="">
+            <div class="overlay-content">
+                <div class="text-end p-3">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xxl-3">
+            <div class="card mt-n5">
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
+
+
+                            <img src="@if ($veiculo->imagem != '') {{ URL::asset('imagens/veiculos/' . $veiculo->id . '/' . $veiculo->imagem) }}@else{{ URL::asset('imagens/veiculos/nao-ha-fotos.png') }} @endif"
+                                class="img-thumbnail">
+                            <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+                                <input id="profile-img-file-input" type="file" class="profile-img-file-input">
+                                <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
+                                    <span class="avatar-title rounded-circle bg-light text-body">
+                                        <i class="ri-camera-fill"></i>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <h5 class="fs-17 mb-1">{{ $veiculo->modelo }}</h5>
+
+                    </div>
+                </div>
+            </div>
+            <!--end card-->
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered table-sm">
+                        <tr>
+                            <th>ID</th>
+                            <td>{{ $veiculo->id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tipo</th>
+                            <td>{{ $veiculo->tipos->nome_tipo_veiculo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Marca</th>
+                            <td>{{ $veiculo->marca }}</td>
+                        </tr>
+                        <tr>
+                            <th>Modelo</th>
+                            <td>{{ $veiculo->modelo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ano</th>
+                            <td>{{ $veiculo->ano }}</td>
+                        </tr>
+                        <tr>
+                            <th>Placa</th>
+                            <td>{{ $veiculo->placa }}</td>
+                        </tr>
+                        <tr>
+                            <th>Valor FIPE</th>
+                            <td>{{ $veiculo->valor_fipe }}</td>
+                        </tr>
+                        <tr>
+                            <th>Situação</th>
+                            <td>{{ $veiculo->situacao }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--end col-->
+        <div class="col-xxl-9">
+            <div class="card mt-xxl-n5">
+                <div class="card-header">
+                    <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab">
+                                <i class="fas fa-home"></i>
+                                Detalhes do veículo
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#manutencoes" role="tab">
+                                <i class="far fa-user"></i>
+                                Manutenções
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Checklist
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Seguros
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                IPVA's
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Abastecimentos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Quilometragem
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Abastecimentos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                                <i class="far fa-envelope"></i>
+                                Acessórios
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-4">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="personalDetails" role="tabpanel">
+
+                            <div class="d-flex card-header mb-3">
+                                <div class="form-group col-12 p-1 m-0 mb-2">
+                                    <form action="{{ route('veiculos.storeImage', $veiculo->id) }}" method="post"
+                                        enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="d-flex flex-row bd-highlight">
+                                            <div class="bd-highlight col-3">
+                                                <h4 class="card-title">GALERIA DE IMAGENS</h4>
+                                            </div>
+                                            <div class="bd-highlight col-6">
+                                                <input type="hidden" name="veiculo_id" value="{{ $veiculo->id }}">
+                                                <input class="form-control form-control-sm" id="formFileSm"
+                                                    name="imagens[]" multiple type="file">
+                                            </div>
+                                            <div class="bd-highlight mx-2 col-3">
+                                                <button type="submit" class="btn btn-primary">Cadastrar novas
+                                                    imagens</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                @foreach ($imagens as $imagem)
+                                    <div class="col-xl-4">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <form action="{{ route('veiculos.deleteImage', $imagem->id) }}"
+                                                    method="POST" class="m-0 p-0">
+                                                    @csrf
+                                                    <input type="hidden" name="veiculo_id" value="{{ $veiculo->id }}">
+                                                    <button type="submit" class="btn-close text-danger float-end fs-11"
+                                                        aria-label="Close" data-toggle="tooltip" data-placement="top"
+                                                        type="submit" title="Excluir"
+                                                        onclick="return confirm('Tem certeza que deseja exluir a imagem?')"></button>
+                                                </form>
+                                                <h6 class="card-title mb-0">{{ $imagem->descricao ?? 'Descrição' }}</h6>
+                                            </div>
+                                            <div class="card-body p-4 text-center">
+                                                <div class="mx-auto avatar mb-3">
+                                                    <img src="{{ asset('imagens/veiculos/' . $imagem->veiculo_id . '/' . $imagem->imagens) }}"
+                                                        alt="" class="img-fluid">
+                                                </div>
+                                            </div>
+                                            <div class="card-footer text-center">
+                                                <div class="row">
+                                                    <div class="d-flex col-6">
+                                                        <button type="button" id="btn_modal_img_veiculo"
+                                                            class="btn btn-primary " data-id="{{ $imagem->id }}"
+                                                            data-bs-toggle="modal" data-bs-target="#modal_img_veiculo">
+                                                            <i class="mdi mdi-pencil mdi-18x"></i>Alterar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- end col -->
+                                @endforeach
+                            </div>
+
+                        </div>
+
+                        <!--end tab-pane-->
+                        <div class="tab-pane" id="manutencoes" role="tabpanel">
+
+                            <div class="card shadow">
+                                <a href="{{ route('ativo.veiculo.manutencao.adicionar', $veiculo->id) }}">
+                                    <button class="btn btn-success">Cadastrar Manutenção</button>
+                                </a>
+                                <div class="card-body">
+
+                                    <table class="table table-sm table-hover table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Tipo</th>
+                                                <th>km Atual</th>
+                                                <th>Data de Execução</th>
+                                                <th>Data de Vencimento</th>
+                                                <th>Descrição</th>
+                                                <th>Valor do Serviço</th>
+                                                <th class="text-center">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($manutencoes as $manutencao)
+                                                <tr>
+                                                    <td>{{ $manutencao->id }}</td>
+                                                    <td>{{ $manutencao->tipo }}</td>
+                                                    <td>{{ $manutencao->quilometragem_atual }}</td>
+                                                    <td>{{ $manutencao->data_de_execucao }}</td>
+                                                    <td>{{ $manutencao->data_de_vencimento }}</td>
+                                                    <td>{{ $manutencao->descricao }}</td>
+                                                    <td>{{ $manutencao->valor_do_servico }}</td>
+
+                                                    <td class="d-flex justify-content-center">
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm btn_modal_uploada_arq_manut "
+                                                            data-id="{{ $manutencao->id }}"></i>inserir/ Alterar</button>
+
+                                                        <a href="{{ route('ativo.veiculo.manutencao.show', $manutencao->id) }}"
+                                                            class="btn btn-outline-primary btn-sm mx-2"><i
+                                                                class="mdi mdi-eye"></i></a>
+
+                                                        <a href="{{ route('ativo.veiculo.manutencao.edit', $manutencao->id) }}"
+                                                            class="btn btn-outline-secondary btn-sm "><i
+                                                                class="mdi mdi-pencil"></i></a>
+
+                                                        <form
+                                                            action="{{ route('ativo.veiculo.manutencao.delete', $manutencao->id) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Tem certeza que deseja excluir este registro?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="btn btn-outline-danger btn-sm mx-2"><i
+                                                                    class="mdi mdi-trash-can"></i></button>
+                                                        </form>
+                                                        <a href="{{ route('ativo.veiculo.manutencao.download', $manutencao->id) }}"
+                                                            class="btn btn-outline-success btn-sm "
+                                                            title="Baixar anexo"><i
+                                                                class="mdi mdi-cloud-download-outline"></i></a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                    <div class="row mt-2">
+                                        <div class="d-flex justify-content-end col-sm-12 col-md-12 col-lg-12 ">
+                                            <div class="paginacao">
+                                                {{ $manutencoes->links() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end tab-pane-->
+                        <div class="tab-pane" id="experience" role="tabpanel">
+                            <form>
+                                <div id="newlink">
+                                    <div id="1">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="mb-3">
+                                                    <label for="jobTitle" class="form-label">Job
+                                                        Title</label>
+                                                    <input type="text" class="form-control" id="jobTitle"
+                                                        placeholder="Job title" value="Lead Designer / Developer">
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label for="companyName" class="form-label">Company
+                                                        Name</label>
+                                                    <input type="text" class="form-control" id="companyName"
+                                                        placeholder="Company name" value="Themesbrand">
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label for="experienceYear" class="form-label">Experience
+                                                        Years</label>
+                                                    <div class="row">
+                                                        <div class="col-lg-5">
+                                                            <select class="form-control" data-choices
+                                                                data-choices-search-false name="experienceYear"
+                                                                id="experienceYear">
+                                                                <option value="">Select years</option>
+                                                                <option value="Choice 1">2001</option>
+                                                                <option value="Choice 2">2002</option>
+                                                                <option value="Choice 3">2003</option>
+                                                                <option value="Choice 4">2004</option>
+                                                                <option value="Choice 5">2005</option>
+                                                                <option value="Choice 6">2006</option>
+                                                                <option value="Choice 7">2007</option>
+                                                                <option value="Choice 8">2008</option>
+                                                                <option value="Choice 9">2009</option>
+                                                                <option value="Choice 10">2010</option>
+                                                                <option value="Choice 11">2011</option>
+                                                                <option value="Choice 12">2012</option>
+                                                                <option value="Choice 13">2013</option>
+                                                                <option value="Choice 14">2014</option>
+                                                                <option value="Choice 15">2015</option>
+                                                                <option value="Choice 16">2016</option>
+                                                                <option value="Choice 17" selected>2017
+                                                                </option>
+                                                                <option value="Choice 18">2018</option>
+                                                                <option value="Choice 19">2019</option>
+                                                                <option value="Choice 20">2020</option>
+                                                                <option value="Choice 21">2021</option>
+                                                                <option value="Choice 22">2022</option>
+                                                            </select>
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-auto align-self-center">
+                                                            to
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-lg-5">
+                                                            <select class="form-control" data-choices
+                                                                data-choices-search-false name="choices-single-default2">
+                                                                <option value="">Select years</option>
+                                                                <option value="Choice 1">2001</option>
+                                                                <option value="Choice 2">2002</option>
+                                                                <option value="Choice 3">2003</option>
+                                                                <option value="Choice 4">2004</option>
+                                                                <option value="Choice 5">2005</option>
+                                                                <option value="Choice 6">2006</option>
+                                                                <option value="Choice 7">2007</option>
+                                                                <option value="Choice 8">2008</option>
+                                                                <option value="Choice 9">2009</option>
+                                                                <option value="Choice 10">2010</option>
+                                                                <option value="Choice 11">2011</option>
+                                                                <option value="Choice 12">2012</option>
+                                                                <option value="Choice 13">2013</option>
+                                                                <option value="Choice 14">2014</option>
+                                                                <option value="Choice 15">2015</option>
+                                                                <option value="Choice 16">2016</option>
+                                                                <option value="Choice 17">2017</option>
+                                                                <option value="Choice 18">2018</option>
+                                                                <option value="Choice 19">2019</option>
+                                                                <option value="Choice 20" selected>2020
+                                                                </option>
+                                                                <option value="Choice 21">2021</option>
+                                                                <option value="Choice 22">2022</option>
+                                                            </select>
+                                                        </div>
+                                                        <!--end col-->
+                                                    </div>
+                                                    <!--end row-->
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            <div class="col-lg-12">
+                                                <div class="mb-3">
+                                                    <label for="jobDescription" class="form-label">Job
+                                                        Description</label>
+                                                    <textarea class="form-control" id="jobDescription" rows="3" placeholder="Enter description">You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. </textarea>
+                                                </div>
+                                            </div>
+                                            <!--end col-->
+                                            <div class="hstack gap-2 justify-content-end">
+                                                <a class="btn btn-success" href="javascript:deleteEl(1)">Delete</a>
+                                            </div>
+                                        </div>
+                                        <!--end row-->
+                                    </div>
+                                </div>
+                                <div id="newForm" style="display: none;">
+
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="hstack gap-2">
+                                        <button type="submit" class="btn btn-success">Update</button>
+                                        <a href="javascript:new_link()" class="btn btn-primary">Add
+                                            New</a>
+                                    </div>
+                                </div>
+                                <!--end col-->
+                            </form>
+                        </div>
+                        <!--end tab-pane-->
+                        <div class="tab-pane" id="privacy" role="tabpanel">
+                            <div class="mb-4 pb-2">
+                                <h5 class="card-title text-decoration-underline mb-3">Security:</h5>
+                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fs-15 mb-1">Two-factor Authentication</h6>
+                                        <p class="text-muted">Two-factor authentication is an enhanced
+                                            security meansur. Once enabled, you'll be required to give
+                                            two types of identification when you log into Google
+                                            Authentication and SMS are Supported.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Enable Two-facor
+                                            Authentication</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fs-15 mb-1">Secondary Verification</h6>
+                                        <p class="text-muted">The first factor is a password and the
+                                            second commonly includes a text with a code sent to your
+                                            smartphone, or biometrics using your fingerprint, face, or
+                                            retina.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Set
+                                            up secondary method</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
+                                    <div class="flex-grow-1">
+                                        <h6 class="fs-15 mb-1">Backup Codes</h6>
+                                        <p class="text-muted mb-sm-0">A backup code is automatically
+                                            generated for you when you turn on two-factor authentication
+                                            through your iOS or Android Twitter app. You can also
+                                            generate a backup code on twitter.com.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Generate backup
+                                            codes</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h5 class="card-title text-decoration-underline mb-3">Application
+                                    Notifications:</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <label for="directMessage" class="form-check-label fs-15">Direct
+                                                messages</label>
+                                            <p class="text-muted">Messages from people you follow</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="directMessage" checked />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                        <div class="flex-grow-1">
+                                            <label class="form-check-label fs-15" for="desktopNotification">
+                                                Show desktop notifications
+                                            </label>
+                                            <p class="text-muted">Choose the option you want as your
+                                                default setting. Block a site: Next to "Not allowed to
+                                                send notifications," click Add.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="desktopNotification" checked />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                        <div class="flex-grow-1">
+                                            <label class="form-check-label fs-15" for="emailNotification">
+                                                Show email notifications
+                                            </label>
+                                            <p class="text-muted"> Under Settings, choose Notifications.
+                                                Under Select an account, choose the account to enable
+                                                notifications for. </p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="emailNotification" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                        <div class="flex-grow-1">
+                                            <label class="form-check-label fs-15" for="chatNotification">
+                                                Show chat notifications
+                                            </label>
+                                            <p class="text-muted">To prevent duplicate mobile
+                                                notifications from the Gmail and Chat apps, in settings,
+                                                turn off Chat notifications.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="chatNotification" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                        <div class="flex-grow-1">
+                                            <label class="form-check-label fs-15" for="purchaesNotification">
+                                                Show purchase notifications
+                                            </label>
+                                            <p class="text-muted">Get real-time purchase alerts to
+                                                protect yourself from fraudulent charges.</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" role="switch"
+                                                    id="purchaesNotification" />
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="card-title text-decoration-underline mb-3">Delete This
+                                    Account:</h5>
+                                <p class="text-muted">Go to the Data & Privacy section of your profile
+                                    Account. Scroll to "Your data & privacy options." Delete your
+                                    Profile Account. Follow the instructions to delete your account :
+                                </p>
+                                <div>
+                                    <input type="password" class="form-control" id="passwordInput"
+                                        placeholder="Enter your password" value="make@321654987"
+                                        style="max-width: 265px;">
+                                </div>
+                                <div class="hstack gap-2 mt-3">
+                                    <a href="javascript:void(0);" class="btn btn-soft-danger">Close &
+                                        Delete This Account</a>
+                                    <a href="javascript:void(0);" class="btn btn-light">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end tab-pane-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end col-->
+    </div>
+    <!--end row-->
+
+
+    <!-- tooltips and popovers modal -->
+    <div class="modal fade" id="modal_img_veiculo" tabindex="-1" aria-labelledby="exampleModalPopoversLabel"
+        aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalPopoversLabel">Alterar dados da imagem </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('veiculos.updateImage', 0) }}" method="POST" class="m-0 p-0"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+
+                        <input type="hidden" name="veiculo_id" value="{{ $veiculo->id }}">
+                        <input type="hidden" id="id_imagem" name="id_imagem">
+
+                        <div class="col-12 my-2">
+                            <label for="firstnameInput" class="form-label">Alterar imagem</label>
+                            <input type="file" id="input-file-now-custom-3" class="form-control" name="imagem">
+                        </div>
+
+                        <div class="col-12 my-2">
+                            <label for="firstnameInput" class="form-label">Descrição da imagem</label>
+                            <input type="text" class="form-control" name="descricao">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endsection
+    @section('script')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var buttons = document.querySelectorAll('.btn_modal_uploada_arq_manut');
+
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var manutencaoId = this.getAttribute('data-id');
+                        var url_update_img_man = "{{ route('ativo.veiculo.manutencao.upload', ['id' => ':id']) }}";
+                        url_update_img_man = url_update_img_man.replace(':id', manutencaoId);
+
+                        (async () => {
+                            const {
+                                value: formValues
+                            } = await Swal.fire({
+                                title: '<div class="icon active">' +
+                                    '<lord-icon src="https://media.lordicon.com/icons/wired/outline/120-folder.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>' +
+                                    '</div>',
+                                html: ` 
+                                        <form id="uploadForm" method="POST" class="m-0 p-0" enctype="multipart/form-data">
+                                
+                                            <div class="row">
+                                                <input type="hidden" id="manutencao_id" name="manutencao_id" value="${manutencaoId}">
+                                                <div class="col-12 text-start mb-3">
+                                                    <label for="arquivo" class="form-label small">Inserir/ Alterar arquivo</label>
+                                                    <input type="file" class="form-control" name="arquivo" id="arquivo">
+                                                </div>
+                                                
+                                            </div>
+                                        </form>
+                                    `,
+
+                                showCancelButton: true,
+                                confirmButtonText: 'Salvar',
+                                cancelButtonText: 'Cancelar',
+                                preConfirm: () => {
+                                    var form = document.getElementById('uploadForm');
+                                    var formData = new FormData(form);
+
+                                    return fetch(url_update_img_man, {
+                                        method: 'POST', // Ou 'PUT' dependendo do que a sua rota espera
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector( 'meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: formData
+                                    }).then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(
+                                                'Erro ao salvar o arquivo'
+                                                );
+                                        }
+                                        return response
+                                    .json(); // Certifique-se de que a resposta seja JSON válida
+                                    }).catch(error => {
+                                        Swal.showValidationMessage(
+                                            `Request failed: ${error.message}`
+                                            );
+                                    });
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Swal.fire({
+                                        title: 'Sucesso!',
+                                        text: 'O arquivo foi salvo com sucesso.',
+                                        icon: 'success',
+                                    });
+                                }
+                            });
+                        })(); // Auto-executando a função async corretamente
+                    });
+                });
+            });
+
+
+            $(document).ready(function() {
+
+                // Encontre todos os botões "btn_modal_img_veiculo"
+                var detalhesButtons = document.querySelectorAll('#btn_modal_img_veiculo');
+
+                //Fazer um loop para encontrar os botões
+                detalhesButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+
+                        $("#id_imagem").val('');
+
+                        let id_imagem = $(this).attr('data-id');
+
+                        $("#id_imagem").val(id_imagem);
+
+                    });
+                });
+
+                // Seleciona todos os botões de upload de arquivo de manutenção
+                $('.btn_modal_uploada_arq_manut').on('click', function() {
+                    var id_manutencao = $(this).data('id');
+                    $('#manutencao_id').val(id_manutencao);
+                });
+
+            });
+        </script>
+    @endsection

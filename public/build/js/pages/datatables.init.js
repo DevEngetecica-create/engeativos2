@@ -46,11 +46,18 @@ function initializeTables() {
     });
 
     //buttons examples
-    let buttonsDataTables = new DataTable('#buttons-datatables', {
+    let buttonsDataTables = new DataTable('#tabela-veiculos', {
         dom: 'Bfrtip',
         buttons: [
-            'copy', 'csv', 'excel', 'print', 'pdf'
-        ]
+            'copy', 'excel'
+        ],
+        order: [
+            [0, 'desc']
+        ],
+        language: {
+            search: 'Pesquisar',
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json',
+        }
     });
 
     //buttons examples

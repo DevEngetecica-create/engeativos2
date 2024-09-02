@@ -8,14 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VeiculoTacografo extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    use SoftDeletes;
-
-    protected $table = 'veiculos_tacografo';
-
+    protected $table = 'veiculos_tacografos';
     protected $dates = ['deleted_at'];
-
     protected $fillable = [
         'veiculo_id',
         'descricao',
@@ -24,7 +20,6 @@ class VeiculoTacografo extends Model
         'observacao'
     ];
 
-  
     public function veiculo()
     {
         return $this->belongsTo(Veiculo::class, 'veiculo_id');

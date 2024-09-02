@@ -8,17 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VeiculoManutencao extends Model
 {
-    use HasFactory;
-
-    use SoftDeletes;
-
-    //protected $dates = ['deleted_at'];
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'veiculo_id',
         'fornecedor_id',
         'servico_id',
-        'id_usuario',
+        'user_create',
+        'user_edit',
         'id_obra',
         'tipo',
         'quilometragem_atual',
@@ -59,7 +56,6 @@ class VeiculoManutencao extends Model
     }
 
     public function situacoes()
-
     {
         return $this->belongsTo(AtivoExernoStatus::class, 'situacao');
     }
@@ -68,7 +64,4 @@ class VeiculoManutencao extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
-
-
-
 }

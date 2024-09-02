@@ -1162,9 +1162,7 @@ class CadastroFuncionarioController extends Controller
                 
             }
 
-            if ($id_anexo) {
-                
-               
+            if ($id_anexo) {  
                 
                 if($request->acao_cadastrar_editar == "editar_qualificacao" ){
                  
