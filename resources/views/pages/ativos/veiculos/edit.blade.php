@@ -74,7 +74,7 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-3">uu
+                            <div class="row mt-3">
                                 <div class="col-md-4">
                                     <label class="form-label" for="tipo"></label>
                                     <select class="form-select" id="tipo" name="tipo" required> 

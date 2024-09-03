@@ -315,7 +315,12 @@
                                                                             
                                                                             <div class="@if (
                                                                                             session()->get('usuario_vinculo')->id_nivel == 15 ||
-                                                                                            session()->get('usuario_vinculo')->id_nivel == 10) d-block @else d-none @endif">
+                                                                                            session()->get('usuario_vinculo')->id_nivel == 10 ||
+                                                                                            session()->get('usuario_vinculo')->id_nivel == 1 ) 
+                                                                                                d-block 
+                                                                                            @else 
+                                                                                                d-none 
+                                                                                            @endif">
                                                                                 <div class="form-group">
                                                                                     <select class="form-select situacao-select" name="situacao_doc" id="situacao_doc{{ $qualificacao->id_anexos ?? $qualificacao->id }}" data-id="{{ $qualificacao->id_anexos ?? $qualificacao->id }}">
                                                                                         <option value="">Selecione</option>

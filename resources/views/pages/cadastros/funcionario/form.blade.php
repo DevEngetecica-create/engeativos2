@@ -1072,15 +1072,14 @@
 
         
 
-            var url_editat_quali =
-                "{{ route('cadastro.funcionario.editar_anexos_funcionarios', ['id' => ':id']) }}".replace(':id',
-                    id_editat_quali);
+            var url_editat_quali =  "{{ route('cadastro.funcionario.editar_anexos_funcionarios', ['id' => ':id']) }}".replace(':id', id_editat_quali);
 
             var fileInput = document.getElementById('file_editar');
             var file = fileInput.files[0];
             var id_editat_quali = $('#id_anexo_editar').val();
 
             console.log(file);
+
             var formData = new FormData($('#form_editar_qualificacao_modal')[0]);
             
             console.log(formData)
@@ -1102,7 +1101,7 @@
                 processData: false,
                 success: function(response) {
 
-                    console.log(response)
+                   // console.log(response)
 
                     Swal.fire({
                         title: response.message.title,

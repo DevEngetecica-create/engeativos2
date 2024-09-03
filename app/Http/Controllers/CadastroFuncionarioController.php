@@ -955,7 +955,7 @@ class CadastroFuncionarioController extends Controller
 
         $editar_data_conclusao = Carbon::parse($request->data_conclusao);
         $data_calculado = $editar_data_conclusao->addMonths($request->tempo_validade);
-        
+
       
          if($request->acao_cadastrar_editar == "editar_qualificacao" ){
           
@@ -990,7 +990,7 @@ class CadastroFuncionarioController extends Controller
                 ]);
     
     
-              $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario, $file->getClientOriginalName());
+              $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
     
                 return response()->json([
                     'message' => [
@@ -1013,8 +1013,7 @@ class CadastroFuncionarioController extends Controller
                 ]
             ]);
             
-         } else {
-            
+         } else {            
             
             // Cadastrando novo arquivo
             
@@ -1036,7 +1035,7 @@ class CadastroFuncionarioController extends Controller
                 
                 $salvar_anexo_funcionario->save();
                 
-               $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario, $file->getClientOriginalName());
+               $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
     
                 return response()->json([
                     'message' => [
