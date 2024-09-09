@@ -214,8 +214,8 @@
                                 </a>
                                 <div class="card-body">
 
-                                    <table class="table table-sm table-hover table-bordered">
-                                        <thead>
+                                    <table class="table table-sm table-hover table-bordered align-middle">
+                                        <thead class="bg-light text-muted">
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Tipo</th>
@@ -270,14 +270,10 @@
                         <!--end tab-pane-->
                         <div class="tab-pane" id="checklist" role="tabpanel">
                             <div class="card shadow">
-                                <div class="card-body">
+                                <div class="card-body pt-0">
                                     <div class="row">
                                         <div class="col-sm-12 col-xl-3 col-xxl-12">
-                                          
-                                            <div class="card-header text-center">
-                                                <h4>Checklists de Manutenção Preventiva | <small>{{ $preventiva->nome_preventiva }}</small></h4>
-                                            </div>
-                                    
+                                        
                                             @php
                                                 $periodosArray = json_decode($preventiva->periodo, true);
                                                 $periodos = [];
@@ -289,17 +285,17 @@
                                     
                                             @endphp
                                     
-                                            <a href="{{ route('veiculo.manut_preventiva.show', $preventiva->id) }}" class="btn btn-warning my-3">Ver o Checklist Completo</a>
+                                            <a href="{{ route('veiculo.manut_preventiva.show', $preventiva->id) }}" class="btn btn-warning  mb-3">Ver o Checklist Completo</a>
                                     
-                                                <div class="btn-group my-3">
-                                                    <a href="#" class="btn btn-primary active" aria-current="page">Cadastrar Checklist</a>
+                                                <div class="btn-group ">
+                                                    <a href="#" class="btn btn-primary active  mb-3" aria-current="page">Cadastrar Checklist</a>
                                                     @foreach ($periodos as $periodo)
-                                                        <a href="{{ route('veiculo_preventivas_checklist.create', $preventiva->id.'?periodo='.$periodo.'&id_veiculo='.$veiculo->id)}}" class="btn btn-primary">De {{ $periodo }} horas |</a>  
+                                                        <a href="{{ route('veiculo_preventivas_checklist.create', $preventiva->id.'?periodo='.$periodo.'&id_veiculo='.$veiculo->id)}}" class="btn btn-primary mb-3">De {{ $periodo }} horas |</a>  
                                                     @endforeach
                                                 </div>
                                     
-                                            <table class="table">
-                                                <thead>
+                                            <table class="table table-sm table-hover table-bordered align-middle">
+                                                <thead class="bg-light text-muted">
                                                     <tr>
                                                         <th>ID</th>
                                                         <th>ID Veículo</th>
@@ -318,13 +314,13 @@
                                     
                                                             <td class="d-flex justify-content-center">
                                                                
-                                                                    <a href="{{ route('veiculo_preventivas_checklist.show', $checkList->id) }}" class="btn btn-info">Ver</a>
-                                                                    <a href="{{ route('veiculo_preventivas_checklist.edit', $checkList->id) }}" class="btn btn-warning mx-2">Editar</a>
+                                                                    <a href="{{ route('veiculo_preventivas_checklist.show', $checkList->id) }}" class="btn btn-info btn-sm">Ver</a>
+                                                                    <a href="{{ route('veiculo_preventivas_checklist.edit', $checkList->id) }}" class="btn btn-warning btn-sm mx-2">Editar</a>
                                                                     <form action="{{ route('veiculo_preventivas_checklist.destroy', $checkList->id) }}"
                                                                         method="POST" style="display:inline;">
                                                                         @csrf
                                                                         @method('delete')
-                                                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                                                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
                                                                     </form>
                                                              
                                                             </td>
@@ -341,7 +337,7 @@
                         <!--end tab-pane-->
                         <div class="tab-pane" id="seguros" role="tabpanel">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body pt-0">
                                     <div class="card-header">
                                         <h3 class="page-title">
                                             <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
@@ -350,16 +346,16 @@
                                         </h3>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover table-bordered align-middle">
 
-                                            <thead>
+                                            <thead class="bg-light text-muted">
                                                 <tr>
-                                                    <th width="8%">ID</th>
+                                                    <th class="text-center" width="8%">ID</th>
                                                     <th>Seguradora</th>
                                                     <th>Custo</th>
                                                     <th>Carência Inicial</th>
                                                     <th>Carência Final</th>
-                                                    <th width="10%">Ações</th>
+                                                    <th class="text-center" width="10%">Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -367,7 +363,7 @@
                         
                                                 <tr>
                         
-                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
+                                                    <td class="text-center"> {{ $seguro->id }}</td>
                         
                                                     <td>{{($seguro->nome_seguradora) }}</td>
                         
@@ -377,34 +373,24 @@
                         
                                                     <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
                         
-                                                    <td class="d-flex gap-2">
-                        
+                                                    <td class="d-flex justify-content-center">
                                                         <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
-                        
-                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
-                        
-                                                    </a>                       
-                        
-                        
-                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
-                        
-                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
-                        
+                                                            <span class='btn btn-success  btn-sm ml-1'><i class="mdi mdi-upload"></i></span>
                                                         </a>
                         
-                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
-                                                            @csrf                        
+                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
+                                                            <button class="btn btn-info  btn-sm mx-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i></button>
+                                                        </a>
+                        
+                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">
+                                                            @csrf
                                                             @method('delete')
-                        
-                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
-                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
-                        
-                                                                    <i class="mdi mdi-delete"></i> Excluir
-                        
-                                                                </button>                        
-                                                            </a>                        
-                                                        </form>                        
-                                                    </td>                        
+                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">
+                                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                                                                    <i class="mdi mdi-delete"></i></button>
+                                                            </a>
+                                                        </form>
+                                                    </td>                 
                                                 </tr>
 
                                                 @endforeach
@@ -415,76 +401,65 @@
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="tab-pane" id="ipvas" role="tabpanel">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body pt-0">
                                     <div class="card-header">
                                         <h3 class="page-title">
-                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
-                                                Cadastrar seguro
+                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.ipva.adicionar', $veiculo->id) }}">
+                                                Cadastrar IPVA
                                             </a>
                                         </h3>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
-
+                                        <table class="table table-sm table-hover table-bordered align-middle">
                                             <thead>
-                                                <tr>
-                                                    <th width="8%">ID</th>
-                                                    <th>Seguradora</th>
-                                                    <th>Custo</th>
-                                                    <th>Carência Inicial</th>
-                                                    <th>Carência Final</th>
-                                                    <th width="10%">Ações</th>
+                                                <tr class="bg-light text-muted">
+                                                    <th class="text-center">ID</th>
+                                                    <th class="text-center">Ano</th>
+                                                    <th whdth="20%" class="text-center">Custo</th>
+                                                    <th class="text-center">Pagamento</th>
+                                                    <th class="text-center">Vencimento</th>
+                                                    <th class="text-center">Nome Doc.</th>
+                                                    <th class="text-center ">Ações</th>
                                                 </tr>
                                             </thead>
+                        
                                             <tbody>
-                                                @foreach ($seguros as $seguro)
+                        
+                                                @foreach ($ipvas as $ipva)
                         
                                                 <tr>
+                                                    <td class="text-center">{{ $ipva->id }}</td>
+                                                    <td class="text-center">{{ $ipva->referencia_ano }}</td>
+                                                    <td class="text-center">R$ {{ Tratamento::currencyFormatBr($ipva->valor) }}</td>  
+                                                    <td class="text-center">{{ Tratamento::dateBr($ipva->data_de_pagamento) }}</td>
+                                                    <td class="text-center">{{ Tratamento::dateBr($ipva->data_de_vencimento) }}</td>
+                                                    <td class="text-center">{{ ($ipva->nome_anexo_ipva) }}</td>
                         
-                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
-                        
-                                                    <td>{{($seguro->nome_seguradora) }}</td>
-                        
-                                                    <td>R$ {{ Tratamento::currencyFormatBr($seguro->valor) }} </td>
-                        
-                                                    <td>{{ Tratamento::dateBr($seguro->carencia_inicial) }}</td>
-                        
-                                                    <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
-                        
-                                                    <td class="d-flex gap-2">
-                        
-                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
-                        
-                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
-                        
-                                                    </a>                       
-                        
-                        
-                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
-                        
-                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
-                        
+                                                    <td class="d-flex justify-content-center">
+                                                        <a href="{{ route('ativo.veiculo.ipva.download', $ipva->id) }}">
+                                                            <span class="btn btn-success btn-sm">Baixar anexo</span>
                                                         </a>
                         
-                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
-                                                            @csrf                        
+                                                        <a href="{{ route('ativo.veiculo.ipva.editar', $ipva->id) }}">
+                                                            <span class="btn btn-info btn-sm mx-2" title="Editar">Editar</span>
+                                                        </a>
+                        
+                                                        <form action="{{ route('ativo.veiculo.ipva.delete', $ipva->id) }}" method="POST">
+                                                            @csrf
                                                             @method('delete')
-                        
-                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
-                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
-                        
-                                                                    <i class="mdi mdi-delete"></i> Excluir
-                        
-                                                                </button>                        
-                                                            </a>                        
-                                                        </form>                        
-                                                    </td>                        
+                                                            <a class="excluir-padrao" data-id="{{ $ipva->id }}" data-table="empresas" data-module="cadastro/empresa">
+                                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                                                                    Excluir
+                                                                </button>
+                                                            </a>
+                                                        </form> 
+                                                    </td>
                                                 </tr>
-
                                                 @endforeach
-                        
                                             </tbody>
                                         </table>
                                     </div>
@@ -498,72 +473,203 @@
                                 <div class="card-body">
                                     <div class="card-header">
                                         <h3 class="page-title">
-                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
-                                                Cadastrar seguro
+                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.abastecimento.adicionar', $veiculo->id) }}">
+                                                Cadastrar Abastecimento
                                             </a>
                                         </h3>
                                     </div>
                                     <div class="table-responsive">
-                                        <table class="table table-sm">
+                                        <table class="table table-sm table-hover table-bordered align-middle">
 
                                             <thead>
-                                                <tr>
-                                                    <th width="8%">ID</th>
-                                                    <th>Seguradora</th>
-                                                    <th>Custo</th>
-                                                    <th>Carência Inicial</th>
-                                                    <th>Carência Final</th>
-                                                    <th width="10%">Ações</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($seguros as $seguro)
-                        
-                                                <tr>
-                        
-                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
-                        
-                                                    <td>{{($seguro->nome_seguradora) }}</td>
-                        
-                                                    <td>R$ {{ Tratamento::currencyFormatBr($seguro->valor) }} </td>
-                        
-                                                    <td>{{ Tratamento::dateBr($seguro->carencia_inicial) }}</td>
-                        
-                                                    <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
-                        
-                                                    <td class="d-flex gap-2">
-                        
-                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
-                        
-                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
-                        
-                                                    </a>                       
-                        
-                        
-                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
-                        
-                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
-                        
-                                                        </a>
-                        
-                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
-                                                            @csrf                        
-                                                            @method('delete')
-                        
-                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
-                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
-                        
-                                                                    <i class="mdi mdi-delete"></i> Excluir
-                        
-                                                                </button>                        
-                                                            </a>                        
-                                                        </form>                        
-                                                    </td>                        
-                                                </tr>
+                                                <tr>                
+                                                    <th class="text-center">ID</th>                
+                                                    <th class="text-center">Combustível</th>  
 
-                                                @endforeach
+                                                    @if ($veiculo->tipo == 'maquinas')                
+                                                        <th class="text-center">Últ. reg.</th>                
+                                                        <th class="text-center">Horas traba.</th>                
+                                                        <th class="text-center">Qtde. (litros)</th>                
+                                                        <th class="text-center">Hr/ litro</th>                
+                                                    @else                
+                                                        <th class="text-center">km</th>                
+                                                        <th class="text-center">km's rodados</th>                
+                                                        <th class="text-center">Qtde. (litros)</th>                
+                                                        <th class="text-center">km's/ l</th>                
+                                                    @endif              
                         
-                                            </tbody>
+                                                    <th class="text-center">Qtde. Média(litros)</th>                
+                                                    <th class="text-center">Custo</th>                
+                                                    <th class="text-center">Média Abast.</th>                
+                                                    <th class="text-center">Data</th>                
+                                                    <th width="10%">Ações</th>                
+                                                </tr>                
+                                            </thead>
+
+                                            <tbody>              
+                        
+                                                @foreach ($abastecimentos->reverse() as $index => $abastecimento)
+                
+                                                <tr>                
+                                                    <td class="text-center"><span class="badge badge-dark">{{ $abastecimento->id }}</span></td> 
+                
+                                                    <!-- tipo do combustível -->                
+                                                    <td class="text-center">{{ $abastecimento->combustivel }}</td>     
+                
+                                                    {{-- Verifica se não é o último registro e efetua os cálculos --}}
+                
+                                                    @if ($index >0) 
+
+                                                    @php            
+                
+                                                    $registroAtual = $abastecimento;
+                                                    $registroPosterior = $abastecimentos[$index - 1];                   
+                                                    $valorMedio = ($registroAtual->valor_total + $registroPosterior->valor_total) / 2;                
+                                                    $qtdeMedia = ($registroAtual->quantidade + $registroPosterior->quantidade) / 2;                
+                                                    $kmRodados = $registroAtual->quilometragem - $registroPosterior->quilometragem;                
+                                                    $hrTraba = $registroAtual->horimetro - $registroPosterior->horimetro;   
+                
+                                                    if($veiculo->tipo == "maquinas"){  
+                                                        
+                                                        $consumoMedio = $hrTraba / $abastecimento->quantidade;                
+                                                    }else{                        
+                
+                                                        $consumoMedio = $kmRodados / $abastecimento->quantidade;                
+                                                    }
+
+                                                    $consumoMedio_arredondado = number_format(round($consumoMedio, 2), 2, '.', '');   
+                
+                                                    @endphp                
+                
+                                                    @if ($veiculo->tipo == 'maquinas')       
+                
+                                                    <!-- registro do último horimetro -->                
+                                                    <td class="text-center">{{ $abastecimento->horimetro ?? 0}}</td>
+
+                                                    <!-- qtde de litros de combustível -->
+                
+                                                    <td class="text-center">                
+                                                        <span class="bg-primary p-1 rounded shadow-sm text-white text-center my-2">{{ $hrTraba}}</span>                
+                                                    </td>
+                                        
+                                                    @else
+
+                                                    <!-- registro do último km -->                
+                                                    <td class="text-center">{{ $abastecimento->quilometragem ?? 0}}</td>               
+                        
+                
+                                                    <!-- resultado do calculo do km atual com o novo -->
+                
+                                                    <td class="text-center"><span class="bg-primary p-1 rounded shadow-sm text-white text-center my-2">{{ $kmRodados}}</span></td>
+                                                       
+                                                    @endif
+
+                                                    <!-- qtde de litros de combustível -->                
+                                                    <td class="text-center">{{ $abastecimento->quantidade }}</td> 
+                
+                                                    <!-- qtde de litros de combustível -->                
+                                                    <td class="text-center"><span class="bg-warning p-1 rounded shadow-sm text-white text-center my-2">{{ $consumoMedio_arredondado }} km's</span></td>
+                
+                                                    <!-- média de consumo dos litros -->                
+                                                    <td class="text-center">                
+                                                        {{ $qtdeMedia }}                
+                                                    </td>
+
+                                                    <!-- valor por litro de combustivel -->                
+                                                    <td class="text-center">R$ {{Tratamento::FormatBrMoeda($abastecimento->valor_total) }}</td>      
+                
+                                                    <!-- valor medio por litro de combustivel -->
+                
+                                                    <td class="text-center">                
+                                                        R$ {{ Tratamento::FormatBrMoeda($valorMedio) }}                
+                                                    </td>
+
+                                                    <!-- data do abastecimento -->                
+                                                    <td class="text-center">{{ Tratamento::dateBr($abastecimento->data_cadastro) }}</td>  
+                
+                                                    <td class="d-flex">                
+                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoAbastecimento" class="abastecimento" href="javascript:void(0)" data-id="{{ $abastecimento->id}}">                
+                                                            <span class='btn btn-success btn-sm ml-1' title="Editar">                
+                                                                <i class="mdi mdi-upload"></i>                
+                                                            </span>                
+                                                        </a>               
+                
+                                                        <a href="{{ route('ativo.veiculo.abastecimento.editar', $abastecimento->id) }}">                
+                                                            <button class="btn btn-info btn-sm mx-2" data-toggle="tooltip" data-placement="top" title="Editar">                
+                                                                <i class="mdi mdi-pencil"></i>                
+                                                            </button>                
+                                                        </a>
+                
+                                                        @if ($loop->first)                
+                                                        <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST">                
+                                                            @csrf
+                
+                                                            @method('delete')                
+                                                            <a class="excluir-padrao" data-id="{{ $abastecimento->id }}">                
+                                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                
+                                                                    <i class="mdi mdi-delete"></i></button>                
+                                                            </a>                
+                                                        </form>                
+                                                        @endif                
+                                                    </td>
+
+                                                    @else       
+                        
+                
+                                                    @if ($veiculo->tipo == 'maquinas')      
+                
+                                                        <!-- registro do último horimetro -->                
+                                                        <td class="text-center">{{ $abastecimento->horimetro }}</td>                
+                                                        <td class="text-center">Sem reg.</td>    
+                                                    @else               
+                                                                    
+                                                        <!-- registro do último km -->                
+                                                        <td class="text-center">{{ $abastecimento->quilometragem }}</td>
+
+                                                        <!-- resultado do calculo do km atual com o novo -->                
+                                                        <td class="text-center">Sem reg.</td>                    
+                                                    @endif              
+
+                                                    <td class="text-center">{{ $abastecimento->quantidade }}</td>  
+                                                    <td class="text-center"><span class="bg-warning p-1 rounded shadow text-white text-center my-2">Sem reg.</span></td> 
+                                                    <td class="text-center">Não há média</td>       
+                                                    <td class="text-center">R$ {{ Tratamento::FormatBrMoeda($abastecimento->valor_total) }}</td>
+                                                    <td class="text-center">Sem reg.</td>
+                                                    <td class="text-center">{{ Tratamento::dateBr($abastecimento->data_cadastro) }}</td>
+                                                    <td class="d-flex">
+                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoAbastecimento" class="abastecimento" href="javascript:void(0)" data-id="{{ $abastecimento->id}}">
+                
+                                                            <span class='btn btn-success btn-sm ml-1' title="Editar">                
+                                                                <i class="mdi mdi-upload"></i>                
+                                                            </span>                
+                                                        </a>
+
+                                                        <a href="{{ route('ativo.veiculo.abastecimento.editar', $abastecimento->id) }}">                
+                                                            <button class="btn btn-info btn-sm mx-2" data-toggle="tooltip" data-placement="top" title="Editar">                
+                                                                <i class="mdi mdi-pencil"></i>                
+                                                            </button>                
+                                                        </a>               
+                
+                                                        @if ($loop->first)                
+                                                            <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST">                
+                                                                @csrf                
+                                                                @method('delete')
+                    
+                                                                <a class="excluir-padrao" data-id="{{ $abastecimento->id }}">
+                    
+                                                                    <button class="btn btn-danger btn-sm" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">                
+                                                                        <i class="mdi mdi-delete"></i>
+                                                                    </button>                
+                                                                </a>                
+                                                            </form>                
+                                                        @endif                
+                                                    </td>                
+                                                    @endif                
+                                                </tr>
+                
+                                                @endforeach                 
+                                            </tbody>                
                                         </table>
                                     </div>
                                 </div>

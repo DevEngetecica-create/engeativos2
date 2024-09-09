@@ -2,98 +2,126 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Interfaces\VeiculoSeguroRepositoryInterface;
 use App\Models\Veiculo;
-use App\Models\VeiculoSeguro;
-use App\Models\Anexo;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Toastr;
+use Log;
 
 class VeiculoSeguroController extends Controller
 {
+    protected $repository;
 
-    public function index(Veiculo $veiculo)
+    public function __construct(VeiculoSeguroRepositoryInterface $repository)
     {
-        $seguros = VeiculoSeguro::where('veiculo_id', $veiculo->id)->orderByDesc('id')->get();
-
-        return view('pages.ativos.veiculos.seguro.index', compact('veiculo', 'seguros'));
+        $this->repository = $repository;
     }
 
-    public function create(Veiculo $veiculo)
+    public function index()
     {
+        $seguros = $this->repository->getAll();
+        return view('pages.ativos.veiculos.seguro.index', compact('seguros'));
+    }
+
+    public function create(Veiculo $veiculo)    {
+      
         return view('pages.ativos.veiculos.seguro.create', compact('veiculo'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->all();
-        $data['valor'] = str_replace('R$ ', '', $request->valor);
-        $save = VeiculoSeguro::create($data);
-        
-       // dd($save->nome_seguradora);
+        try {
+            $seguro = $this->repository->create($request->all());
 
-        if($save) {
-            return redirect()->route('ativo.veiculo.seguro.index', $save->veiculo_id)->with('success', 'Registro cadastrado com sucesso');
-        } else {
-            return redirect()->route('ativo.veiculo.seguro.index', $save->veiculo_id)->with('fail', 'Problema para cadastrar o registro');
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Seguro cadastrado com sucesso!",
+                'type' => 'success'
+            );
+         
+            Log::info('Seguro cadastrado', ['seguro' => $seguro]);
+
+            return redirect()->route('veiculo.show', $request->veiculo_id."#seguros")->with($notification);
+
+        } catch (\Exception $e) {           
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao cadastrar seguro.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao cadastrar seguro', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);
         }
-
     }
 
     public function edit($id)
     {
-        $seguro = VeiculoSeguro::with('veiculo')->where('id', $id)->first();
-
+        $seguro = $this->repository->getById($id);
         return view('pages.ativos.veiculos.seguro.edit', compact('seguro'));
     }
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
 
-        if (! $seguro = VeiculoSeguro::find($id)) {
-            return redirect()->route('ativo.veiculo.seguro.editar', $id)->with('fail', 'Problemas para localizar o registro.');
+        try {
+            $seguro = $this->repository->update($id, $request->all());
+            
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Seguro atualizado com sucesso!",
+                'type' => 'success'
+            );
+
+            Log::info('Seguro atualizado', ['seguro' => $seguro]);
+
+            return redirect()->route('veiculo.show', $request->veiculo_id."#seguros")->with($notification);
+            
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar seguro.",
+                'type' => 'warning'
+            );
+
+            Log::error('Erro ao atualizar seguro', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);
         }
-
-        $data = $request->all();
-        $data['valor'] = str_replace('R$ ', '', $request->valor);
-        $seguro->update($data);
-
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog .' | EDIT DEPRECIACAO: ' . $id);
-
-        return redirect()->route('ativo.veiculo.seguro.index', $seguro->veiculo_id)->with('success', 'O registro foi alterado com sucesso');
     }
 
     public function delete($id)
     {
-        $veiculo = VeiculoSeguro::findOrFail($id);
+        try {
 
-        $userLog = Auth::user()->email;
-        Log::channel('main')->info($userLog .' | DELETE SEGURO: ' . $veiculo->id);
+            $seguro =  $this->repository->getById($id);
+            
+            $this->repository->delete($id);
 
-        $veiculo->delete();
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Seguro deletado com sucesso!",
+                'type' => 'success'
+            );
 
-        return redirect()->back()->with('success', 'Registro excluído com sucesso');
+            Log::info('Seguro deletado', ['id' => $id]);
+
+            return redirect()->route('veiculo.show', $seguro->veiculo_id."#seguros")->with($notification);
+
+        } catch (\Exception $e) {
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar seguro.",
+                'type' => 'success'
+            );
+
+            Log::error('Erro ao deletar seguro', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with($notification);
+        }
     }
-    
-     public function anexo($id_ativo_externo = null)
-    {
-        if (!$id_ativo_externo) {
-            return redirect()->route('ativo.veiculo.index')->with('fail', 'Problemas para localizar o arquivo.');
-        }
-
-        $anexo = Anexo::where('id_item', $id_ativo_externo)
-        ->where('id_modulo', 30 )
-        ->get();
-
-        if (!$anexo) {
-            return [];
-        }
-
-        if ($anexo) {
-            return view('components.anexo.lista_anexo', compact('anexo'));
-        }
-    }
-
 }

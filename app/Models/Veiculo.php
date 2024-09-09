@@ -50,8 +50,9 @@ class Veiculo extends Model
 
     public function quilometragem()
     {
-        return $this->belongsTo(VeiculoQuilometragem::class, 'veiculo_id');
+        return $this->hasMany(VeiculoQuilometragem::class, 'veiculo_id');
     }
+    
     
     public function categorias()
     {
@@ -61,7 +62,7 @@ class Veiculo extends Model
     public function checkli_preventiva()
     {
         return $this->belongsTo(CheckListManutPreventiva::class, 'id_veiculo');
-    }
+    }    
    
     public function documentosLegais()
     {
@@ -77,5 +78,16 @@ class Veiculo extends Model
     {
         return $this->hasMany(VeiculoSeguro::class, 'veiculo_id');
     }
+
+    public function ipvas()
+    {
+        return $this->hasMany(VeiculoIpva::class, 'veiculo_id');
+    }
+
+    public function abastecimento()
+    {
+        return $this->belongsTo(VeiculoAbastecimento::class, 'veiculo_id');
+    }
+    
     
 }

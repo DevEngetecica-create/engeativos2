@@ -33,4 +33,9 @@ class VeiculoQuilometragem extends Model
     {
         return $this->belongsTo(User::class, 'usuario');
     }
+    
+    /* public function abastecimento()
+    {
+        return $this->belongsTo(VeiculoAbastecimento::class, 'id_abastecimento');
+    } */
 }

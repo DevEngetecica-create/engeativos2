@@ -10,7 +10,7 @@ class VeiculoSeguroRepository implements VeiculoSeguroRepositoryInterface
 {
     public function getAll()
     {
-        return VeiculoSeguro::all();
+        return VeiculoSeguro::with('veiculo')->get();
     }
 
     public function getById($id)
@@ -36,7 +36,9 @@ class VeiculoSeguroRepository implements VeiculoSeguroRepositoryInterface
     public function delete($id)
     {
         $seguro = VeiculoSeguro::findOrFail($id);
+
         $seguro->delete();
+        
         Log::info('Seguro deletado', ['seguro' => $seguro]);
         return $seguro;
     }

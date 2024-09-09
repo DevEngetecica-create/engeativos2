@@ -20,4 +20,9 @@ class VeiculoIpva extends Model
         'nome_anexo_ipva',
         'extensao'
     ];
+
+    public function veiculo()
+    {
+        return $this->belongsTo(Veiculo::class, 'veiculo_id'); 
+    }
 }

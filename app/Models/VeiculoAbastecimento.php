@@ -27,4 +27,25 @@ class VeiculoAbastecimento extends Model
         'nome_anexo',
         'arquivo',
     ]; 
+
+    public function veiculo()
+    {
+        return $this->belongsTo(Veiculo::class, 'veiculo_id'); 
+    }
+
+    public function funcionario()
+    {
+        return $this->belongsTo(CadastroFuncionario::class, 'id_funcionario'); 
+    }
+
+    public function fornecedor()
+    {
+        return $this->belongsTo(CadastroFuncionario::class, 'fornecedor'); 
+    }
+
+    /* public function quilometragem()
+    {
+        return $this->hasMany(VeiculoQuilometragem::class, 'veiculo_id'); 
+    } */
+
 }

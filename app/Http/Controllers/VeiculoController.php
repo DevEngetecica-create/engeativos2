@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\VeiculoManutencaoRepositoryInterface;
 use App\Interfaces\VeiculoSeguroRepositoryInterface;
+use App\Interfaces\VeiculoIpvaRepositoryInterface;
 use App\Interfaces\VeiculoRepositoryInterface;
 use App\Interfaces\VeiculoCategoriaRepositoryInterface;
 use App\Interfaces\VeiculoSubCategoriaRepositoryInterface;
@@ -13,6 +14,8 @@ use App\Interfaces\VeiculoPreventivaRepositoryInterface;
 use App\Interfaces\CheckListManutPreventivaRepositoryInterface;
 use App\Interfaces\VeiculosDocsTecnicosRepositoryInterface;
 use App\Interfaces\VeiculoQuilometragemRepositoryInterface;
+use App\Models\CadastroFornecedor;
+use App\Models\CadastroFuncionario;
 use App\Models\VeiculoImagens;
 use App\Models\VeiculoSubCategoria;
 use App\Models\Veiculo;
@@ -31,6 +34,7 @@ class VeiculoController extends Controller
     protected $manutencoes;
     protected $veiculo_quilometragem;
     protected $seguros;
+    protected $ipvas;
     protected $docs_legais;
     protected $docs_tecnicos;
     protected $tipo;
@@ -38,6 +42,7 @@ class VeiculoController extends Controller
     public function __construct(
         VeiculoRepositoryInterface $veiculoRepository,
         VeiculoSeguroRepositoryInterface $seguros,
+        VeiculoIpvaRepositoryInterface $ipvas,
         VeiculoCategoriaRepositoryInterface $categorias,
         VeiculoSubCategoriaRepositoryInterface $subCateborias,
         VeiculoManutencaoRepositoryInterface $manutencoes,
@@ -51,6 +56,7 @@ class VeiculoController extends Controller
     ) {
         $this->veiculoRepository = $veiculoRepository;
         $this->seguros = $seguros;
+        $this->ipvas = $ipvas;
         $this->manutencoes = $manutencoes;
         $this->veiculo_quilometragem = $veiculo_quilometragem;
         $this->categorias = $categorias;
@@ -173,17 +179,39 @@ class VeiculoController extends Controller
         $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
         $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);        
         $docs_tecnicos = $veiculo->documentosTecnicos()->orderBy('id', 'desc')->paginate(7);
+        $abastecimentos = $veiculo->abastecimento()->orderBy('id', 'desc')->paginate(7);
         $seguros = $veiculo->seguros()->orderBy('id', 'desc')->paginate(7);
-
-        //$this->docs_tecnicos
-
-        $preventiva = $this->preventivaRepository->getById($veiculo->id_preventiva);
-        
+        $ipvas = $veiculo->ipvas()->orderBy('id', 'desc')->paginate(7);
+        $preventiva = $this->preventivaRepository->getById($veiculo->id_preventiva);        
         $checkLists = $this->checkListRepository->getByIdVeiculo($veiculo->id);
+
+        $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
+        $funcionarios = CadastroFuncionario::all();
+
+
+        $abastecimentos = $veiculo->abastecimento()
+            ->where('veiculo_id', $veiculo->id)
+            ->get();
+
+        $media_quantidade = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
+            ->avg('quantidade');
+
+        $media_valor_do_litro = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
+            ->avg('valor_do_litro');
+
+        $media_valor_total = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
+            ->avg('valor_total');
+
+        $last = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
+            ->orderByDesc('id')
+            ->first();
+
+           
+
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
 
-        return view('pages.ativos.veiculos.show', compact('veiculo', 'seguros', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id'));
+        return view('pages.ativos.veiculos.show', compact('veiculo', 'seguros', 'ipvas', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id',  'abastecimentos', 'last', 'fornecedores', 'media_quantidade', 'media_valor_do_litro', 'media_valor_total', 'funcionarios'));
     }
 
     public function delete($id)

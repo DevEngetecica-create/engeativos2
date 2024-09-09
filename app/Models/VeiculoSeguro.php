@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class VeiculoSeguro extends Model
 {
     use HasFactory, SoftDeletes;
-
+    protected $table = "veiculo_seguros";
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'veiculo_id',
@@ -21,6 +21,6 @@ class VeiculoSeguro extends Model
 
     public function veiculo()
     {
-        return $this->belongsTo(Veiculo::class);
+        return $this->belongsTo(Veiculo::class, 'veiculo_id'); // Ajuste 'veiculo_id' se necessário
     }
 }

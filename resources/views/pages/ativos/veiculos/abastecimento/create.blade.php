@@ -7,31 +7,26 @@
         
     
     <div class="row mt-4">
-        <div class="col-6 breadcrumb-item active" aria-current="page">
+        <div class="col-8 breadcrumb-item active" aria-current="page">
             <h3 class="page-title text-left">
                 
                 @if ($veiculo->tipo == 'maquinas')
                     <span class="page-title-icon bg-gradient-primary me-2">
-                        <i class="mdi mdi-gas-station mdi-24px"></i>
+                        <i class="mdi mdi-gas-station mdi-36px"></i>
                     </span> 
                     
-                    Horímetro da máquina
+                    Abastecimento da máquina  <i class="mdi mdi-arrow-right-thin mdi-36px"></i>  <small class="font-weight-bold">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
                 @else
                     <span class="page-title-icon bg-gradient-primary me-2">
-                        <i class="mdi mdi-gas-station mdi-24px"></i>
+                        <i class="mdi mdi-gas-station mdi-36px"></i>
                     </span> 
                 
-                    Horímetro do veículo
+                    Abastecimento do veículo  <i class="mdi mdi-arrow-right-thin mdi-36px"></i>  <small class="font-weight-bold">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
                     
                 @endif
             </h3>
         </div>
 
-        <div class="col-4 active m-2">
-            <h5 class="page-title text-left m-0">
-                <span>Cadastro <i class="mdi mdi-check icon-sm text-primary align-middle"></i></span>
-            </h5>
-        </div>
     </div>
 
     <hr>
@@ -73,12 +68,14 @@
         
                                
         
-                                @php
-                                $ultimoHorimetro = $veiculo->horimetro->last();
-                                @endphp
+                               {{--  @php
+                                $ultimoHorimetro = $veiculo->horimetro->last() ?? 0;
+                                @endphp --}}
         
                                 @php
-                                $ultimaQuilometragem = $veiculo->quilometragens->last();
+                                $ultimaQuilometragem = $veiculo->quilometragem()->max('quilometragem_nova');
+
+                                
                                 @endphp
         
                                 @if($veiculo->tipo =="maquinas")

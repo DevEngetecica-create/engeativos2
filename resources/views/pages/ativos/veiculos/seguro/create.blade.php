@@ -2,48 +2,27 @@
 @section('title', 'Veículo')
 @section('content')
 
-    <div class="page-header">
-        <h3 class="page-title">
-            <span class="page-title-icon bg-gradient-primary me-2 text-white">
-                <i class="mdi mdi-access-point-network menu-icon"></i>
-            </span>
-            @if ($veiculo->tipo == 'maquinas')
-                Seguro da Máquina
-            @else
-                Seguro do Veículo
-            @endif
-        </h3>
-        <nav aria-label="breadcrumb">
-            <ul class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">
-                    Ativos
-                </li>
-            </ul>
-        </nav>
-    </div>
-
+<div class="container mt-5">
     <div class="row">
-        <div class="col-md-12 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
+        <div class="card">
+            <div class="card-body">
+                <div class="page-header my-3">
+                    <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary">
+                            <i class="mdi mdi-piggy-bank-outline mdi-36px"></i>
+                        </span>
+                        @if ($veiculo->tipos->tipo_veiculo == 'maquinas')
+                            Seguro da Máquina ->  <small>{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
+                        @else
+                            Seguro do Veículo ->  <small>{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
+                        @endif
+                    </h3>                        
+                </div>
 
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <strong>Ops!</strong><br><br>
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
+                <hr>
                     <form method="post" action="{{ route('ativo.veiculo.seguro.store') }}">
                         @csrf
-                        <div class="jumbotron p-3">
-                            <span class="font-weight-bold">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</span>
-                        </div>
-                        
+                      
                         <div class="row mt-3" id="divHorimetro">
                             <div class="col-md-8">
                                 <label class="form-label" for="nome_seguradora">Nome da Operadora de Seguro</label>
@@ -75,10 +54,10 @@
 
                         <div class="col-12 mt-5">
                             <input name="veiculo_id" type="hidden" value="{{ $veiculo->id }}">
-                            <button class="btn btn-primary btn-sm font-weight-medium" type="submit">Salvar</button>
+                            <button class="btn btn-primary font-weight-medium" type="submit">Salvar</button>
 
                             <a href="{{url('admin/ativo/veiculo')}}">
-                                <button class="btn btn-warning btn-lg font-weight-medium" type="button">Cancelar</button>
+                                <button class="btn btn-warning font-weight-medium" type="button">Cancelar</button>
                             </a>
                         </div>
                     </form>
