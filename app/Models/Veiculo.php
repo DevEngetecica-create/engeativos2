@@ -72,5 +72,10 @@ class Veiculo extends Model
     {
         return $this->hasMany(VeiculosDocsTecnicos::class, 'id_veiculo');
     }
+
+    public function seguros()
+    {
+        return $this->hasMany(VeiculoSeguro::class, 'veiculo_id');
+    }
     
 }

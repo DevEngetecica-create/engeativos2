@@ -28,7 +28,7 @@ class CheckListManutPreventivaController extends Controller
         $preventiva = $this->preventivaRepository->getById($id_manut_preventiva);
         $checkLists = $this->checkListRepository->getByPreventivaId($id_manut_preventiva);
 
-        return view('veiculos.preventivas.checklist.index', compact('preventiva', 'checkLists'));
+        return view('pages.ativos.veiculos.preventivas.checklist.index', compact('preventiva', 'checkLists'));
     }
 
 
@@ -39,7 +39,7 @@ class CheckListManutPreventivaController extends Controller
         $periodo = $request->query('periodo'); // Obtém o período da URL
         $id_veiculo = $request->query('id_veiculo');
 
-        return view('veiculos.preventivas.checklist.create', compact('preventiva', 'periodo', 'id_veiculo'));
+        return view('pages.ativos.veiculos.preventivas.checklist.create', compact('preventiva', 'periodo', 'id_veiculo'));
     }
 
     public function store(Request $request)
@@ -58,8 +58,6 @@ class CheckListManutPreventivaController extends Controller
                 'file.*.*.mimes' => "Extensão inválida. Extensões permitidas: jpg, png, pdf, doc, docx"
             ]
         );
-
-        //dd($request->id_veiculo);
 
         // Inicializar o array $files com null para todos os índices
         $files = array_fill(0, count($data['checklist']), null);
@@ -88,7 +86,7 @@ class CheckListManutPreventivaController extends Controller
         // Salvar os dados no repositório
         $this->checkListRepository->create($data);
 
-        return redirect()->route('veiculos.show', $request->id_veiculo.'#cheklist_preventiva')->with('success', 'Checklist salvo com sucesso!');
+        return redirect()->route('veiculo.show', $request->id_veiculo.'#cheklist_preventiva')->with('success', 'Checklist salvo com sucesso!');
     }
 
 
@@ -102,7 +100,7 @@ class CheckListManutPreventivaController extends Controller
         $preventiva = $this->preventivaRepository->getById($checklist->id_manut_preventiva);
         $periodo = $request->query('periodo'); // Obtém o período da URL
 
-        return view('veiculos.preventivas.checklist.edit', compact('checklist', 'preventiva', 'periodo'));
+        return view('pages.ativos.veiculos.preventivas.checklist.edit', compact('checklist', 'preventiva', 'periodo'));
     }
 
     public function update(Request $request, $id)
@@ -148,7 +146,7 @@ class CheckListManutPreventivaController extends Controller
         // Atualizar os dados no repositório
         $this->checkListRepository->update($id, $data);
 
-        return redirect()->route('veiculos.show', $arquivo->id_veiculo.'#cheklist_preventiva')
+        return redirect()->route('veiculo.show', $arquivo->id_veiculo.'#cheklist_preventiva')
             ->with('success', 'Checklist atualizado com sucesso!');
     }
 
@@ -158,7 +156,7 @@ class CheckListManutPreventivaController extends Controller
         $checklist = $this->checkListRepository->find($id);
         $preventiva = $this->preventivaRepository->getById($checklist->id_manut_preventiva);
 
-        return view('veiculos.preventivas.checklist.show', compact('checklist', 'preventiva'));
+        return view('pages.ativos.veiculos.preventivas.checklist.show', compact('checklist', 'preventiva'));
     }
 
     public function destroy($id)
@@ -167,7 +165,7 @@ class CheckListManutPreventivaController extends Controller
 
         $this->checkListRepository->delete($id);
 
-        return redirect()->route('veiculos.show', $checklist->id_veiculo.'#cheklist_preventiva')->with('success', 'Checklist excluído com sucesso.');
+        return redirect()->route('veiculo.show', $checklist->id_veiculo.'#cheklist_preventiva')->with('success', 'Checklist excluído com sucesso.');
     }
 
     public function search(Request $request)

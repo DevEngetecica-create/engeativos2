@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('dashboard')
 
 <style>
    table td
@@ -64,13 +64,13 @@
                 </table>
             </div>
             <div class="card-footer">
-                <a href="{{ route('veiculo_preventivas.edit', $preventiva->id) }}" class="btn btn-warning">Editar</a>
-                <form action="{{ route('veiculo_preventivas.destroy', $preventiva->id) }}" method="POST" style="display:inline-block;">
+                <a href="{{ route('veiculo.manut_preventiva.edit', $preventiva->id) }}" class="btn btn-warning">Editar</a>
+                <form action="{{ route('veiculo.manut_preventiva.delete', $preventiva->id) }}" method="POST" style="display:inline-block;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Excluir</button>
                 </form>
-                <a href="{{ route('veiculo_preventivas.index') }}" class="btn btn-primary">Voltar para a Lista</a>
+                <a href="{{ route('veiculo.manut_preventiva.index') }}" class="btn btn-primary">Voltar para a Lista</a>
             </div>
         </div>
     </div>

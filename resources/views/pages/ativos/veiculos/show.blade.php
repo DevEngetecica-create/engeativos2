@@ -21,7 +21,6 @@
                     <div class="text-center">
                         <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
 
-
                             <img src="@if ($veiculo->imagem != '') {{ URL::asset('imagens/veiculos/' . $veiculo->id . '/' . $veiculo->imagem) }}@else{{ URL::asset('imagens/veiculos/nao-ha-fotos.png') }} @endif"
                                 class="img-thumbnail">
                             <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
@@ -96,25 +95,25 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab">
+                            <a class="nav-link" data-bs-toggle="tab" href="#checklist" role="tab">
                                 <i class="far fa-envelope"></i>
                                 Checklist
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                            <a class="nav-link" data-bs-toggle="tab" href="#seguros" role="tab">
                                 <i class="far fa-envelope"></i>
                                 Seguros
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                            <a class="nav-link" data-bs-toggle="tab" href="#ipvas" role="tab">
                                 <i class="far fa-envelope"></i>
                                 IPVA's
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
+                            <a class="nav-link" data-bs-toggle="tab" href="#abastecimentos" role="tab">
                                 <i class="far fa-envelope"></i>
                                 Abastecimentos
                             </a>
@@ -240,32 +239,18 @@
                                                     <td>{{ $manutencao->valor_do_servico }}</td>
 
                                                     <td class="d-flex justify-content-center">
-                                                        <button type="button"
-                                                            class="btn btn-primary btn-sm btn_modal_uploada_arq_manut "
-                                                            data-id="{{ $manutencao->id }}"></i>inserir/ Alterar</button>
+                                                        <button type="button" class="btn btn-primary btn-sm btn_modal_uploada_arq_manut " data-id="{{ $manutencao->id }}"></i>inserir/ Alterar</button>
+                                                        <a href="{{ route('ativo.veiculo.manutencao.show', $manutencao->id) }}" class="btn btn-info btn-sm mx-2">Ver</i></a>
 
-                                                        <a href="{{ route('ativo.veiculo.manutencao.show', $manutencao->id) }}"
-                                                            class="btn btn-outline-primary btn-sm mx-2"><i
-                                                                class="mdi mdi-eye"></i></a>
-
-                                                        <a href="{{ route('ativo.veiculo.manutencao.edit', $manutencao->id) }}"
-                                                            class="btn btn-outline-secondary btn-sm "><i
-                                                                class="mdi mdi-pencil"></i></a>
-
-                                                        <form
-                                                            action="{{ route('ativo.veiculo.manutencao.delete', $manutencao->id) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Tem certeza que deseja excluir este registro?')">
+                                                        <a href="{{ route('ativo.veiculo.manutencao.edit', $manutencao->id) }}" class="btn btn-secondary btn-sm ">Editar</a>                                                       
+                                                        
+                                                        <a href="{{ route('ativo.veiculo.manutencao.download', $manutencao->id) }}" class="btn btn-outline-success btn-sm " title="Baixar anexo">Baixar anexo</a>
+                                                        
+                                                        <form action="{{ route('ativo.veiculo.manutencao.delete', $manutencao->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este registro?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-outline-danger btn-sm mx-2"><i
-                                                                    class="mdi mdi-trash-can"></i></button>
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm mx-2">Excluir</button>
                                                         </form>
-                                                        <a href="{{ route('ativo.veiculo.manutencao.download', $manutencao->id) }}"
-                                                            class="btn btn-outline-success btn-sm "
-                                                            title="Baixar anexo"><i
-                                                                class="mdi mdi-cloud-download-outline"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -283,274 +268,304 @@
                             </div>
                         </div>
                         <!--end tab-pane-->
-                        <div class="tab-pane" id="experience" role="tabpanel">
-                            <form>
-                                <div id="newlink">
-                                    <div id="1">
-                                        <div class="row">
-                                            <div class="col-lg-12">
-                                                <div class="mb-3">
-                                                    <label for="jobTitle" class="form-label">Job
-                                                        Title</label>
-                                                    <input type="text" class="form-control" id="jobTitle"
-                                                        placeholder="Job title" value="Lead Designer / Developer">
+                        <div class="tab-pane" id="checklist" role="tabpanel">
+                            <div class="card shadow">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-xl-3 col-xxl-12">
+                                          
+                                            <div class="card-header text-center">
+                                                <h4>Checklists de Manutenção Preventiva | <small>{{ $preventiva->nome_preventiva }}</small></h4>
+                                            </div>
+                                    
+                                            @php
+                                                $periodosArray = json_decode($preventiva->periodo, true);
+                                                $periodos = [];
+                                                foreach ($periodosArray as $p) {
+                                                    $periodos = array_merge($periodos, array_map('trim', explode(',', $p)));
+                                                }
+                                                $periodos = array_unique($periodos);
+                                                sort($periodos);
+                                    
+                                            @endphp
+                                    
+                                            <a href="{{ route('veiculo.manut_preventiva.show', $preventiva->id) }}" class="btn btn-warning my-3">Ver o Checklist Completo</a>
+                                    
+                                                <div class="btn-group my-3">
+                                                    <a href="#" class="btn btn-primary active" aria-current="page">Cadastrar Checklist</a>
+                                                    @foreach ($periodos as $periodo)
+                                                        <a href="{{ route('veiculo_preventivas_checklist.create', $preventiva->id.'?periodo='.$periodo.'&id_veiculo='.$veiculo->id)}}" class="btn btn-primary">De {{ $periodo }} horas |</a>  
+                                                    @endforeach
                                                 </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="companyName" class="form-label">Company
-                                                        Name</label>
-                                                    <input type="text" class="form-control" id="companyName"
-                                                        placeholder="Company name" value="Themesbrand">
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="experienceYear" class="form-label">Experience
-                                                        Years</label>
-                                                    <div class="row">
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="experienceYear"
-                                                                id="experienceYear">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17" selected>2017
-                                                                </option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20">2020</option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-auto align-self-center">
-                                                            to
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="choices-single-default2">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17">2017</option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20" selected>2020
-                                                                </option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                    </div>
-                                                    <!--end row-->
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-12">
-                                                <div class="mb-3">
-                                                    <label for="jobDescription" class="form-label">Job
-                                                        Description</label>
-                                                    <textarea class="form-control" id="jobDescription" rows="3" placeholder="Enter description">You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. </textarea>
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="hstack gap-2 justify-content-end">
-                                                <a class="btn btn-success" href="javascript:deleteEl(1)">Delete</a>
-                                            </div>
+                                    
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>ID Veículo</th>
+                                                        <th>Manutenção Preventiva</th>                    
+                                                        <th>Período</th>                                   
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach ($checkLists as $checkList)
+                                                        <tr>
+                                                            <td>{{ $checkList->id }}</td>
+                                                            <td>{{ $checkList->id_veiculo }}</td>
+                                                            <td>{{ $preventiva->nome_preventiva }}</td>
+                                                            <td>{{ $checkList->periodo }}</td>
+                                    
+                                                            <td class="d-flex justify-content-center">
+                                                               
+                                                                    <a href="{{ route('veiculo_preventivas_checklist.show', $checkList->id) }}" class="btn btn-info">Ver</a>
+                                                                    <a href="{{ route('veiculo_preventivas_checklist.edit', $checkList->id) }}" class="btn btn-warning mx-2">Editar</a>
+                                                                    <form action="{{ route('veiculo_preventivas_checklist.destroy', $checkList->id) }}"
+                                                                        method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        @method('delete')
+                                                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                                                    </form>
+                                                             
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                            {{ $checkLists->links() }}
                                         </div>
-                                        <!--end row-->
                                     </div>
                                 </div>
-                                <div id="newForm" style="display: none;">
-
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="hstack gap-2">
-                                        <button type="submit" class="btn btn-success">Update</button>
-                                        <a href="javascript:new_link()" class="btn btn-primary">Add
-                                            New</a>
-                                    </div>
-                                </div>
-                                <!--end col-->
-                            </form>
+                            </div>
                         </div>
                         <!--end tab-pane-->
-                        <div class="tab-pane" id="privacy" role="tabpanel">
-                            <div class="mb-4 pb-2">
-                                <h5 class="card-title text-decoration-underline mb-3">Security:</h5>
-                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fs-15 mb-1">Two-factor Authentication</h6>
-                                        <p class="text-muted">Two-factor authentication is an enhanced
-                                            security meansur. Once enabled, you'll be required to give
-                                            two types of identification when you log into Google
-                                            Authentication and SMS are Supported.</p>
+                        <div class="tab-pane" id="seguros" role="tabpanel">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h3 class="page-title">
+                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
+                                                Cadastrar seguro
+                                            </a>
+                                        </h3>
                                     </div>
-                                    <div class="flex-shrink-0 ms-sm-3">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Enable Two-facor
-                                            Authentication</a>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fs-15 mb-1">Secondary Verification</h6>
-                                        <p class="text-muted">The first factor is a password and the
-                                            second commonly includes a text with a code sent to your
-                                            smartphone, or biometrics using your fingerprint, face, or
-                                            retina.</p>
-                                    </div>
-                                    <div class="flex-shrink-0 ms-sm-3">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Set
-                                            up secondary method</a>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
-                                    <div class="flex-grow-1">
-                                        <h6 class="fs-15 mb-1">Backup Codes</h6>
-                                        <p class="text-muted mb-sm-0">A backup code is automatically
-                                            generated for you when you turn on two-factor authentication
-                                            through your iOS or Android Twitter app. You can also
-                                            generate a backup code on twitter.com.</p>
-                                    </div>
-                                    <div class="flex-shrink-0 ms-sm-3">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary">Generate backup
-                                            codes</a>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+
+                                            <thead>
+                                                <tr>
+                                                    <th width="8%">ID</th>
+                                                    <th>Seguradora</th>
+                                                    <th>Custo</th>
+                                                    <th>Carência Inicial</th>
+                                                    <th>Carência Final</th>
+                                                    <th width="10%">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($seguros as $seguro)
+                        
+                                                <tr>
+                        
+                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
+                        
+                                                    <td>{{($seguro->nome_seguradora) }}</td>
+                        
+                                                    <td>R$ {{ Tratamento::currencyFormatBr($seguro->valor) }} </td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_inicial) }}</td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
+                        
+                                                    <td class="d-flex gap-2">
+                        
+                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
+                        
+                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
+                        
+                                                    </a>                       
+                        
+                        
+                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
+                        
+                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
+                        
+                                                        </a>
+                        
+                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
+                                                            @csrf                        
+                                                            @method('delete')
+                        
+                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
+                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                        
+                                                                    <i class="mdi mdi-delete"></i> Excluir
+                        
+                                                                </button>                        
+                                                            </a>                        
+                                                        </form>                        
+                                                    </td>                        
+                                                </tr>
+
+                                                @endforeach
+                        
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <h5 class="card-title text-decoration-underline mb-3">Application
-                                    Notifications:</h5>
-                                <ul class="list-unstyled mb-0">
-                                    <li class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <label for="directMessage" class="form-check-label fs-15">Direct
-                                                messages</label>
-                                            <p class="text-muted">Messages from people you follow</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="directMessage" checked />
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex mt-2">
-                                        <div class="flex-grow-1">
-                                            <label class="form-check-label fs-15" for="desktopNotification">
-                                                Show desktop notifications
-                                            </label>
-                                            <p class="text-muted">Choose the option you want as your
-                                                default setting. Block a site: Next to "Not allowed to
-                                                send notifications," click Add.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="desktopNotification" checked />
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex mt-2">
-                                        <div class="flex-grow-1">
-                                            <label class="form-check-label fs-15" for="emailNotification">
-                                                Show email notifications
-                                            </label>
-                                            <p class="text-muted"> Under Settings, choose Notifications.
-                                                Under Select an account, choose the account to enable
-                                                notifications for. </p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="emailNotification" />
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex mt-2">
-                                        <div class="flex-grow-1">
-                                            <label class="form-check-label fs-15" for="chatNotification">
-                                                Show chat notifications
-                                            </label>
-                                            <p class="text-muted">To prevent duplicate mobile
-                                                notifications from the Gmail and Chat apps, in settings,
-                                                turn off Chat notifications.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="chatNotification" />
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex mt-2">
-                                        <div class="flex-grow-1">
-                                            <label class="form-check-label fs-15" for="purchaesNotification">
-                                                Show purchase notifications
-                                            </label>
-                                            <p class="text-muted">Get real-time purchase alerts to
-                                                protect yourself from fraudulent charges.</p>
-                                        </div>
-                                        <div class="flex-shrink-0">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" role="switch"
-                                                    id="purchaesNotification" />
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h5 class="card-title text-decoration-underline mb-3">Delete This
-                                    Account:</h5>
-                                <p class="text-muted">Go to the Data & Privacy section of your profile
-                                    Account. Scroll to "Your data & privacy options." Delete your
-                                    Profile Account. Follow the instructions to delete your account :
-                                </p>
-                                <div>
-                                    <input type="password" class="form-control" id="passwordInput"
-                                        placeholder="Enter your password" value="make@321654987"
-                                        style="max-width: 265px;">
+                        </div>
+                        <div class="tab-pane" id="ipvas" role="tabpanel">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h3 class="page-title">
+                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
+                                                Cadastrar seguro
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+
+                                            <thead>
+                                                <tr>
+                                                    <th width="8%">ID</th>
+                                                    <th>Seguradora</th>
+                                                    <th>Custo</th>
+                                                    <th>Carência Inicial</th>
+                                                    <th>Carência Final</th>
+                                                    <th width="10%">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($seguros as $seguro)
+                        
+                                                <tr>
+                        
+                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
+                        
+                                                    <td>{{($seguro->nome_seguradora) }}</td>
+                        
+                                                    <td>R$ {{ Tratamento::currencyFormatBr($seguro->valor) }} </td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_inicial) }}</td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
+                        
+                                                    <td class="d-flex gap-2">
+                        
+                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
+                        
+                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
+                        
+                                                    </a>                       
+                        
+                        
+                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
+                        
+                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
+                        
+                                                        </a>
+                        
+                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
+                                                            @csrf                        
+                                                            @method('delete')
+                        
+                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
+                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                        
+                                                                    <i class="mdi mdi-delete"></i> Excluir
+                        
+                                                                </button>                        
+                                                            </a>                        
+                                                        </form>                        
+                                                    </td>                        
+                                                </tr>
+
+                                                @endforeach
+                        
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                                <div class="hstack gap-2 mt-3">
-                                    <a href="javascript:void(0);" class="btn btn-soft-danger">Close &
-                                        Delete This Account</a>
-                                    <a href="javascript:void(0);" class="btn btn-light">Cancel</a>
+                            </div>
+                        </div>
+                        <!--end tab-pane-->
+
+                        <div class="tab-pane" id="abastecimentos" role="tabpanel">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header">
+                                        <h3 class="page-title">
+                                            <a class="btn btn-success " href="{{ route('ativo.veiculo.seguro.adicionar', $veiculo->id) }}">
+                                                Cadastrar seguro
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+
+                                            <thead>
+                                                <tr>
+                                                    <th width="8%">ID</th>
+                                                    <th>Seguradora</th>
+                                                    <th>Custo</th>
+                                                    <th>Carência Inicial</th>
+                                                    <th>Carência Final</th>
+                                                    <th width="10%">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($seguros as $seguro)
+                        
+                                                <tr>
+                        
+                                                    <td><span class="badge badge-dark">{{ $seguro->id }}</span></td>
+                        
+                                                    <td>{{($seguro->nome_seguradora) }}</td>
+                        
+                                                    <td>R$ {{ Tratamento::currencyFormatBr($seguro->valor) }} </td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_inicial) }}</td>
+                        
+                                                    <td>{{ Tratamento::dateBr($seguro->carencia_final) }}</td>
+                        
+                                                    <td class="d-flex gap-2">
+                        
+                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoSeguro" class="seguro" href="javascript:void(0)" data-id="{{$seguro->id}}">
+                        
+                                                            <span class='badge badge-success  badge-sm ml-1 pb-2'><i class="mdi mdi-upload"></i>Upload</span>
+                        
+                                                    </a>                       
+                        
+                        
+                                                        <a href="{{ route('ativo.veiculo.seguro.editar', [$seguro->id, 'edit']) }}">
+                        
+                                                            <button class="badge badge-info  badge-sm pb-2" data-toggle="tooltip" data-placement="top" title="Editar"><i class="mdi mdi-pencil"></i> Editar </button>
+                        
+                                                        </a>
+                        
+                                                         <form action="{{ route('ativo.veiculo.seguro.delete', $seguro->id) }}" method="POST">                        
+                                                            @csrf                        
+                                                            @method('delete')
+                        
+                                                            <a class="excluir-padrao" data-id="{{ $seguro->id }}" data-table="empresas" data-module="cadastro/empresa">                        
+                                                                <button class="badge badge-danger" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                        
+                                                                    <i class="mdi mdi-delete"></i> Excluir
+                        
+                                                                </button>                        
+                                                            </a>                        
+                                                        </form>                        
+                                                    </td>                        
+                                                </tr>
+
+                                                @endforeach
+                        
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>

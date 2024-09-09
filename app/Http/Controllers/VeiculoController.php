@@ -1,9 +1,9 @@
 <?php
 
-// app/Http/Controllers/VeiculoController.php
 namespace App\Http\Controllers;
 
 use App\Interfaces\VeiculoManutencaoRepositoryInterface;
+use App\Interfaces\VeiculoSeguroRepositoryInterface;
 use App\Interfaces\VeiculoRepositoryInterface;
 use App\Interfaces\VeiculoCategoriaRepositoryInterface;
 use App\Interfaces\VeiculoSubCategoriaRepositoryInterface;
@@ -30,12 +30,14 @@ class VeiculoController extends Controller
     protected $checkListRepository;
     protected $manutencoes;
     protected $veiculo_quilometragem;
+    protected $seguros;
     protected $docs_legais;
     protected $docs_tecnicos;
     protected $tipo;
 
     public function __construct(
         VeiculoRepositoryInterface $veiculoRepository,
+        VeiculoSeguroRepositoryInterface $seguros,
         VeiculoCategoriaRepositoryInterface $categorias,
         VeiculoSubCategoriaRepositoryInterface $subCateborias,
         VeiculoManutencaoRepositoryInterface $manutencoes,
@@ -48,6 +50,7 @@ class VeiculoController extends Controller
 
     ) {
         $this->veiculoRepository = $veiculoRepository;
+        $this->seguros = $seguros;
         $this->manutencoes = $manutencoes;
         $this->veiculo_quilometragem = $veiculo_quilometragem;
         $this->categorias = $categorias;
@@ -166,13 +169,11 @@ class VeiculoController extends Controller
 
     public function show($id)
     {
-        $veiculo = $this->veiculoRepository->getById($id);
-        
+        $veiculo = $this->veiculoRepository->getById($id);        
         $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
-
-        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);
-        
+        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);        
         $docs_tecnicos = $veiculo->documentosTecnicos()->orderBy('id', 'desc')->paginate(7);
+        $seguros = $veiculo->seguros()->orderBy('id', 'desc')->paginate(7);
 
         //$this->docs_tecnicos
 
@@ -182,7 +183,7 @@ class VeiculoController extends Controller
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
 
-        return view('pages.ativos.veiculos.show', compact('veiculo', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id'));
+        return view('pages.ativos.veiculos.show', compact('veiculo', 'seguros', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id'));
     }
 
     public function delete($id)

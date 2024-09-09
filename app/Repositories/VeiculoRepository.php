@@ -156,6 +156,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         $veiculoImagem = VeiculoImagens::findOrFail($data['id_imagem']);
     
         if ($imagem) {
+            
             // Defina o caminho completo da imagem antiga
             $imagePath = public_path("imagens/veiculos/" . $data['veiculo_id'] . "/" . $veiculoImagem->imagens);
     
@@ -171,6 +172,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
             // Atualiza o nome da imagem e a descrição no banco de dados
             $veiculoImagem->imagens = $imageName;
             $veiculoImagem->descricao = $data['descricao'];
+
         } else {
             // Se não houver nova imagem, apenas atualize a descrição
             $veiculoImagem->descricao = $data['descricao'];

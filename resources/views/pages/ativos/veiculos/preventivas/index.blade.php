@@ -52,10 +52,10 @@
             <div class="card table-responsive">
                 <div class="">
                     <div class="card-body p-1" id="tabela_veiculos">
-                        <table class="table table-bordered table-sm table-hover">
+                        <table class="table table-bordered table-sm table-hover table-midle">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th class="text-center">ID</th>
                                     <th>Nome da Preventiva</th>
                                     <th>Tipo de Veículo</th>
                                     <th class="text-center">Serviços</th>
@@ -65,7 +65,7 @@
                             <tbody>
                                 @foreach ($preventivas as $preventiva)
                                     <tr>
-                                        <td>{{ $preventiva->id }}</td>
+                                        <td class="text-center">{{ $preventiva->id }}</td>
                                         <td>{{ $preventiva->nome_preventiva }}</td>
                                         <td>{{ $preventiva->tipo_veiculos->nome_tipo_veiculo }}</td>
                                         <td class="text-center">
@@ -92,17 +92,17 @@
 
                                         <td class="d-flex justify-content-center">
                                             <a href="{{ route('veiculo.manut_preventiva.edit', $preventiva->id) }}"
-                                                class="btn btn-outline-warning btn-sm" title="Editar"><i class="mdi mdi-lead-pencil mdi-18px"></i></a>
+                                                class="btn btn-outline-warning btn-sm" title="Editar"><i class="mdi mdi-lead-pencil"></i></a>
                                             <form action="{{ route('veiculo.manut_preventiva.delete', $preventiva->id) }}" method="POST" style="display:inline-block;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm mx-2" title="Excluir"><i class="mdi mdi-trash-can mdi-18px"></i></button>
+                                                <button type="submit" class="btn btn-outline-danger btn-sm mx-2" title="Excluir"><i class="mdi mdi-trash-can"></i></button>
                                             </form>
 
                                             <a href="{{ route('veiculo.manut_preventiva.show', $preventiva->id) }}"
-                                                class="btn btn-outline-info" title="Detalhes"><i class="mdi mdi-eye mdi-18px"></i></a>
+                                                class="btn btn-outline-info btn-sm" title="Detalhes"><i class="mdi mdi-eye"></i></a>
 
-                                            <a href="" class="btn btn-outline-success btn-sm mx-2" title="Checklist"><i class="mdi mdi-format-list-checks mdi-18px"></i></a>
+                                            <a href="" class="btn btn-outline-success btn-sm mx-2" title="Checklist"><i class="mdi mdi-format-list-checks"></i></a>
 
                                         </td>
                                     </tr>

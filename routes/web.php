@@ -155,7 +155,6 @@ Auth::routes();
 
 //Language Translation
 
-
 Route::middleware(['auth'])->group(function () {
     Route::resource('categories', CategoryController::class);
     Route::resource('subcategories', SubcategoryController::class);

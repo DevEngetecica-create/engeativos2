@@ -1,12 +1,15 @@
-@extends('layouts.app')
+@extends('dashboard')
 
 @section('content')
-    <div class="container">
-        <h1>Detalhes da Manutenção Preventiva</h1>
-        <div class="card">
-            <div class="card-header">
-                <h3>{{ $preventiva->nome_preventiva }}</h3>
-                <a href="{{ route('veiculo_preventivas.index') }}" class="btn btn-primary">Voltar para a Lista</a>
+    <div class="container ">
+        
+        <div class="card p-5">
+            <h1 class="mb-3 ">Detalhes da Manutenção Preventiva</h1>
+            <div class="card-header align-middle">
+                <div class="row">
+                    <div class="col-3"><a href="{{route('veiculo.show', $id_veiculo)}}" class="btn btn-info ">Voltar para a Lista</a></div>
+                    <div class="col"><h3 >{{ $preventiva->nome_preventiva }}</h3>         </div>
+                </div>      
             </div>
 
             @if ($errors->any())
@@ -42,13 +45,13 @@
                     <input type="hidden" name="nome_servicos" value="{{ $nomeServicosJson }}">
 
                     @if($id_veiculo)
-                        <input type="text" name="id_veiculo" value="{{ $id_veiculo }}">
+                        <input type="hidden" name="id_veiculo" value="{{ $id_veiculo }}">
                     @endif
 
-                    <table class="table table-bordered">
+                    <table class="table table-bordered align-middle table-sm">
                         <thead>
                             <tr>
-                                <th class="text-center">Nome do Serviço</th>
+                                <th class="text-center">Serviços </th>
                                 @foreach ($periodos as $p)
                                     @if(!$periodo || $periodo == $p)
                                         <th class="text-center">{{ $p }} Horas</th>
@@ -63,136 +66,93 @@
                                     @foreach ($periodos as $p)
                                         @if(!$periodo || $periodo == $p)   
                                             @php
-                                                $periodoServico = array_map('trim', explode(',', json_decode($preventiva->periodo)[$key]));
-
-                                               
+                                                $periodoServico = array_map('trim', explode(',', json_decode($preventiva->periodo)[$key]));                                               
 
                                                 if (in_array($p, $periodoServico)) {
                                                     $situacao = json_decode($preventiva->situacao, true)[$key];
                                                     $checked = isset($checklistDataChecbox[$key][$p]) && $checklistDataChecbox[$key][$p] == "1";
                                                     $observacao = isset($checklistObservacao[$key][$p]) ? $checklistObservacao[$key][$p] : '';
                                                     $file = isset($files[$key][$p]) ? $files[$key][$p] : '';
-                                                    
-                                                   /*  echo '<pre>';
-                                                    var_dump($checked);
- */
+                                           
                                                     echo '<input type="hidden" name="situacaoPreventiva[]" value="'. $situacao .'">';
                                                     echo '<input type="hidden" name="nome_servicos[]" value="'. $nome_servico .'">';
                                                     echo ' <td>'. $nome_servico .'</td>';
 
+                                                    echo '<td>'; 
+                                                        
+                                                    echo'<table class="table align-middle mb-0">
+                                                            <thead class="table-light my-0">
+                                                                <tr class="text-muted ">
+                                                                    <th class="py-2 text-center" scope="col">Situação</th>
+                                                                    <th class="py-2 text-center" scope="col" style="width: 20%;">Verificado?</th>
+                                                                    <th class="py-2 text-center" scope="col">Anexos</th>
+                                                                    <th class="py-2 text-center" scope="col" style="width: 16%;">Observações</th>                                                                                    
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>';
+                                                            
+                                                                echo '<tr>';
+                                                                    switch ($situacao) {
+                                                                        case 1:
+                                                                            echo'<td class="py-1">Deve ser executado &#9899;</td>';
+                                                                        break;
 
-                                                    echo '<td>';
-                                                    switch ($situacao) {
-                                                        case 1:
-                                                            echo '<div class="d-flex align-items-center justify-content-center">
-                                                                    <div class="form-check form-switch">
-                                                                        <label class="form-check-label" for="obgr_' . $situacao . '_' . $p . '"><span style="font-size:18px;" title="Deve ser executado">&#9899;</span></label>
-                                                                        <input style="width:40px; height:20px" type="checkbox" id="obgr_' . $key . '_' . $p . '" class="form-check-input checklist-checkbox" name="checklist[] "  >                                                         
-                                                                        <input  type="hidden" id="periodo_' . $key . '_' . $p . '"  name="periodo" value="' . $p . '">
-                                                                    </div>
-                                                                    <div class="upload-btn-wrapper ms-2">
-                                                                        <span class="btn-upload"><i class="fas fa-cloud-upload-alt" style="font-size:25px;" ></i></span>
-                                                                        <input class="observacao disabled" type="file" name="file[]" id="file[' . $key . ']"/>                                                                     
-                                                                    </div>
-                                                                    <span data-bs-toggle="modal" data-bs-target="#executar' . $key . '" class="observacao text-secondary disabled mx-2" style="font-size:25px;" title="Observações"><i class="fas fa-comment-alt"></i></span>
-                                                                </div>';
+                                                                        case 2:
+                                                                            echo'<td class="py-1">Deve ser executado conforme condição &#9673;</td>';
+                                                                        break;
 
-                                                            echo '<!-- Modal -->
-                                                                    <div class="modal fade" id="executar' . $key . '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                        <div class="modal-dialog">
-                                                                            <div class="modal-content">
-                                                                                <div class="modal-header">
-                                                                                    <h5 class="modal-title" id="exampleModalLabel">' . $nome_servico . '</h5>
-                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                                </div>
-                                                                                <div class="modal-body">
-                                                                                    <div class="mb-3">
-                                                                                        <label for="exampleFormControlTextarea1" class="form-label">Observações</label>
-                                                                                        <textarea class="form-control" id="observacoes_' . $key . '" name="observacoes[]" rows="3"></textarea>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="modal-footer">
-                                                                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar</button>                                                                              
-                                                                                </div>
+
+                                                                        case 3:
+                                                                            echo'<td class="py-1">Deve ser verificado &#9650;</td>';
+                                                                        break;
+                                                                    }
+
+                                                                    echo '<td class="py-1">
+                                                                            <div class="form-check  text-center">
+                                                                                <input style="width:40px; height:20px" type="checkbox" id="obgr_' . $key . '_' . $p . '" class="form-check-input checklist-checkbox" name="checklist[] "  >                                                         
+                                                                                <input  type="hidden" id="periodo_' . $key . '_' . $p . '"  name="periodo" value="' . $p . '">
                                                                             </div>
-                                                                        </div>
-                                                                    </div>';
-                                                            break;
-                                                        case 2:
-                                                            echo '<div class="d-flex align-items-center justify-content-center">
-                                                                    <div class="align-items-center form-check form-switch">
-                                                                        <label class="form-check-label mx-2" for="condicao_' . $situacao . '_' . $p . '"><span style="font-size:18px;" title="Deve ser executado conforme condição">&#9673;</span></label>
-                                                                        <input style="width:40px; height:20px" type="checkbox" id="condicao_' . $key . '_' . $p . '" class="form-check-input checklist-checkbox" name="checklist[]"  >
-                                                                        <input  type="hidden" id="periodo_' . $key . '_' . $p . '"  name="periodo" value="' . $p . '">
-                                                                    </div>
-                                                                    <div class="upload-btn-wrapper ms-2">
-                                                                        <span class="btn-upload"><i class="fas fa-cloud-upload-alt" style="font-size:25px;"></i></span>
-                                                                        <input class="observacao disabled" type="file" name="file[]" id="file[' . $key . ']"/>
-                                                                    </div>
+                                                                        </td>
                                                                     
-                                                                    <span data-bs-toggle="modal" data-bs-target="#condicao' . $key . '"class="observacao text-secondary disabled mx-2" style="font-size:25px;" title="Observações"><i class="fas fa-comment-alt text-secondary" title="Observações"></i></span>
-                                                                </div>';
+                                                                    <td class="py-1 text-center">
+                                                                        
+                                                                        <div class="upload-btn-wrapper ms-2" title="Anexar arquivo">                                                                                                                                                                          
+                                                                            <label class="form-label btn-upload btn btn-outline-secondary btn-sm btn-border px-4 py-0 mt-2 mb-0" for="' . $key . '"><i class="mdi mdi-cloud-upload-outline mdi-18px"></i></label>                                                                                       
+                                                                            <input class="observacao disabled" type="file" name="file[]" id="' . $key . '"/>                                                                     
+                                                                        </div> 
+                                                                    </td>
 
-                                                            echo '<!-- Modal -->
-                                                                <div class="modal fade" id="condicao' . $key . '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="exampleModalLabel">' . $nome_servico . '</h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <div class="mb-3">
-                                                                                    <label for="exampleFormControlTextarea1" class="form-label">Observações</label>
-                                                                                    <textarea class="form-control" id="observacoes_' . $key . '" name="observacoes[]" rows="3"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>                                                                              
-                                                                            </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>';
-                                                            break;
-                                                        case 3:
-                                                            echo '<div class="d-flex align-items-center justify-content-center">
-                                                                    <div class="align-items-center form-check form-switch">
-                                                                        <label class="form-check-label" for="verificar_' . $situacao . '_' . $p . '"><span style="font-size:25px;" title="Deve ser verificado">&#9650;</span></label>
-                                                                        <input style="width:40px; height:20px" type="checkbox" id="verificar_' . $key . '_' . $p . '" class="form-check-input checklist-checkbox" name="checklist[]" >
-                                                                        <input  type="hidden" id="periodo_' . $key . '_' . $p . '"  name="periodo" value="' . $p . '">
+                                                                    <td class="py-1 text-center">
+                                                                        <span data-bs-toggle="modal" data-bs-target="#modal' . $key . '" class="btn-observacao  btn btn-outline-secondary btn-sm btn-border px-4 py-0 mt-1 mb-0" title="Observações"><i class="mdi mdi-comment-edit-outline mdi-18px"></i></span>
+                                                                    </td>
+                                                                </tr>';
+                                                            
+                                                    echo '</tbody><!-- end tbody -->
+                                                        </table><!-- end table --> ';                                                    
+                                                } 
+                                                
+                                                echo '<!-- Modal -->
+                                                        <div class="modal fade" id="modal' . $key . '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="exampleModalLabel">' . $nome_servico . '</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                                     </div>
-                                                                    <span>' . htmlspecialchars($observacao) . '</span>
-                                                                    <div class="upload-btn-wrapper ms-2">
-                                                                        <span class="btn-upload"><i class="fas fa-cloud-upload-alt" style="font-size:25px;"></i></span>
-                                                                        <input class="observacao disabled" type="file" name="file[]" id="file[' . $key . ']"/>                                                                       
-                                                                    </div>
-                                                                    <span data-bs-toggle="modal" data-bs-target="#verificar' . $key . '" class="observacao text-secondary disabled mx-2" style="font-size:25px;" title="Observações"><i class="fas fa-comment-alt" title="Observações"></i></span>
-                                                                </div>';
-                                                                    
-                                                            echo '<!-- Modal -->
-                                                                <div class="modal fade" id="verificar' . $key . '" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                    <div class="modal-dialog">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="exampleModalLabel">' . $nome_servico . '</h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <div class="mb-3">
-                                                                                    <label for="exampleFormControlTextarea1" class="form-label">Observações</label>
-                                                                                   <textarea class="form-control" id="observacoes_' . $key . '" name="observacoes[]" rows="3"></textarea>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancelar</button>                                                                              
-                                                                            </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="mb-3">
+                                                                            <label for="exampleFormControlTextarea1" class="form-label">Observações</label>
+                                                                            <textarea class="form-control" id="observacoes_' . $key . '" name="observacoes[]" rows="3"></textarea>
                                                                         </div>
                                                                     </div>
-                                                                </div>';
-                                                            break;
-                                                    }
-                                                }  
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar</button>                                                                              
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>'; 
                                                 echo '</td>';
+                                               
                                             @endphp     
                                         @endif
                                     @endforeach
@@ -200,44 +160,52 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <button type="submit" class="btn btn-primary">Salvar Checklist</button>
+                    <button type="submit" class="btn btn-success">Salvar Checklist</button>
                 </form>
             </div>
         </div>
     </div>
-@endsection
+    
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-            // Inicialmente, desabilitar todos os ícones de observação
-            $('.observacao').addClass('disabled');
+<script>
+    $(document).ready(function() {
+        // Função para habilitar/desabilitar o ícone de observação e upload
 
-            // Função para habilitar/desabilitar o ícone de observação
-            function toggleObservacao(checkbox) {
-                var target = $(checkbox).closest('td').find('.observacao');
-                var target_upload = $(checkbox).closest('td').find('.btn-upload');
+        // Inicializar com base nos valores das checkboxes ao carregar a página
+        $('.checklist-checkbox').each(function() {
+            toggleObservacao(this);
+        });
 
-                if (checkbox.checked) {
-                    target.removeClass('disabled');
-                    target.removeAttr('readonly').removeClass('text-secondary disabled').addClass('text-warning');
-                    target_upload.removeAttr('readonly').removeClass('text-secondary disabled').addClass('text-success');
+        function toggleObservacao(checkbox) {
+            // Acessa a linha <tr> mais próxima do checkbox e encontra os elementos dentro dela
+            var row = $(checkbox).closest('tr');
 
-                } else {
-                    target.addClass('disabled');
-                    target.attr('readonly', true).removeClass('text-warning').addClass('text-secondary disabled');
-                    target_upload.attr('readonly', true).removeClass('text-success').addClass('text-secondary disabled');
-                }
-               
+            var target_upload = row.find('.btn-upload');
+            var target_observacao = row.find('.btn-observacao');
+            var input_file = row.find('.observacao');
+
+            if (checkbox.checked) {
+                // Habilitar interação
+                target_upload.css('pointer-events', 'all').removeClass('btn btn-outline-secondary text-secondary').addClass('btn btn-outline-success ');
+                target_observacao.css('pointer-events', 'all').removeClass('btn btn-outline-secondary text-secondary').addClass('btn btn-outline-success');
+                input_file.css('pointer-events', 'all');
+
+                input_file.css('z-index',' -1');
+                target_upload.css('z-index', '2');
+                
+                
+                
+            } else {
+                // Desabilitar interação
+                target_upload.css('pointer-events', 'none').removeClass('btn btn-outline-success text-success').addClass('btn btn-outline-secondary text-secondary');
+                target_observacao.css('pointer-events', 'none').removeClass('btn btn-outline-success text-success').addClass('btn btn-outline-secondary text-secondary');
+                input_file.css('pointer-events', 'none');
             }
+        }
 
-            // Ação ao clicar na checkbox
-            $('.checklist-checkbox').change(function() {
-                toggleObservacao(this);
-            });
-
-            // Ajuste ao submeter o formulário
-            $('#checklistForm').on('submit', function() {
+        // Ajuste ao submeter o formulário
+        $('#checklistForm').on('submit', function() {
                 $('.checklist-checkbox').each(function() {
                     var checkbox = $(this);
                     if (checkbox.is(':checked')) {
@@ -249,20 +217,15 @@
                 });
             });
 
-            // Inicializar com base nos valores das checkboxes
-            $('.checklist-checkbox').each(function() {
-                toggleObservacao(this);
-            });
-
-            // Impedir o clique no ícone de observação se estiver desabilitado
-            $(document).on('click', '.observacao.disabled', function(event) {
-                event.preventDefault();
-                return false;
-            });
+        // Ação ao clicar na checkbox
+        $('.checklist-checkbox').change(function() {
+            toggleObservacao(this);
         });
 
+    });
+</script>
 
-    </script>
+
     <script>
         function validateFileInput(input) {
             const allowedExtensions = ['jpg', 'png', 'pdf', 'doc', 'docx'];
