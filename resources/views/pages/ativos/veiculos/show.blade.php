@@ -482,194 +482,44 @@
                                         <table class="table table-sm table-hover table-bordered align-middle">
 
                                             <thead>
-                                                <tr>                
-                                                    <th class="text-center">ID</th>                
-                                                    <th class="text-center">Combustível</th>  
-
-                                                    @if ($veiculo->tipo == 'maquinas')                
-                                                        <th class="text-center">Últ. reg.</th>                
-                                                        <th class="text-center">Horas traba.</th>                
-                                                        <th class="text-center">Qtde. (litros)</th>                
-                                                        <th class="text-center">Hr/ litro</th>                
-                                                    @else                
-                                                        <th class="text-center">km</th>                
-                                                        <th class="text-center">km's rodados</th>                
-                                                        <th class="text-center">Qtde. (litros)</th>                
-                                                        <th class="text-center">km's/ l</th>                
-                                                    @endif              
-                        
-                                                    <th class="text-center">Qtde. Média(litros)</th>                
-                                                    <th class="text-center">Custo</th>                
-                                                    <th class="text-center">Média Abast.</th>                
-                                                    <th class="text-center">Data</th>                
-                                                    <th width="10%">Ações</th>                
-                                                </tr>                
-                                            </thead>
-
-                                            <tbody>              
-                        
-                                                @foreach ($abastecimentos->reverse() as $index => $abastecimento)
-                
-                                                <tr>                
-                                                    <td class="text-center">{{ $abastecimento->id }}</td> 
-                
-                                                    <!-- tipo do combustível -->                
-                                                    <td class="text-center">{{ $abastecimento->combustivel }}</td>     
-                
-                                                    {{-- Verifica se não é o último registro e efetua os cálculos --}}
-                
-                                                    @if ($index >0) 
-
-                                                    @php            
-                
-                                                    $registroAtual = $abastecimento;
-                                                    $registroPosterior = $abastecimentos[$index - 1];                   
-                                                    $valorMedio = ($registroAtual->valor_total + $registroPosterior->valor_total) / 2;                
-                                                    $qtdeMedia = ($registroAtual->quantidade + $registroPosterior->quantidade) / 2;                
-                                                    $kmRodados = $registroAtual->quilometragem - $registroPosterior->quilometragem;                
-                                                    $hrTraba = $registroAtual->horimetro - $registroPosterior->horimetro;   
-                
-                                                    if($veiculo->tipo == "maquinas"){  
-                                                        
-                                                        $consumoMedio = $hrTraba / $abastecimento->quantidade;                
-                                                    }else{                        
-                
-                                                        $consumoMedio = $kmRodados / $abastecimento->quantidade;                
-                                                    }
-
-                                                    $consumoMedio_arredondado = number_format(round($consumoMedio, 2), 2, '.', '');   
-                
-                                                    @endphp                
-                
-                                                    @if ($veiculo->tipo == 'maquinas')       
-                
-                                                    <!-- registro do último horimetro -->                
-                                                    <td class="text-center">{{ $abastecimento->horimetro ?? 0}}</td>
-
-                                                    <!-- qtde de litros de combustível -->
-                
-                                                    <td class="text-center">                
-                                                        <span class="bg-primary p-1 rounded shadow-sm text-white text-center my-2">{{ $hrTraba}}</span>                
-                                                    </td>
-                                        
-                                                    @else
-
-                                                    <!-- registro do último km -->                
-                                                    <td class="text-center">{{ $abastecimento->quilometragem ?? 0}}</td>               
-                        
-                
-                                                    <!-- resultado do calculo do km atual com o novo -->
-                
-                                                    <td class="text-center"><span class="bg-primary p-1 rounded shadow-sm text-white text-center my-2">{{ $kmRodados}}</span></td>
-                                                       
-                                                    @endif
-
-                                                    <!-- qtde de litros de combustível -->                
-                                                    <td class="text-center">{{ $abastecimento->quantidade }}</td> 
-                
-                                                    <!-- qtde de litros de combustível -->                
-                                                    <td class="text-center"><span class="bg-warning p-1 rounded shadow-sm text-white text-center my-2">{{ $consumoMedio_arredondado }} km's</span></td>
-                
-                                                    <!-- média de consumo dos litros -->                
-                                                    <td class="text-center">                
-                                                        {{ $qtdeMedia }}                
-                                                    </td>
-
-                                                    <!-- valor por litro de combustivel -->                
-                                                    <td class="text-center">R$ {{Tratamento::FormatBrMoeda($abastecimento->valor_total) }}</td>      
-                
-                                                    <!-- valor medio por litro de combustivel -->
-                
-                                                    <td class="text-center">                
-                                                        R$ {{ Tratamento::FormatBrMoeda($valorMedio) }}                
-                                                    </td>
-
-                                                    <!-- data do abastecimento -->                
-                                                    <td class="text-center">{{ Tratamento::dateBr($abastecimento->data_cadastro) }}</td>  
-                
-                                                    <td class="d-flex">                
-                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoAbastecimento" class="abastecimento" href="javascript:void(0)" data-id="{{ $abastecimento->id}}">                
-                                                            <span class='btn btn-success btn-sm ml-1' title="Editar">                
-                                                                <i class="mdi mdi-upload"></i>                
-                                                            </span>                
-                                                        </a>               
-                
-                                                        <a href="{{ route('ativo.veiculo.abastecimento.editar', $abastecimento->id) }}">                
-                                                            <button class="btn btn-info btn-sm mx-2" data-toggle="tooltip" data-placement="top" title="Editar">                
-                                                                <i class="mdi mdi-pencil"></i>                
-                                                            </button>                
-                                                        </a>
-                
-                                                        @if ($loop->first)                
-                                                        <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST">                
-                                                            @csrf
-                
-                                                            @method('delete')                
-                                                            <a class="excluir-padrao" data-id="{{ $abastecimento->id }}">                
-                                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
-                
-                                                                    <i class="mdi mdi-delete"></i></button>                
-                                                            </a>                
-                                                        </form>                
-                                                        @endif                
-                                                    </td>
-
-                                                    @else       
-                        
-                
-                                                    @if ($veiculo->tipo == 'maquinas')      
-                
-                                                        <!-- registro do último horimetro -->                
-                                                        <td class="text-center">{{ $abastecimento->horimetro }}</td>                
-                                                        <td class="text-center">Sem reg.</td>    
-                                                    @else               
-                                                                    
-                                                        <!-- registro do último km -->                
-                                                        <td class="text-center">{{ $abastecimento->quilometragem }}</td>
-
-                                                        <!-- resultado do calculo do km atual com o novo -->                
-                                                        <td class="text-center">Sem reg.</td>                    
-                                                    @endif              
-
-                                                    <td class="text-center">{{ $abastecimento->quantidade }}</td>  
-                                                    <td class="text-center"><span class="bg-warning p-1 rounded shadow text-white text-center my-2">Sem reg.</span></td> 
-                                                    <td class="text-center">Não há média</td>       
-                                                    <td class="text-center">R$ {{ Tratamento::FormatBrMoeda($abastecimento->valor_total) }}</td>
-                                                    <td class="text-center">Sem reg.</td>
-                                                    <td class="text-center">{{ Tratamento::dateBr($abastecimento->data_cadastro) }}</td>
-                                                    <td class="d-flex">
-                                                        <a data-bs-toggle="modal" data-bs-target="#anexarArquivoAtivoAbastecimento" class="abastecimento" href="javascript:void(0)" data-id="{{ $abastecimento->id}}">
-                
-                                                            <span class='btn btn-success btn-sm ml-1' title="Editar">                
-                                                                <i class="mdi mdi-upload"></i>                
-                                                            </span>                
-                                                        </a>
-
-                                                        <a href="{{ route('ativo.veiculo.abastecimento.editar', $abastecimento->id) }}">                
-                                                            <button class="btn btn-info btn-sm mx-2" data-toggle="tooltip" data-placement="top" title="Editar">                
-                                                                <i class="mdi mdi-pencil"></i>                
-                                                            </button>                
-                                                        </a>               
-                
-                                                        @if ($loop->first)                
-                                                            <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST">                
-                                                                @csrf                
-                                                                @method('delete')
-                    
-                                                                <a class="excluir-padrao" data-id="{{ $abastecimento->id }}">
-                    
-                                                                    <button class="btn btn-danger btn-sm" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">                
-                                                                        <i class="mdi mdi-delete"></i>
-                                                                    </button>                
-                                                                </a>                
-                                                            </form>                
-                                                        @endif                
-                                                    </td>                
-                                                    @endif                
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Quilometragem Inicial</th>
+                                                    <th>Quilometragem Final</th>
+                                                    <th>Quilometragem Percorrida</th>
+                                                    <th>Quantidade de Combustível</th>
+                                                    <th>Consumo Médio (km/l)</th>
+                                                    <th>Custo por Litro</th>
+                                                    <th>Custo por Quilômetro</th>
+                                                    <th>Valor Total</th>
+                                                    <th>Data do Abastecimento</th>
+                                                    <th>Ações</th>
                                                 </tr>
-                
-                                                @endforeach                 
-                                            </tbody>                
+                                            </thead>
+                                            <tbody>
+                                                @foreach($abastecimentos as $abastecimento)
+                                                    <tr>
+                                                        <td>{{ $abastecimento->id }}</td>
+                                                        <td>{{ $abastecimento->quilometragem_inicial }}</td>
+                                                        <td>{{ $abastecimento->quilometragem_final }}</td>
+                                                        <td>{{ $abastecimento->quilometragem_percorrida }}</td>
+                                                        <td>{{ $abastecimento->quantidade_combustivel }}</td>
+                                                        <td>{{ number_format($abastecimento->consumo_medio, 2) }} km/l</td>
+                                                        <td>R$ {{ number_format($abastecimento->custo_por_litro, 2) }}</td>
+                                                        <td>R$ {{ number_format($abastecimento->custo_por_km, 2) }}</td>
+                                                        <td>R$ {{ number_format($abastecimento->valor_total, 2) }}</td>
+                                                        <td>{{ $abastecimento->data_abastecimento }}</td>
+                                                        <td class="d-flex justify-content-center">
+                                                            <a href="{{ route('ativo.veiculo.abastecimento.edit', $abastecimento->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                                            <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST" style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm mx-2">Excluir</button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
