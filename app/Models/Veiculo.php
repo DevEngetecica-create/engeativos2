@@ -86,7 +86,7 @@ class Veiculo extends Model
 
     public function abastecimento()
     {
-        return $this->belongsTo(VeiculoAbastecimento::class, 'veiculo_id');
+        return $this->hasMany(VeiculoAbastecimento::class, 'veiculo_id');
     }
     
     
