@@ -736,7 +736,7 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/veiculo/abastecimento/{veiculo}',                   [VeiculoAbastecimentoController::class, 'index'])->name('ativo.veiculo.abastecimento.index');
     Route::get('admin/ativo/veiculo/abastecimento/adicionar/{veiculo}',         [VeiculoAbastecimentoController::class, 'create'])->name('ativo.veiculo.abastecimento.adicionar');
     Route::post('admin/ativo/veiculo/abastecimento',                            [VeiculoAbastecimentoController::class, 'store'])->name('ativo.veiculo.abastecimento.store');
-    Route::get('admin/ativo/veiculo/abastecimento/editar/{id}',                 [VeiculoAbastecimentoController::class, 'edit'])->name('ativo.veiculo.abastecimento.editar');
+    Route::get('admin/ativo/veiculo/abastecimento/editar/{id}',                 [VeiculoAbastecimentoController::class, 'edit'])->name('ativo.veiculo.abastecimento.edit');
     Route::put('admin/ativo/veiculo/abastecimento/{id}',                        [VeiculoAbastecimentoController::class, 'update'])->name('ativo.veiculo.abastecimento.update');
     Route::delete('admin/ativo/veiculo/abastecimento/delete/{id}',              [VeiculoAbastecimentoController::class, 'delete'])->name('ativo.veiculo.abastecimento.delete');
     Route::get('admin/ativo/veiculo/abastecimento/download/{id}',               [VeiculoAbastecimentoController::class, 'download'])->name('ativo.veiculo.abastecimento.download');

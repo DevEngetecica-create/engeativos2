@@ -28,12 +28,10 @@
         </div>
     </div>
 
-    <hr>
-    
+    <hr> 
 
-
-        <div class="row">
-            <div class="col-md-12 grid-margin stretch-card">
+        <div class="container">
+            <div class="row">
                 <div class="card">
                     <div class="card-body p-5">
         
@@ -48,126 +46,40 @@
                         </div>
                         @endif
         
-                        <form method="post" action="{{ route('ativo.veiculo.abastecimento.store') }}" enctype="multipart/form-data">
+                        <form method="post" action="{{ route('ativo.veiculo.abastecimento.store') }}" enctype="multipart/form-data">                          
+                            
                             @csrf
-                            <div class="jumbotron mb-4">
-                                <input type="hidden" name="tipo" value="{{$veiculo->tipo}}">
-                                <span class="font-weight-bold bg-success p-1 px-3 rounded text-white">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</span>
+                            <div class="form-group">
+                                <label for="quilometragem_inicial">Quilometragem Inicial</label>
+                                <input type="text" id="quilometragem_inicial" name="quilometragem_inicial" value="{{ $lastQuilometragem }}" class="form-control" readonly>
                             </div>
-        
-                            <div class="row my-4">
-                                <div class="col-md-2">
-                                    <label class="form-label" for="fornecedor_id">Data do abastecimento</label>
-                                    <input type="date" class="form-control" id="data_cadastro" name="data_cadastro">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" for="fornecedor_id">Local do abastecimento</label>
-                                    <input type="text" class="form-control" id="fornecedor" name="fornecedor">
-                                </div>
-        
-                               
-        
-                               {{--  @php
-                                $ultimoHorimetro = $veiculo->horimetro->last() ?? 0;
-                                @endphp --}}
-        
-                                @php
-                                $ultimaQuilometragem = $veiculo->quilometragem()->max('quilometragem_nova');
 
-                                
-                                @endphp
-        
-                                @if($veiculo->tipo =="maquinas")
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="horimetro_atual">hr Atual</label>
-                                    <input class="form-control" id="horimetro_atual" name="horimetro_atual" type="text" value="{{ $ultimoHorimetro->horimetro_atual ?? 0}}" step="any" readonly>
-                                </div>
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="horimetro_novo">hr do abastecimento</label>
-                                    <input class="form-control" id="horimetro_novo" name="horimetro_novo" type="number" step="any" min="{{$ultimoHorimetro->horimetro_novo ?? 0}}">
-                                </div>
-        
-                                @else
-        
-        
-                                <div class="col-md-1">
-                                    <label class="form-label" for="quilometragem_atual">km Atual</label>
-                                    <input class="form-control" id="quilometragem_atual" name="quilometragem_atual" type="text" value="{{ $ultimaQuilometragem ?? old('quilometragem_atual') }}" step="any" readonly>
-                                </div>
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="quilometragem_nova">km do abastecimento</label>
-                                    <input class="form-control" id="quilometragem_nova" name="quilometragem_nova" type="number" step="any" min="{{ $ultimaQuilometragem ?? 0 }}">
-                                </div>
-                                @endif
-        
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="combustivel">Tipo de Combustível</label>
-                                    <select class="form-select" id="combustivel" name="combustivel">
-                                        <option value="">Selecione</option>
-                                        <option value="etanol_alcool" {{ old('combustivel') == 'etanol_alcool' ? 'selected' : '' }}>Etanol/Alcool</option>
-                                        <option value="gasolina" {{ old('combustivel') == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
-                                        <option value="diesel" {{ old('combustivel') == 'diesel' ? 'selected' : '' }}>Diesel</option>
-                                        <option value="gnv" {{ old('combustivel') == 'gnv' ? 'selected' : '' }}>GNV</option>
-                                    </select>
-                                </div>
-        
+                            <div class="form-group">
+                                <label for="quilometragem_final">Quilometragem Final</label>
+                                <input type="number" id="quilometragem_final" name="quilometragem_final" class="form-control" required>
                             </div>
-        
-                            <div class="row mt-3">
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="quantidade">Quantidade</label>
-                                    <input class="form-control" id="quantidade" name="quantidade" type="te" value="{{ old('quantidade') }}" step="any">
-                                </div>
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="valor_do_litro">Valor do litro</label>
-                                    <input class="form-control" id="valor_do_litro" name="valor_do_litro" type="text" value="{{ old('valor_do_litro') }}" step="any">
-                                </div>
-        
-                                <div class="col-md-2">
-                                    <label class="form-label" for="valor_total">Valor total</label>
-                                    <input class="form-control" id="valor_total" name="valor_total" type="text" value="{{ old('valor_total') }}" step="any" readonly>
-                                </div>
-        
-                                <div class="col-md-5">
-                                    <label class="form-label" for="valor_total">Motorista</label>
-                                    <select class="form-select select2" id="id_funcionario" name="id_funcionario">
-                                        <option value="">Selecione</option>
-                                        @foreach ($funcionarios as $funcionario)
-                                        <option value="{{ $funcionario->id }}" @php if(old('id_funcionario', @$store->id_funcionario) == $funcionario->id) echo "selected"; @endphp>
-                                            {{ $funcionario->matricula }} - {{ $funcionario->nome }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+
+                            <div class="form-group">
+                                <label for="quantidade_combustivel">Quantidade de Combustível</label>
+                                <input type="number" step="0.01" id="quantidade_combustivel" name="quantidade_combustivel" class="form-control" required>
                             </div>
-        
-                            <div class="row mt-3">
-                                <div class="col-md-4">
-                                    <label class="form-label" for="data_de_pagamento">Nome do arquivo</label>
-                                    <input class="form-control" id="nome_anexo" name="nome_anexo" type="text" value="{{ old('nome_anexo') }}">
-                                </div>
-        
-                                <div class="col-md-5">
-                                    <label class="form-label" for="data_de_pagamento">Inserir arquivo(s)</label>
-                                    <input class="form-control" id="arquivo" name="arquivo" type="file" value="{{ old('arquivo') }}">
-                                    <span>Extensões permitidas: 'png,' 'jpg', 'jpeg', 'gif', 'pdf', 'excel', 'arquivo compactado'.<span>
-                                </div>
+
+                            <div class="form-group">
+                                <label for="tipo_combustivel">Tipo de Combustível</label>
+                                <input type="text" id="tipo_combustivel" name="tipo_combustivel" class="form-control" required>
                             </div>
-        
-                            <div class="col-12 mt-5">
-                                <input name="veiculo_id" type="hidden" value="{{ $veiculo->id }}">
-                                <button class="btn btn-primary btn-md font-weight-medium" type="submit">Salvar</button>
-        
-                                <a href="{{ url('admin/ativo/veiculo') }}">
-                                    <button class="btn btn-warning btn-md font-weight-medium mx-4" type="button">Cancelar</button>
-                                </a>
+                            <div class="form-group">
+                                <label for="valor_total">Valor Total</label>
+                                <input type="number" step="0.01" id="valor_total" name="valor_total" class="form-control" required>
                             </div>
+
+                            <div class="form-group">
+                                <label for="data_abastecimento">Data do Abastecimento</label>
+                                <input type="date" id="data_abastecimento" name="data_abastecimento" class="form-control" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                           
                         </form>
                     </div>
                 </div>
