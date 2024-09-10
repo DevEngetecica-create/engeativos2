@@ -24,6 +24,9 @@
                     Abastecimento do veículo  <i class="mdi mdi-arrow-right-thin mdi-36px"></i>  <small class="font-weight-bold">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
                     
                 @endif
+
+
+                
             </h3>
         </div>
 
