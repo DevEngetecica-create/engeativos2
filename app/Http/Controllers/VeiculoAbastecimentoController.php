@@ -55,9 +55,9 @@ class VeiculoAbastecimentoController extends Controller
         $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
         $funcionarios = CadastroFuncionario::all();
 
-        $maiorQuilometragem = $veiculo->quilometragem()->max('quilometragem_nova');
+        $lastQuilometragem = $veiculo->quilometragem()->max('quilometragem_nova') ?? 0;
 
-        return view('pages.ativos.veiculos.abastecimento.create', compact('veiculo', 'fornecedores', 'funcionarios', 'maiorQuilometragem'));
+        return view('pages.ativos.veiculos.abastecimento.create', compact('veiculo', 'fornecedores', 'funcionarios', 'lastQuilometragem'));
     }
 
     public function store(Request $request)
