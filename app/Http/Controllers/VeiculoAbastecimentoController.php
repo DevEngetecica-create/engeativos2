@@ -64,13 +64,28 @@ class VeiculoAbastecimentoController extends Controller
     {
         try {
             $abastecimento = $this->repository->create($request->all());
-            Toastr::success('Abastecimento cadastrado com sucesso!');
+
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Abastecimento cadastrado com sucesso!",
+                'type' => 'success'
+            );
+
             Log::info('Abastecimento cadastrado', ['abastecimento' => $abastecimento]);
-            return redirect()->route('veiculo_abastecimentos.index');
+
+            return redirect()->route('veiculo.show', $request->veiculo_id."#abastecimentos")->with($notification);
+
         } catch (\Exception $e) {
-            Toastr::error('Erro ao cadastrar abastecimento.');
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao cadastrar abastecimento.",
+                'type' => 'warning'
+            );
+
             Log::error('Erro ao cadastrar abastecimento', ['error' => $e->getMessage()]);
-            return redirect()->back();
+
+            return redirect()->back()->with($notification);;
         }
     }
 
@@ -83,14 +98,30 @@ class VeiculoAbastecimentoController extends Controller
     public function update(Request $request, $id)
     {
         try {
+
             $abastecimento = $this->repository->update($id, $request->all());
-            Toastr::success('Abastecimento atualizado com sucesso!');
+
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Abastecimento cadastrado com sucesso!",
+                'type' => 'success'
+            );
+            
             Log::info('Abastecimento atualizado', ['abastecimento' => $abastecimento]);
-            return redirect()->route('veiculo_abastecimentos.index');
+            
+            return redirect()->route('veiculo.show', $request->veiculo_id."#abastecimentos")->with($notification);
+
         } catch (\Exception $e) {
-            Toastr::error('Erro ao atualizar abastecimento.');
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao atualizar abastecimento.",
+                'type' => 'warning'
+            );
+
             Log::error('Erro ao atualizar abastecimento', ['error' => $e->getMessage()]);
-            return redirect()->back();
+
+            return redirect()->back()->with($notification);;
         }
     }
 
@@ -126,9 +157,15 @@ class VeiculoAbastecimentoController extends Controller
             Log::info('Abastecimento deletado', ['id' => $id]);
             return redirect()->route('veiculo_abastecimentos.index');
         } catch (\Exception $e) {
-            Toastr::error('Erro ao deletar abastecimento.');
+
+            $notification = array(
+                'title' => "Atenção!!!",
+                'message' => "Erro ao deletar abastecimento.",
+                'type' => 'warning'
+            );
+
             Log::error('Erro ao deletar abastecimento', ['error' => $e->getMessage()]);
-            return redirect()->back();
+            return redirect()->back()->with($notification);
         }
     }
 }
