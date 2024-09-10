@@ -192,25 +192,37 @@ class VeiculoController extends Controller
             ->where('veiculo_id', $veiculo->id)
             ->get();
 
-        $media_quantidade = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
-            ->avg('quantidade');
-
-        $media_valor_do_litro = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
-            ->avg('valor_do_litro');
-
-        $media_valor_total = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
-            ->avg('valor_total');
-
-        $last = $veiculo->abastecimento()->where('veiculo_id', $veiculo->id)
-            ->orderByDesc('id')
-            ->first();
-
+            foreach ($abastecimentos as $abastecimento) {
+                // Calcular a quilometragem percorrida
+                $abastecimento->quilometragem_percorrida = $abastecimento->km_final - $abastecimento->km_inicial;
+        
+                // Calcular o consumo médio (km/l)
+                if ($abastecimento->quantidade > 0) {
+                    $abastecimento->consumo_medio = $abastecimento->quilometragem_percorrida / $abastecimento->quantidade;
+                } else {
+                    $abastecimento->consumo_medio = 0;
+                }
+        
+                // Calcular o custo por litro
+                if ($abastecimento->quantidade > 0) {
+                    $abastecimento->custo_por_litro = $abastecimento->valor_total / $abastecimento->quantidade;
+                } else {
+                    $abastecimento->custo_por_litro = 0;
+                }
+        
+                // Calcular o custo por quilômetro
+                if ($abastecimento->quilometragem_percorrida > 0) {
+                    $abastecimento->custo_por_km = $abastecimento->valor_total / $abastecimento->quilometragem_percorrida;
+                } else {
+                    $abastecimento->custo_por_km = 0;
+                }
+            }
            
 
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
 
-        return view('pages.ativos.veiculos.show', compact('veiculo', 'seguros', 'ipvas', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id',  'abastecimentos', 'last', 'fornecedores', 'media_quantidade', 'media_valor_do_litro', 'media_valor_total', 'funcionarios'));
+        return view('pages.ativos.veiculos.show', compact('veiculo', 'seguros', 'ipvas', 'manutencoes', 'preventiva', 'checkLists', 'docs_legais', 'docs_tecnicos', 'imagens', 'id',  'abastecimentos', 'fornecedores', 'funcionarios'));
     }
 
     public function delete($id)
