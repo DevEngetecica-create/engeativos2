@@ -24,12 +24,8 @@
                     Abastecimento do veículo  <i class="mdi mdi-arrow-right-thin mdi-36px"></i>  <small class="font-weight-bold">{{ $veiculo->marca }} | {{ $veiculo->modelo }} | {{ $veiculo->veiculo }}</small>
                     
                 @endif
-
-
-                
             </h3>
         </div>
-
     </div>
 
     <hr>
@@ -98,12 +94,12 @@
         
                                 <div class="col-md-1">
                                     <label class="form-label" for="quilometragem_atual">km Atual</label>
-                                    <input class="form-control" id="quilometragem_atual" name="quilometragem_atual" type="text" value="{{ $ultimaQuilometragem->quilometragem_nova ?? old('quilometragem_atual') }}" step="any" readonly>
+                                    <input class="form-control" id="quilometragem_atual" name="quilometragem_atual" type="text" value="{{ $ultimaQuilometragem ?? old('quilometragem_atual') }}" step="any" readonly>
                                 </div>
         
                                 <div class="col-md-2">
                                     <label class="form-label" for="quilometragem_nova">km do abastecimento</label>
-                                    <input class="form-control" id="quilometragem_nova" name="quilometragem_nova" type="number" step="any" min="{{ $ultimaQuilometragem->quilometragem_nova ?? 0 }}">
+                                    <input class="form-control" id="quilometragem_nova" name="quilometragem_nova" type="number" step="any" min="{{ $ultimaQuilometragem ?? 0 }}">
                                 </div>
                                 @endif
         

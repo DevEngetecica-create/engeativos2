@@ -511,7 +511,7 @@
                                                 @foreach ($abastecimentos->reverse() as $index => $abastecimento)
                 
                                                 <tr>                
-                                                    <td class="text-center"><span class="badge badge-dark">{{ $abastecimento->id }}</span></td> 
+                                                    <td class="text-center">{{ $abastecimento->id }}</td> 
                 
                                                     <!-- tipo do combustível -->                
                                                     <td class="text-center">{{ $abastecimento->combustivel }}</td>     

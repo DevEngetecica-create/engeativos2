@@ -188,7 +188,6 @@ class VeiculoController extends Controller
         $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
         $funcionarios = CadastroFuncionario::all();
 
-
         $abastecimentos = $veiculo->abastecimento()
             ->where('veiculo_id', $veiculo->id)
             ->get();

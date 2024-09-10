@@ -15,7 +15,8 @@ class VeiculoAbastecimento extends Model
     protected $fillable = [
         'veiculo_id',
         'id_funcionario',
-        'usuario',
+        'user_create',
+        'user_edit',
         'fornecedor',
         'combustivel',
         'quilometragem',
@@ -28,10 +29,7 @@ class VeiculoAbastecimento extends Model
         'arquivo',
     ]; 
 
-    public function veiculo()
-    {
-        return $this->belongsTo(Veiculo::class, 'veiculo_id'); 
-    }
+   
 
     public function funcionario()
     {
