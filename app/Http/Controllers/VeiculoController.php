@@ -20,6 +20,7 @@ use App\Models\VeiculoImagens;
 use App\Models\VeiculoSubCategoria;
 use App\Models\Veiculo;
 use App\Models\VeiculoQuilometragem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Toastr;
@@ -72,23 +73,23 @@ class VeiculoController extends Controller
     {
         //$search = $request->input('search');        
         //$listPage = $request->input('lista', 12); // Padrão para 10 itens por página se 'lista' não estiver definido
-    
+
         // Paginar os resultados com base no método paginate do repositório
         $veiculos = $this->veiculoRepository->getAll();
-    
+
         // Adiciona o termo de pesquisa às URLs de paginação
         //$veiculos->appends($request->except('page'));
-    
+
         // Contagem total de veículos
         $count_veiculos_list = Veiculo::whereNull('deleted_at')->count();
-    
+
         // Pegue o quilometragem do veículo com ID 51, caso seja necessário para a view
         $quilometragem = VeiculoQuilometragem::where('veiculo_id', 51)->first();
-    
+
         // Retorne a view com os dados
         return view('pages.ativos.veiculos.index', compact('veiculos', 'quilometragem', 'count_veiculos_list'));
     }
-    
+
 
     public function create()
     {
@@ -113,7 +114,6 @@ class VeiculoController extends Controller
 
             Log::info('Veículo criado: ', ['veiculo' => $veiculo]);
             return redirect()->route('veiculos.index')->with($notification);
-
         } catch (\Exception $e) {
 
             $notification = array(
@@ -136,11 +136,21 @@ class VeiculoController extends Controller
         $veiculo = $this->veiculoRepository->getById($id);
         $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
         $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);
-        $categorias =  $this->categorias->getAll();
+        $categorias =  $veiculo->categorias->get();
+        $subCategorias  =  $veiculo->subCategorias->get();
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
         $preventivas = $this->preventivaRepository->getAll();
 
-        return view('pages.ativos.veiculos.edit', compact('veiculo', 'manutencoes', 'docs_legais', 'imagens', 'id', 'categorias', 'preventivas', 'tipos_veiculos'));
+        // Definir a data e aplicar o fuso horário "America/Sao_Paulo"
+        $data = Carbon::now()->setTimezone('America/Sao_Paulo');
+
+        // Definir o locale para português
+        $data->locale('pt_BR');
+
+        // Formatar a data no estilo de exibição desejado
+        $dataFormatada = $data->translatedFormat('l, d \d\e F \d\e Y');  // Exemplo: "quarta-feira, 11 de setembro de 2024"
+
+        return view('pages.ativos.veiculos.edit', compact('veiculo', 'manutencoes', 'docs_legais', 'imagens', 'id', 'categorias', 'subCategorias', 'preventivas', 'tipos_veiculos', 'dataFormatada'));
     }
 
     public function update(Request $request, $id)
@@ -154,11 +164,10 @@ class VeiculoController extends Controller
                 'message' => "Registro atualizado",
                 'type' => 'success'
             );
-            
+
             Log::info('Veículo atualizado: ', ['veiculo' => $veiculo]);
 
-            return redirect()->route('veiculo.index')->with($notification);
-
+            return redirect()->route('veiculos.index')->with($notification);
         } catch (\Exception $e) {
 
             $notification = array(
@@ -175,14 +184,14 @@ class VeiculoController extends Controller
 
     public function show($id)
     {
-        $veiculo = $this->veiculoRepository->getById($id);        
+        $veiculo = $this->veiculoRepository->getById($id);
         $manutencoes = $veiculo->manutencoes()->orderBy('data_de_execucao', 'asc')->paginate(7);
-        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);        
+        $docs_legais = $veiculo->documentosLegais()->orderBy('id', 'desc')->paginate(7);
         $docs_tecnicos = $veiculo->documentosTecnicos()->orderBy('id', 'desc')->paginate(7);
         $abastecimentos = $veiculo->abastecimento()->orderBy('id', 'desc')->paginate(7);
         $seguros = $veiculo->seguros()->orderBy('id', 'desc')->paginate(7);
         $ipvas = $veiculo->ipvas()->orderBy('id', 'desc')->paginate(7);
-        $preventiva = $this->preventivaRepository->getById($veiculo->id_preventiva);        
+        $preventiva = $this->preventivaRepository->getById($veiculo->id_preventiva);
         $checkLists = $this->checkListRepository->getByIdVeiculo($veiculo->id);
 
         $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
@@ -190,34 +199,35 @@ class VeiculoController extends Controller
 
         $abastecimentos = $veiculo->abastecimento()
             ->where('veiculo_id', $veiculo->id)
+            ->orderBy('id', 'desc')
             ->get();
 
-            foreach ($abastecimentos as $abastecimento) {
-                // Calcular a quilometragem percorrida
-                $abastecimento->quilometragem_percorrida = $abastecimento->km_final - $abastecimento->km_inicial;
-        
-                // Calcular o consumo médio (km/l)
-                if ($abastecimento->quantidade > 0) {
-                    $abastecimento->consumo_medio = $abastecimento->quilometragem_percorrida / $abastecimento->quantidade;
-                } else {
-                    $abastecimento->consumo_medio = 0;
-                }
-        
-                // Calcular o custo por litro
-                if ($abastecimento->quantidade > 0) {
-                    $abastecimento->custo_por_litro = $abastecimento->valor_total / $abastecimento->quantidade;
-                } else {
-                    $abastecimento->custo_por_litro = 0;
-                }
-        
-                // Calcular o custo por quilômetro
-                if ($abastecimento->quilometragem_percorrida > 0) {
-                    $abastecimento->custo_por_km = $abastecimento->valor_total / $abastecimento->quilometragem_percorrida;
-                } else {
-                    $abastecimento->custo_por_km = 0;
-                }
+        foreach ($abastecimentos as $abastecimento) {
+            // Calcular a quilometragem percorrida
+            $abastecimento->quilometragem_percorrida = $abastecimento->km_final - $abastecimento->km_inicial;
+
+            // Calcular o consumo médio (km/l)
+            if ($abastecimento->quantidade > 0) {
+                $abastecimento->consumo_medio = $abastecimento->quilometragem_percorrida / $abastecimento->quantidade;
+            } else {
+                $abastecimento->consumo_medio = 0;
             }
-           
+
+            // Calcular o custo por litro
+            if ($abastecimento->quantidade > 0) {
+                $abastecimento->custo_por_litro = $abastecimento->valor_total / $abastecimento->quantidade;
+            } else {
+                $abastecimento->custo_por_litro = 0;
+            }
+
+            // Calcular o custo por quilômetro
+            if ($abastecimento->quilometragem_percorrida > 0) {
+                $abastecimento->custo_por_km = $abastecimento->valor_total / $abastecimento->quilometragem_percorrida;
+            } else {
+                $abastecimento->custo_por_km = 0;
+            }
+        }
+
 
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
@@ -236,11 +246,10 @@ class VeiculoController extends Controller
                 'message' => "Registro deletado.",
                 'type' => 'success'
             );
-            
+
             Log::info('Veículo deletado: ', ['id' => $id]);
 
             return redirect()->back()->with($notification);
-
         } catch (\Exception $e) {
 
             $notification = array(
@@ -251,7 +260,7 @@ class VeiculoController extends Controller
 
             Log::error('Erro ao deletar veículo: ', ['error' => $e->getMessage()]);
 
-             return redirect()->back()->with($notification);
+            return redirect()->back()->with($notification);
         }
     }
 
@@ -268,9 +277,8 @@ class VeiculoController extends Controller
             );
 
             return redirect()->route('veiculo.show', $request->veiculo_id)->with($notification);
-
         } catch (\Exception $e) {
-            
+
             $notification = array(
                 'title' => "Atenção!!!",
                 'message' => "Erro ao criar a imagem.",
@@ -285,7 +293,7 @@ class VeiculoController extends Controller
 
     public function updateImage(Request $request, $id)
     {
-        
+
         try {
 
             if ($request->file('imagem') or $request->descricao) {
@@ -301,8 +309,7 @@ class VeiculoController extends Controller
                 Log::info('Imagem atualizada: ', ['veiculo' => $veiculo]);
 
                 return redirect()->back()->with($notification);
-
-            }else{
+            } else {
 
                 $notification = array(
                     'title' => "Atenção!!!",
@@ -341,7 +348,6 @@ class VeiculoController extends Controller
             Log::info('Imagem do Veículo deletado: ', ['id' => $id]);
 
             return redirect()->back()->with($notification);
-
         } catch (\Exception $e) {
 
             $notification = array(
@@ -371,7 +377,6 @@ class VeiculoController extends Controller
             );
 
             return redirect()->back()->whit($notification);
-    
         }
 
         return response()->json($categoria);
