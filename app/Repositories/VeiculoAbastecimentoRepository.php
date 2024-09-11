@@ -6,6 +6,7 @@ use App\Interfaces\VeiculoAbastecimentoRepositoryInterface;
 use App\Models\VeiculoAbastecimento;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryInterface
 {
@@ -30,11 +31,8 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
         if ($arquivo) {
 
             if ($data['nome_anexo']) {
-
                 $nome_arquivo = $data['nome_anexo'];
-
             } else {
-
                 $nome_arquivo = $arquivo->getClientOriginalName();
             }
 
@@ -48,13 +46,13 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
         $abastecimento->veiculo_id = $data['veiculo_id'];
         $abastecimento->id_funcionario = $data['id_funcionario'];
         $abastecimento->user_create = Auth::user()->email;
-        $abastecimento->fornecedor = $data['fornecedor'];
+        $abastecimento->bandeira = $data['bandeira'];
         $abastecimento->combustivel = $data['combustivel'];
-        $abastecimento->quilometragem = $data['quilometragem_nova'];
-       // $abastecimento->horimetro = $data['horimetro'];
+        $abastecimento->km_inicial = $data['km_inicial'];
+        $abastecimento->km_final = $data['km_final'];
         $abastecimento->valor_do_litro = $valor_do_litro;
         $abastecimento->quantidade = $data['quantidade'];
-        $abastecimento->data_cadastro = $data['data_cadastro'];
+        $abastecimento->data_abastecimento = $data['data_abastecimento'];
         $abastecimento->valor_total = $valor_total;
         $abastecimento->arquivo = $nome_arquivo ?? "";
 
@@ -67,9 +65,46 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
 
     public function update($id, array $data)
     {
+        $valor_do_litro = $this->formatCurrency($data['valor_do_litro']);
+        $valor_total = $this->formatCurrency($data['valor_total']);
+
+        //dd($data['arquivo']);
+
+        $arquivos = $data['arquivo'];
+
         $abastecimento = VeiculoAbastecimento::findOrFail($id);
-        $abastecimento->update($data);
+
+        if ($arquivos) {
+
+            $nome_arquivo = $arquivos->getClientOriginalName() ?? $data['nome_anexo'];
+            $caminho_arquivo = 'uploads/manutencao/' . $data['veiculo_id'];
+
+            // Verifica se o arquivo já existe e o exclui antes de salvar o novo
+            if (Storage::disk('public')->exists($caminho_arquivo)) {
+                Storage::disk('public')->delete($caminho_arquivo);
+            }
+
+            // Armazena o novo arquivo
+            $arquivos->storeAs($caminho_arquivo, $nome_arquivo, 'public');
+        }
+
+        $abastecimento->veiculo_id = $data['veiculo_id'];
+        $abastecimento->id_funcionario = $data['id_funcionario'];
+        $abastecimento->user_edit = Auth::user()->email;        
+        $abastecimento->bandeira = $data['bandeira'];
+        $abastecimento->combustivel = $data['combustivel'];
+        $abastecimento->km_inicial = $data['km_inicial'];
+        $abastecimento->km_final = $data['km_final'];
+        $abastecimento->valor_do_litro = $valor_do_litro;
+        $abastecimento->quantidade = $data['quantidade'];
+        $abastecimento->data_abastecimento = $data['data_abastecimento'];
+        $abastecimento->valor_total = $valor_total;
+        $abastecimento->arquivo = $nome_arquivo;
+
+        $abastecimento->save();
+
         Log::info('Abastecimento atualizado', ['abastecimento' => $abastecimento]);
+
         return $abastecimento;
     }
 
