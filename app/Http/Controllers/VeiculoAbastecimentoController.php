@@ -55,7 +55,7 @@ class VeiculoAbastecimentoController extends Controller
         $fornecedores = CadastroFornecedor::select('id', 'razao_social')->get();
         $funcionarios = CadastroFuncionario::all();
 
-        $lastQuilometragem = $veiculo->quilometragem()->max('quilometragem_nova') ?? 0;
+        $lastQuilometragem = $veiculo->km_abastecimento()->max('km_final') ?? 0;
 
         return view('pages.ativos.veiculos.abastecimento.create', compact('veiculo', 'fornecedores', 'funcionarios', 'lastQuilometragem'));
     }
@@ -89,14 +89,20 @@ class VeiculoAbastecimentoController extends Controller
         }
     }
 
-    public function edit($id)
+    public function edit(Veiculo $veiculo, $id)
     {
+
+       
         $abastecimento = $this->repository->getById($id);
-        return view('veiculo_abastecimentos.edit', compact('abastecimento'));
+        $lastQuilometragem = $veiculo->km_abastecimento()->max('km_final') ?? 0;
+        $funcionarios = CadastroFuncionario::all();
+
+        return view('pages.ativos.veiculos.abastecimento.edit', compact('abastecimento', 'veiculo', 'lastQuilometragem', 'funcionarios'));
     }
 
     public function update(Request $request, $id)
     {
+
         try {
 
             $abastecimento = $this->repository->update($id, $request->all());
@@ -109,7 +115,7 @@ class VeiculoAbastecimentoController extends Controller
             
             Log::info('Abastecimento atualizado', ['abastecimento' => $abastecimento]);
             
-            return redirect()->route('veiculo.show', $request->veiculo_id."#abastecimentos")->with($notification);
+            return redirect()->route('veiculo.show', $request->veiculo_id)->with($notification);
 
         } catch (\Exception $e) {
 
@@ -121,7 +127,7 @@ class VeiculoAbastecimentoController extends Controller
 
             Log::error('Erro ao atualizar abastecimento', ['error' => $e->getMessage()]);
 
-            return redirect()->back()->with($notification);;
+            return redirect()->back()->with($notification);
         }
     }
 
