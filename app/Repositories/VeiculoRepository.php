@@ -12,6 +12,7 @@ use App\Model\Log;
 use App\Models\VeiculoSubCategoria;
 use Flasher\Laravel\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class VeiculoRepository implements VeiculoRepositoryInterface
 {
@@ -92,13 +93,55 @@ class VeiculoRepository implements VeiculoRepositoryInterface
 
     public function update($id, array $data)
     {
-        $veiculo = Veiculo::finOrFail($id);
+        $veiculo = Veiculo::findOrFail($id);
 
-        $veiculo->user_create = Auth::user()->email;
+        $imagem = $data['imagem'];
 
-        $veiculo->update($data);
+        if ($imagem != "") {
 
-        return $veiculo;
+            $image_name = $imagem->getClientOriginalName();
+
+            $nome_arquivo = $imagem->getClientOriginalName() ?? $veiculo->imagem;
+            $imagePath = 'uploads/veiculos/' . $id .'/'.$veiculo->imagem;
+
+            // Verifique se o arquivo existe e, se sim, exclua-o
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+
+            // Armazena o novo arquivo
+            $imagem->move(public_path("imagens/veiculos/" . $id), $nome_arquivo);
+
+        }
+
+        // Converte '126.173,00' para '126173.00'
+        $data['valor_fipe'] = str_replace(['.', ','], ['', '.'], $data['valor_fipe']);
+        $data['valor_aquisicao'] = str_replace(['.', ','], ['', '.'], $data['valor_aquisicao']);
+
+        $veiculo->obra_id = $data['obra_id'];
+        $veiculo->idCategoria = $data['idCategoria'];
+        $veiculo->idSubCategoria = $data['idSubCategoria'];
+        $veiculo->id_preventiva = $data['id_preventiva'];
+        $veiculo->user_edit = Auth::user()->email;
+        $veiculo->tipo = $data['tipo'];
+        $veiculo->marca = $data['marca_nome'];
+        $veiculo->modelo = $data['modelo_nome'];
+        $veiculo->ano = $data['ano'];
+        $veiculo->veiculo = $data['veiculo'];
+        $veiculo->valor_fipe = $data['valor_fipe'];
+        $veiculo->valor_aquisicao = $data['valor_aquisicao'];
+        $veiculo->codigo_fipe = $data['codigo_fipe'];
+        $veiculo->fipe_mes_referencia = $data['fipe_mes_referencia'];
+        $veiculo->mes_aquisicao = $data['mes_aquisicao'];
+        $veiculo->placa = $data['placa'];
+        $veiculo->quilometragem_inicial = $data['quilometragem_inicial'];
+        $veiculo->observacao = $data['observacao'];
+        $veiculo->situacao = $data['situacao'];
+        $veiculo->imagem = $image_name;
+
+        $veiculo->save();
+
+        return true;
     }
 
     public function delete($id)
