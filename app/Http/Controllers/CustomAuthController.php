@@ -23,7 +23,6 @@ use App\Models\{
     Charts,
 
     Veiculo
-
 };
 
 
@@ -79,6 +78,7 @@ class CustomAuthController extends Controller
             /** Verificação de Vínculo de Usuário */
             $usuario_vinculo = CadastroUsuariosVinculo::find(Auth::user()->id);
             $request->session()->put("usuario_vinculo", $usuario_vinculo);
+
             if (!$usuario_vinculo) {
                 return redirect()->route('login')->with('error', 'Usuário não possui vínculo com Obra');
             }
@@ -93,9 +93,19 @@ class CustomAuthController extends Controller
                     'codigo_obra' => 'SGAE-OBRA-ADM'
                 ];
             } else {
-                $obra_detalhes = CadastroObra::find($id_obra);            }
+                $obra_detalhes = CadastroObra::find($id_obra);
+            }
 
+            // Definir a data e aplicar o fuso horário "America/Sao_Paulo"
+            $data = Carbon::now()->setTimezone('America/Sao_Paulo');
 
+            // Definir o locale para português
+            $data->locale('pt_BR');
+
+            // Formatar a data no estilo de exibição desejado
+            $dataFormatada = $data->translatedFormat('l, d \d\e F \d\e Y');  // Exemplo: "quarta-feira, 11 de setembro de 2024"
+
+            session(['data_local' => $dataFormatada]);
 
             $request->session()->put("obra", $obra_detalhes);
 
@@ -108,13 +118,11 @@ class CustomAuthController extends Controller
 
 
             return redirect()->intended('admin/dashboard');
-
         }
 
 
 
         return redirect()->route('login')->with('error', 'Email ou senha inválidos');
-
     }
 
 
@@ -139,7 +147,7 @@ class CustomAuthController extends Controller
 
 
 
-          $valoresGraficosVeiculos = Charts::valoresGraficosVeiculos();
+            $valoresGraficosVeiculos = Charts::valoresGraficosVeiculos();
 
             $contaModelo = Charts::contaModelos();
 
@@ -159,14 +167,13 @@ class CustomAuthController extends Controller
 
             $qtdeAtivosObra = Charts::qtdeAtivosObras();
 
-          
 
-           //dd($valoresGraficosVeiculos);
 
-           
+            //dd($valoresGraficosVeiculos);
 
-            return view('pages.dashboard.index', compact('dataAtual', 'valoresGraficosVeiculos','QtdeTotalVeiculos',  'contaModelo', 'valorTotalVeiculo', 'valorTotalMaquina', 'totalModelos', 'ativosExterno', 'vencimentoIPVAs', 'vencimentoSeguros', 'calibracaoAtivosExternos', 'qtdeAtivosObra'));
 
+
+            return view('pages.dashboard.index', compact('dataAtual', 'valoresGraficosVeiculos', 'QtdeTotalVeiculos',  'contaModelo', 'valorTotalVeiculo', 'valorTotalMaquina', 'totalModelos', 'ativosExterno', 'vencimentoIPVAs', 'vencimentoSeguros', 'calibracaoAtivosExternos', 'qtdeAtivosObra'));
         }
 
         Auth::logout();
@@ -199,7 +206,6 @@ class CustomAuthController extends Controller
             $obra['id'] = $id_obra;
             $obra['razao_social'] = $obra->razao_social;
             $obra['codigo_obra'] = $obra->codigo_obra;
-
         } else {
 
             $obra['id'] = null;
@@ -209,8 +215,7 @@ class CustomAuthController extends Controller
 
         session(['obra' => $obra]);
 
-       return response()->json($obra); 
-
+        return response()->json($obra);
     }
 
 
@@ -225,7 +230,6 @@ class CustomAuthController extends Controller
             Session::put('lang', $locale);
             Session::save();
             return redirect()->back()->with('locale', $locale);
-
         } else {
 
             return redirect()->back();
@@ -253,7 +257,6 @@ class CustomAuthController extends Controller
             $avatarPath = public_path('/images/');
             $avatar->move($avatarPath, $avatarName);
             $user->avatar =  $avatarName;
-
         }
 
         $user->update();
@@ -270,7 +273,6 @@ class CustomAuthController extends Controller
             // ], 200); // Status code here
 
             return redirect()->back();
-
         } else {
 
             Session::flash('message', 'Something went wrong!');
@@ -335,10 +337,6 @@ class CustomAuthController extends Controller
                 ], 200); // Status code here
 
             }
-
         }
-
     }
-
 }
-
