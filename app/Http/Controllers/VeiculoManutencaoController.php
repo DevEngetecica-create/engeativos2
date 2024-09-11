@@ -195,9 +195,6 @@ class VeiculoManutencaoController extends Controller
 
         try {
 
-
-            dd($request->all());
-
             if ($request->file('imagem') or $request->descricao) {
 
                 $veiculo = $this->repository->updateImage($id, $request->file('imagem'), $request->all());
