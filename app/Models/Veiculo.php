@@ -52,11 +52,20 @@ class Veiculo extends Model
     {
         return $this->hasMany(VeiculoQuilometragem::class, 'veiculo_id');
     }
+
+    public function km_abastecimento()
+    {
+        return $this->hasMany(VeiculoAbastecimento::class, 'veiculo_id');
+    }
     
     
     public function categorias()
     {
         return $this->belongsTo(VeiculoCategoria::class, 'idCategoria');
+    }
+    public function subCategorias ()
+    {
+        return $this->belongsTo(VeiculoSubCategoria::class, 'idSubCategoria');
     }
    
     public function checkli_preventiva()
