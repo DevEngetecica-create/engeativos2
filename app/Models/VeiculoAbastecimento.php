@@ -17,13 +17,13 @@ class VeiculoAbastecimento extends Model
         'id_funcionario',
         'user_create',
         'user_edit',
-        'fornecedor',
+        'data_abastecimento',
+        'bandiera',
         'combustivel',
-        'quilometragem',
-        'horimetro',
-        'valor_do_litro',
-        'quantidade',
-        'data_cadastro',
+        'km_inicial',
+        'km_final',
+        'quantidade',  
+        'valor_do_litro',              
         'valor_total',
         'nome_anexo',
         'arquivo',
@@ -39,6 +39,11 @@ class VeiculoAbastecimento extends Model
     public function fornecedor()
     {
         return $this->belongsTo(CadastroFuncionario::class, 'fornecedor'); 
+    }
+
+    public function veiculo()
+    {
+        return $this->belongsTo(Veiculo::class, 'veiculo_id'); 
     }
 
     /* public function quilometragem()
