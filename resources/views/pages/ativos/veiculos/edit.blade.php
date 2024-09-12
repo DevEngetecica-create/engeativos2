@@ -113,7 +113,7 @@
 
                                     </select>
 
-                                    <input id="marcas_nome" name="marca_nome" value="{{($veiculo->marca_nome ? $veiculo->marca_nome : '')}}" type="hidden">
+                                    <input id="marcas_nome" name="marca_nome" value="{{($veiculo->marca ? $veiculo->marca : '')}}" type="hidden">
 
                                 </div>
 
@@ -134,7 +134,7 @@
 
                                     </select>
 
-                                    <input id="modelos_nome" name="modelo_nome" value="{{($veiculo->modelo_nome ? $veiculo->modelo_nome : '')}}" type="hidden">
+                                    <input id="modelos_nome" name="modelo_nome" value="{{($veiculo->modelo ? $veiculo->modelo : '')}}" type="hidden">
                                 </div>
                             </div>
 
