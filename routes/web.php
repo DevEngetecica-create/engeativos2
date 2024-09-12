@@ -597,7 +597,7 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/veiculo/create',                                        [VeiculoController::class, 'create'])->name('veiculo.create');
     Route::get('admin/ativo/veiculo/edit/{id}',                                     [VeiculoController::class, 'edit'])->name('veiculo.edit');
     Route::post('admin/ativo/veiculo/store',                                        [VeiculoController::class, 'store'])->name('veiculo.store');
-    Route::put('admin/ativo/veiculo/update',                                        [VeiculoController::class, 'update'])->name('veiculo.update');
+    Route::put('admin/ativo/veiculo/update/{id}',                                   [VeiculoController::class, 'update'])->name('veiculo.update');
     Route::delete('admin/ativo/veiculo/delete/{id}',                                [VeiculoController::class, 'delete'])->name('veiculo.delete');
 
     Route::post('admin/ativo/veiculos/storeImage/{id}',                             [VeiculoController::class, 'storeImage'])->name('veiculos.storeImage');
