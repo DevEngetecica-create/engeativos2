@@ -126,9 +126,9 @@
 
                                         <option value="">Selecione os campos anteriores</option>
 
-                                        @if($veiculo->modelos)
+                                        @if($veiculo->modelo)
                                             
-                                                <option value="{{ $veiculo->modelos }}" selected> {{ $veiculo->modelos }}</option>
+                                                <option value="{{ $veiculo->modelo }}" selected> {{ $veiculo->modelo }}</option>
                                            
                                         @endif
 
