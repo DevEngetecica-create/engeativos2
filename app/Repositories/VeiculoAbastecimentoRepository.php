@@ -67,9 +67,7 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
     {
         $valor_do_litro = $this->formatCurrency($data['valor_do_litro']);
         $valor_total = $this->formatCurrency($data['valor_total']);
-
-        //dd($data['arquivo']);
-
+        
         $arquivos = $data['arquivo'];
 
         $abastecimento = VeiculoAbastecimento::findOrFail($id);
