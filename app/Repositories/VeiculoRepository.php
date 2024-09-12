@@ -105,7 +105,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
             $image_name = $imagem->getClientOriginalName(); // Obtém o nome da nova imagem
 
             // Define o caminho completo da imagem antiga
-            $imagePath = 'uploads/veiculos/' . $id . '/' . $veiculo->imagem;
+            $imagePath = 'imagens/veiculos/' . $id . '/' . $veiculo->imagem;
 
             // Verifica se o arquivo existe e, se sim, exclui-o
             if (file_exists($imagePath)) {
