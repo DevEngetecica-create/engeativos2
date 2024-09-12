@@ -36,10 +36,10 @@ class VeiculoAbastecimento extends Model
         return $this->belongsTo(CadastroFuncionario::class, 'id_funcionario'); 
     }
 
-    public function fornecedor()
+   /*  public function fornecedor()
     {
         return $this->belongsTo(CadastroFuncionario::class, 'fornecedor'); 
-    }
+    } */
 
     public function veiculo()
     {
