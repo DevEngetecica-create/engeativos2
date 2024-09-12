@@ -26,11 +26,11 @@
                     </div>
                 @endif
 
-                <form method="post" action="{{ route('veiculo.store') }}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('veiculo.update', 70) }}" enctype="multipart/form-data">
+                    @csrf
+                    @method("PUT")
                     <div class="row">
-                        <div class="col-8">
-                            @csrf
-
+                        <div class="col-8">                          
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label class="form-label" for="obra">Obra</label>
@@ -250,17 +250,12 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label" for="placa">Imagem Principal</label>
-                                        <input class="form-control form-control-sm" id="imagem" name="imagem"
-                                            onChange="carregarImg()" type="file">
+                                        <input class="form-control form-control-sm" id="imagem" name="imagem" onChange="carregarImg()" type="file">
                                     </div>
                                     <div class="col-md-12">
-
-                                        <button class="btn btn-primary btn-md font-weight-medium"
-                                            type="submit">Salvar</button>
-
+                                        <button class="btn btn-primary btn-md font-weight-medium" type="submit">Salvar</button>
                                         <a href="{{ url('admin/ativo/veiculo') }}">
-                                            <button class="btn btn-warning btn-md font-weight-medium"
-                                                type="button">Cancelar</button>
+                                            <span class="btn btn-warning btn-md font-weight-medium" type="button">Cancelar</span>
                                         </a>
                                     </div>
                                 </div>
