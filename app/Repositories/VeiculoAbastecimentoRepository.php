@@ -65,14 +65,16 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
 
     public function update($id, array $data)
     {
-        $valor_do_litro = $this->formatCurrency($data['valor_do_litro']);
-        $valor_total = $this->formatCurrency($data['valor_total']);
-        
-        $arquivos = $data['arquivo'];
-
         $abastecimento = VeiculoAbastecimento::findOrFail($id);
 
-        if ($arquivos) {
+        $valor_do_litro = $this->formatCurrency($data['valor_do_litro']);
+        $valor_total = $this->formatCurrency($data['valor_total']); 
+        $arquivos = $data['arquivo'] ?? null; // Verifica se o campo 'arquivo' está presente
+
+        // Define $image_name como a imagem existente por padrão
+        $nome_arquivo = $abastecimento->arquivo;
+
+        if ($arquivos) { // Verifica se o arquivo foi enviado
 
             $nome_arquivo = $arquivos->getClientOriginalName() ?? $data['nome_anexo'];
             $caminho_arquivo = 'uploads/manutencao/' . $data['veiculo_id'];
@@ -81,12 +83,12 @@ class VeiculoAbastecimentoRepository implements VeiculoAbastecimentoRepositoryIn
             if (Storage::disk('public')->exists($caminho_arquivo)) {
                 Storage::disk('public')->delete($caminho_arquivo);
             }
-
             // Armazena o novo arquivo
             $arquivos->storeAs($caminho_arquivo, $nome_arquivo, 'public');
         }
 
         $abastecimento->veiculo_id = $data['veiculo_id'];
+        $abastecimento->id_obra = $data['id_obra'];
         $abastecimento->id_funcionario = $data['id_funcionario'];
         $abastecimento->user_edit = Auth::user()->email;        
         $abastecimento->bandeira = $data['bandeira'];
