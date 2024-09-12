@@ -14,6 +14,7 @@ class VeiculoAbastecimento extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'veiculo_id',
+        'id_obra',
         'id_funcionario',
         'user_create',
         'user_edit',
