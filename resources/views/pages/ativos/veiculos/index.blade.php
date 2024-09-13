@@ -124,29 +124,26 @@
                             <tbody>
                                 @foreach ($veiculos as $veiculo)
                                     <tr>
-                                        <td class="text-center">{{ $veiculo->id }}</td>
-                                        <td>{{ $veiculo->tipos->nome_tipo_veiculo ?? 'Não cadastrado' }}</td>
-                                        <td>{{ $veiculo->marca }}</td>
-                                        <td>{{ $veiculo->modelo }}</td>
-                                        <td class="text-center">{{ $veiculo->ano }}</td>
-                                        <td>{{ $veiculo->placa }}</td>
-                                        <td>R$ {{ number_format($veiculo->valor_fipe, 2, ',', '.') }}</td>
-
+                                            <td class="text-center"><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->id }}</a></td>                                             
+                                            <td><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->tipos->nome_tipo_veiculo ?? 'Não cadastrado' }} </a></td>
+                                            <td><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->marca }}</a></td>
+                                            <td><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->modelo }}</a></td>
+                                            <td class="text-center"><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->ano }}</a></td>
+                                            <td><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">{{ $veiculo->placa }}</a></td>
+                                            <td><a href="{{ route('veiculo.show', $veiculo->id) }}" title="Detalhes">R$ {{ number_format($veiculo->valor_fipe, 2, ',', '.') }}</a></td>
+                                       
                                         <td class="d-flex justify-content-center">
 
-                                            <a href="/admin/ativo/veiculo/show/{{ $veiculo->id }}"
-                                                class="btn btn-outline-primary btn-sm" title="Detalhes"><i
-                                                    class="mdi mdi-eye"></i></a>
+                                            <a href="{{ route('veiculo.show', $veiculo->id) }}" class="btn btn-outline-primary btn-sm" title="Detalhes">Ver</a>
 
                                             <a href="{{ route('veiculo.edit', $veiculo->id) }}"class="btn btn-outline-secondary btn-sm mx-2"
-                                                title="Editar"><i class="mdi mdi-pencil"></i></a>
+                                                title="Editar">Editar</i></a>
 
                                             <form action="{{ route('veiculo.delete', $veiculo->id) }}" method="POST"
                                                 onsubmit="return confirm('Tem certeza que deseja excluir este registro?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm"><i
-                                                        class="mdi mdi-trash-can"></i></button>
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Excluir</button>
                                             </form>
                                         </td>
                                     </tr>

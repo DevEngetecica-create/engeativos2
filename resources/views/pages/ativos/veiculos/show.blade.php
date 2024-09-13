@@ -123,13 +123,7 @@
                                 <i class="far fa-envelope"></i>
                                 Quilometragem
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
-                                <i class="far fa-envelope"></i>
-                                Abastecimentos
-                            </a>
-                        </li>
+                        </li>                     
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
                                 <i class="far fa-envelope"></i>
@@ -233,8 +227,8 @@
                                                     <td>{{ $manutencao->id }}</td>
                                                     <td>{{ $manutencao->tipo }}</td>
                                                     <td>{{ $manutencao->quilometragem_atual }}</td>
-                                                    <td>{{ $manutencao->data_de_execucao }}</td>
-                                                    <td>{{ $manutencao->data_de_vencimento }}</td>
+                                                    <td>{{ Tratamento::dateBr($manutencao->data_de_execucao) }}</td>
+                                                    <td>{{ Tratamento::dateBr($manutencao->data_de_vencimento) }}</td>
                                                     <td>{{ $manutencao->descricao }}</td>
                                                     <td>{{ $manutencao->valor_do_servico }}</td>
 
@@ -425,12 +419,9 @@
                                                     <th class="text-center">Nome Doc.</th>
                                                     <th class="text-center ">Ações</th>
                                                 </tr>
-                                            </thead>
-                        
-                                            <tbody>
-                        
-                                                @foreach ($ipvas as $ipva)
-                        
+                                            </thead>                        
+                                            <tbody>                        
+                                                @foreach ($ipvas as $ipva)                        
                                                 <tr>
                                                     <td class="text-center">{{ $ipva->id }}</td>
                                                     <td class="text-center">{{ $ipva->referencia_ano }}</td>
@@ -482,33 +473,35 @@
                                         <table class="table table-sm table-hover table-bordered align-middle">
 
                                             <thead>
-                                                <tr>
+                                                <tr class="bg-light text-muted text-center">
                                                     <th>ID</th>
-                                                    <th>Quilometragem Inicial</th>
-                                                    <th>Quilometragem Final</th>
-                                                    <th>Quilometragem Percorrida</th>
-                                                    <th>Quantidade de Combustível</th>
-                                                    <th>Consumo Médio (km/l)</th>
-                                                    <th>Custo por Litro</th>
-                                                    <th>Custo por Quilômetro</th>
+                                                    <th >km Inicial</th>
+                                                    <th>km Final</th>
+                                                    <th>km Percorrido</th>
+                                                    <th>Qtde.</th>
+                                                    <th>R$ Médio (km/l)</th>
+                                                    <th>R$/ litro</th>
+                                                    <th>R$/ km</th>
                                                     <th>Valor Total</th>
-                                                    <th>Data do Abastecimento</th>
+                                                    <th>Data do Abast.</th>
+                                                    <th>Qtde. de Carbono</th>
                                                     <th>Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach($abastecimentos as $abastecimento)
-                                                    <tr>
+                                                    <tr class="text-center">
                                                         <td>{{ $abastecimento->id }}</td>
-                                                        <td>{{ $abastecimento->quilometragem_inicial }}</td>
-                                                        <td>{{ $abastecimento->quilometragem_final }}</td>
+                                                        <td>{{ $abastecimento->km_inicial }}</td>
+                                                        <td>{{ $abastecimento->km_final }}</td>
                                                         <td>{{ $abastecimento->quilometragem_percorrida }}</td>
-                                                        <td>{{ $abastecimento->quantidade_combustivel }}</td>
+                                                        <td>{{ $abastecimento->quantidade }}</td>
                                                         <td>{{ number_format($abastecimento->consumo_medio, 2) }} km/l</td>
                                                         <td>R$ {{ number_format($abastecimento->custo_por_litro, 2) }}</td>
                                                         <td>R$ {{ number_format($abastecimento->custo_por_km, 2) }}</td>
                                                         <td>R$ {{ number_format($abastecimento->valor_total, 2) }}</td>
-                                                        <td>{{ $abastecimento->data_abastecimento }}</td>
+                                                        <td>{{ Tratamento::dateBr( $abastecimento->data_abastecimento) }}</td>
+                                                        <td>{{$abastecimento->emissao_carbono}} kg de CO₂</td>
                                                         <td class="d-flex justify-content-center">
                                                             <a href="{{ route('ativo.veiculo.abastecimento.edit', $abastecimento->id) }}" class="btn btn-warning btn-sm">Editar</a>
                                                             <form action="{{ route('ativo.veiculo.abastecimento.delete', $abastecimento->id) }}" method="POST" style="display:inline;">
