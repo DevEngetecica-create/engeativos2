@@ -664,6 +664,7 @@ Route::middleware(['auth',])->group(function () {
 
     Route::get('veiculo_preventivas_checklist/show/{id}',       [CheckListManutPreventivaController::class, 'show'])->name('veiculo_preventivas_checklist.show');
     Route::get('veiculo_preventivas_checklist/edit/{id}',       [CheckListManutPreventivaController::class, 'edit'])->name('veiculo_preventivas_checklist.edit');
+    Route::get('veiculo_preventivas_checklist/show/download/{id}/{fileIndex}',       [CheckListManutPreventivaController::class, 'edit'])->name('checklist.download');
 
     /* Veículos - Categorias */
 
