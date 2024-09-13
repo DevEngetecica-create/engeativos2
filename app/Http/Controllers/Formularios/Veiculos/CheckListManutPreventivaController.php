@@ -67,13 +67,12 @@ class CheckListManutPreventivaController extends Controller
             if ($request->file("file.$key")) {
                 $file = $request->file("file.$key");
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads/veiculos/preventivas/' . $data['id_manut_preventiva'], $fileName, 'public');
+                $filePath = $file->storeAs('uploads/veiculos/'  . $data['id_veiculo']. "/" . "preventivas/". $data['id_manut_preventiva'], $fileName, 'public');
                 $files[$key] = $filePath;
             }
         }
 
-        // Converter arrays para JSON
-       
+        // Converter arrays para JSON       
         $data['nome_servico'] = json_encode($data['nome_servicos']);
         $data['situacaoPreventiva'] = $request->situacaoPreventiva;
         $data['periodo'] = $request->periodo;
@@ -124,7 +123,7 @@ class CheckListManutPreventivaController extends Controller
                 // Armazenar o novo arquivo
                 $file = $request->file("file.$key");
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads/veiculos/preventivas/' . $data['id_manut_preventiva'], $fileName, 'public');
+                $filePath = $file->storeAs('uploads/veiculos/'  . $data['id_veiculo']. "/" . "preventivas/". $data['id_manut_preventiva'], $fileName, 'public');
                 $files[$key] = $filePath;
             } else {
                 // Manter o arquivo existente ou "null" se não houver arquivo
@@ -174,4 +173,32 @@ class CheckListManutPreventivaController extends Controller
         $checkLists = $this->checkListRepository->search($query);
         return view('veiculos.preventivas.checklist.index', compact('checkLists'));
     }
+
+    public function download($id, $fileIndex)
+{
+    // Obter o registro do banco de dados com base no ID
+    $arquivo = CheckListManutPreventiva::find($id);
+
+    if (!$arquivo) {
+        return redirect()->back()->with('error', 'Arquivo não encontrado.');
+    }
+
+    // Decodificar o array de arquivos do JSON armazenado no banco de dados
+    $arquivoArray = json_decode($arquivo->files, true) ?? [];
+
+    // Verificar se o índice fornecido é válido e se o arquivo existe
+    if (!isset($arquivoArray[$fileIndex]) || $arquivoArray[$fileIndex] === "null") {
+        return redirect()->back()->with('error', 'Arquivo não encontrado.');
+    }
+
+    // Verificar se o arquivo realmente existe no sistema de arquivos
+    $filePath = $arquivoArray[$fileIndex];
+    if (!Storage::disk('public')->exists($filePath)) {
+        return redirect()->back()->with('error', 'Arquivo não encontrado no servidor.');
+    }
+
+    // Retornar o arquivo para download
+    return Storage::disk('public')->download($filePath);
+}
+
 }
