@@ -87,8 +87,7 @@
                                         <option value="">Selecione</option>
 
                                         @foreach ($tipos_veiculos as $tipo_veiculo)
-                                            <option value="{{ $tipo_veiculo->id }}">{{ $tipo_veiculo->nome_tipo_veiculo }}
-                                            </option>
+                                            <option value="{{ $tipo_veiculo->id }}">{{ $tipo_veiculo->nome_tipo_veiculo }} </option>
                                         @endforeach
 
                                     </select>

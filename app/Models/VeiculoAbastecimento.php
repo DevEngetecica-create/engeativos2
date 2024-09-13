@@ -14,6 +14,7 @@ class VeiculoAbastecimento extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'veiculo_id',
+        'id_obra',
         'id_funcionario',
         'user_create',
         'user_edit',
@@ -36,10 +37,10 @@ class VeiculoAbastecimento extends Model
         return $this->belongsTo(CadastroFuncionario::class, 'id_funcionario'); 
     }
 
-    public function fornecedor()
+   /*  public function fornecedor()
     {
         return $this->belongsTo(CadastroFuncionario::class, 'fornecedor'); 
-    }
+    } */
 
     public function veiculo()
     {
