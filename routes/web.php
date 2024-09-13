@@ -55,7 +55,7 @@ use App\Http\Controllers\ApiController;
 
  */
 
-use App\Http\Controllers\Api\ApiRequisicao;
+
 use App\Http\Controllers\RelatorioAtivoInternoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\RelatorioFornecedorController;
@@ -927,14 +927,6 @@ Route::get('admin/ativo/veiculo/manutencao/servicos/{item}/delete', [VeiculoServ
 
     Route::get('admin/ferramental/requisicao/romaneio/{id}/obra/{obra}', [FerramentalRequisicaoController::class, 'romaneioObra'])->name('ferramental.requisicao.romaneio.obra');
     Route::get('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
-
-
-    /** Ferramental - Requisição API */
-
-    Route::get('admin/ferramental/requisicao/lista_ativo/{term?}', [ApiRequisicao::class, 'lista_ativo'])->name('ferramental.requisicao.lista_ativo');
-    Route::get('admin/ferramental/requisicao/ativo_externo_id/{id?}', [ApiRequisicao::class, 'ativo_externo_id'])->name('ferramental.requisicao.ativo_externo_id');
-
-    /* Manipulação de Anexos */
 
     Route::post('admin/anexo/upload', [AnexoController::class, 'upload'])->name('anexo.upload');
     Route::get('admin/anexo/excluir/{id?}/{modulo?}', [AnexoController::class, 'destroy'])->name('anexo.destroy');
