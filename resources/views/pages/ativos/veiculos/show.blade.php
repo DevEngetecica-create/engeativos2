@@ -213,9 +213,10 @@
 
                         <!--end tab-pane-->
                         <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
+                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                            <div class="card-body">
                             <div class="card">
-                                <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
-                                <div class="card-body">
+                               
                                     <table class="table table-grid">
                                         <thead>
                                             <tr>
