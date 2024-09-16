@@ -212,6 +212,42 @@
                         </div>
 
                         <!--end tab-pane-->
+                        <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
+                            <div class="card">
+                                <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                                <div class="card-body">
+                                    <table class="table table-grid">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome Documento</th>
+                                                <th>Arquivo</th>
+                                                <th>Data Documento</th>                                
+                                                <th>Validade</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($docs_tecnicos as $doc_tec)
+                                                <tr>
+                                                    <td>{{ $doc_tec->id }}</td>
+                                                    <td>{{ $doc_tec->tipo_doc_legal->nome_documento }}</td>
+                                                    <td>{{ $doc_tec->arquivo }}</td>
+                                                    <td>{{ $doc_tec->data_documento }}</td>
+                                                    <td>{{ $doc_tec->data_validade }}</td>
+                                                    <td>
+                                                        <a class="btn btn-warning" href="{{ route('veiculo_docs_tecnico.edit', $doc_tec->id) }}">Editar</a>
+                                                        <a class="btn btn-danger" href="{{ route('veiculo_docs_tecnico.delete', $doc_tec->id) }}">Excluir</a>
+                                                        <a class="btn btn-success" href="{{ route('veiculo_docs_tecnico.download', $doc_tec->id) }}">Download</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="tab-pane" id="manutencoes" role="tabpanel">
 
                             <div class="card shadow">
