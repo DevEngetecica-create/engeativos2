@@ -75,20 +75,58 @@
 
                         <div class="p-1">
                             <div class="card border" id="etiquetasIndividuais" style="max-width: 120mm; height:45mm">
+                                <div class="row no-gutters">                                    
+                                    <div class="col ">
+                                        <div class="card-body p-3">
+                                            <div class="col-3 m-3" id="qrcode_cracha"></div>
+                                            <img src="{{ URL::asset('build/images/usuarios/cracha_v00')}}" >
+                                            <strong>
+                                                <h3><span id="funcionario"></span></h3>
+                                            </strong>
+                                            <strong>
+                                                <h3>Função: <span id="funcao"></span></h3>
+                                            </strong>                                           
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="print_etiqueta">Imprimir</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+ <!-- Modal para exibir o cracha -->
+    <div id="modal_cracha" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true"style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabel">Crachá do Funcionário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body" id="cracha">
+
+                        <div class="p-1">
+                            <div class="card border" id="crachaIndividuais">
 
                                 <div class="row no-gutters">
                                     <div class="col-3 m-3" id="qrcode"></div>
                                     <div class="col ">
                                         <div class="card-body p-3">
                                             <strong>
-                                                <h3><span id="funcionario"></span></h3>
+                                                <h3><span id="nome_funcionario"></span></h3>
                                             </strong>
                                             <strong>
-                                                <h3>Função: <span id="funcao"></span></h3>
+                                                <h3>Função: <span id="cracha_funcao"></span></h3>
                                             </strong>
-                                            <strong>
-                                                <h4>www.engetecnica.com.br</h5>
-                                            </strong>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -99,7 +137,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="print_etiqueta">Imprimir</button>
+                    <button type="button" class="btn btn-primary" id="print_cracha">Imprimir</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
