@@ -50,11 +50,11 @@
                         <td class="d-flex text-center {{ session()->get('usuario_vinculo')->id_nivel <= 2 or session()->get('usuario_vinculo')->id_nivel == 14 ? 'd-block' : 'd-none' }}">
     
                             <a class="btn btn-warning  btn-sm mr-2" href="{{ route('cadastro.funcionario.editar', $v->id) }}" title="Editar">
-                                <i class="mdi mdi-pencil"></i>
+                                Editar
                             </a>
     
                             <a class="btn btn-info btn-sm mx-2" href="{{ route('cadastro.funcionario.show', $v->id) }}" title="Visualizar">
-                                <i class="mdi mdi-eye"></i>
+                                Ver
                             </a>
     
                             @if (session()->get('usuario_vinculo')->id_nivel == 1 
@@ -64,17 +64,14 @@
                                     @csrf
                                     @method('delete')
                                     <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
-                                        <i class="mdi mdi-delete"></i>
+                                        Ecluir
                                     </button>
                                 </form>
                             @endif
                             
                             <!-- Botão para gerar a etiqueta -->
-                            <a class="btn btn-success btn-sm mx-2" id="etiqueta_funcionario"
-                                data-id="{{ $v->id }}" data-bs-toggle="modal"
-                                data-bs-target="#modal_funcionario"
-                                href="{{ route('cadastro.funcionario.show', $v->id) }}" title="Imprimir etiqueta">
-                                <i class="mdi mdi-printer-settings"></i>
+                            <a class="btn btn-success btn-sm mx-2" id="etiqueta_funcionario" data-id="{{ $v->id }}" data-bs-toggle="modal" data-bs-target="#modal_funcionario"
+                                href="{{ route('cadastro.funcionario.show', $v->id) }}" title="Imprimir etiqueta"> Etiqueta
                             </a>
                         </td>
                     </tr>
