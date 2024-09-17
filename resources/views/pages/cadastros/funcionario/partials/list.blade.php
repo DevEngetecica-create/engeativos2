@@ -73,6 +73,11 @@
                             <a class="btn btn-success btn-sm mx-2" id="etiqueta_funcionario" data-id="{{ $v->id }}" data-bs-toggle="modal" data-bs-target="#modal_funcionario"
                                 href="{{ route('cadastro.funcionario.show', $v->id) }}" title="Imprimir etiqueta"> Etiqueta
                             </a>
+
+                            <!-- Botão para gerar o cracha -->
+                            <span class="btn btn-warning btn-sm" id="cracha_funcionario" data-id="{{ $v->id }}" data-bs-toggle="modal" data-bs-target="#modal_cracha"
+                                title="Gerar cracha"> Crachá
+                            </span>
                         </td>
                     </tr>
                     @endforeach
@@ -82,7 +87,6 @@
     </div>
     <div class="card-footer clearfix">
         <div class="d-flex justify-content-end col-sm-12 col-md-12 col-lg-12 ">
-
             <div class="paginacao mx-3">
                 {{$lista->onEachSide(2)->links()}}
             </div>          
