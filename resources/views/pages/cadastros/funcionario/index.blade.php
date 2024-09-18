@@ -141,7 +141,7 @@
             margin: auto;
             padding: 0;
             border: 1px solid #888;
-            width: 513px;
+            width: 535px;
             height: 51.5rem;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             -webkit-animation-name: animatetop;
@@ -202,14 +202,16 @@
             background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
             background-size: cover;
             background-position: center;
-            width: auto;
-            height: 51.6rem;
+            width: 640px;
+            height: 1006px;
             margin: 0px !important;
             padding: 0px !important;
             left: 39% !important;
             top: 3px !important;
-            margin-bottom: -1%;
-            padding-bottom: -1%;
+            margin-bottom: -10%;
+            padding-bottom: -10%;
+            object-fit: cover;
+            position: fixed;
         }
 
         #qrcode_cracha {
@@ -218,53 +220,53 @@
             width: 20%;
             height: 30px;
             padding: 0;
-            top: 63%;
-            left: 38%;
+            top: 64%;
+            left: 40%;
         }
 
         #qrcode_cracha img {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
         }
 
         #informacoes_cracha {
             position: fixed;
-            width: 50%;
-            left: 46%;
-            top: 62%;
+            width: auto;
+            left: 47%;
+            top: 65%;
             text-align: start;
             padding: 0px;
             font-family: "Barlow Condensed", sans-serif;
             font-weight: 800;
             font-style: normal;
-            font-size: 30px;
+            font-size: 100px;
         }
 
         #informacoes_cracha h3 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: normal;
             font-weight: 800;
-            font-size: 43px;
+            font-size: 51px;
             color: black
         }
 
         #informacoes_cracha h4 {
             font-family: "Barlow Condensed", sans-serif;
-            font-style: normal;
+            font-style: italic;
             /*  font-weight: 700; */
             font-size: 35px;
-            color: #ff5205
+            color: #ff5205;
+            text-transform: capitalize;
         }
 
         .image_usuario {
             position: fixed;
-            top: 23.5%;
-            left: 0%;
+            top: 20.5%;
+            left: 45.75%;
         }
 
         .image_usuario img {
-            width: 253px;
-            height: 324;
+            width: 25.5%;
         }
 
 
@@ -278,10 +280,11 @@
             background-color: #ff5205;
             padding: 20px;
             border-radius: 6px;
+        
         }
 
 
-        .modal-body {
+ /*       .modal-body {
             padding: 2px 16px;
         }
 
@@ -291,7 +294,7 @@
             color: white;
         }
 
-
+*/
         @media print {
          
             @page {
@@ -312,31 +315,33 @@
     <!-- The Modal -->
     <div id="modal_cracha" class="modal" style="z-index: 999999">
         <!-- Modal content -->
-        <div class="modal-content" style="width:540px">
+        <div class="modal-content" style="width:540px; padding:none !important">
             <div class="modal-header">
                 <span class="close">&times;</span>
                 <h2>Crachás</h2>
             </div>
             <div class="modal-body" style="width:545px">
                 <div class="p-0" id="crachaIndividuais">
-                    <div class="row" style="position: relative; text-align: center;">
-                        <div class="col image_usuario p-0 m-0">
+                        <div class="image_usuario p-0 m-0">
                             <img id="image_cracha" src="" alt="">
                         </div>
 
-                        <div class="col p-0 m-0 " id="qrcode_cracha"></div>
+                        <div class="p-0 m-0 " id="qrcode_cracha"></div>
 
-                        <div class="col p-0 m-0" id="informacoes_cracha">
+                        <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
-                            <h4><span id="cracha_funcao"></span></h4>
+                            <h4 class="text-capitalize"><span id="cracha_funcao"></span></h4>
                         </div>
-                    </div>
                 </div>
             </div>           
         </div>
         <div class="imprimir">
             <button type="button" class="btn btn-success" id="print_cracha">Imprimir</button>
         </div>
+        <div class="salvar">
+            <button type="button" class="btn btn-primary" id="save_cracha">Salvar</button>
+        </div>
+        
 
     </div>
 
@@ -490,6 +495,26 @@
                     });
                 });
             }
+
+            $('#save_cracha').on('click', function() { 
+                captureAndSaveCracha();
+            });
+
+            function captureAndSaveCracha() {
+                html2canvas(document.getElementById('crachaIndividuais'), {
+                    width: 640,    // Largura desejada
+                    height: 1006,  // Altura desejada
+                    scale: 1  // Mantém a proporção
+                }).then(function(canvas) {
+                    var image = canvas.toDataURL('image/png');
+                    var link = document.createElement('a');
+                    link.href = image;
+                    link.download = 'cracha.png';  // Nome do arquivo salvo
+                    link.click();  // Inicia o download
+                });
+            }
+
+
             // Encontre todos os botões "Detalhes"
             var detalhesButtonsCracha = document.querySelectorAll('#cracha_funcionario');
             // Adicione um evento de clique a cada botão "Detalhes"
