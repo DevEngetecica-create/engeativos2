@@ -75,7 +75,7 @@
                             </a>
 
                             <!-- Botão para gerar o cracha -->
-                            <span class="btn btn-warning btn-sm" id="cracha_funcionario" data-id="{{ $v->id }}" data-bs-toggle="modal" data-bs-target="#modal_cracha"
+                            <span class="btn btn-warning btn-sm" id="cracha_funcionario" data-id="{{ $v->id }}"  data-image="{{ $v->imagem_usuario }}" data-bs-toggle="modal" data-bs-target="#modal_cracha"
                                 title="Gerar cracha"> Crachá
                             </span>
                         </td>
