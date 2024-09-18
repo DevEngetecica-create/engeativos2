@@ -109,131 +109,42 @@
 
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Bold:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-        
-        /* The Modal (background) */
-        .modal {
-            display: none;
-            /* Hidden by default */
-            position: fixed;
-            /* Stay in place */
-            z-index: 1;
-            /* Sit on top */
-            padding-top: 20px;
-            /* Location of the box */
-            left: 0;
-            top: 0;
-            width: 100%;
-            /* Full width */
-            height: 1076px;
-            /* Full height */
-            overflow: auto;
-            /* Enable scroll if needed */
-            background-color: rgb(0, 0, 0);
-            /* Fallback color */
-            background-color: rgba(0, 0, 0, 0.4);
-            /* Black w/ opacity */
-        }
-
-        /* Modal Content */
-        .modal-content {
-            position: relative;
-            background-color: #fefefe;
-            margin: auto;
-            padding: 0;
-            border: 1px solid #888;
-            width: 535px;
-            height: 51.5rem;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-            -webkit-animation-name: animatetop;
-            -webkit-animation-duration: 0.4s;
-            animation-name: animatetop;
-            animation-duration: 0.4s
-        }
-
-        
-
-        /* Add Animation */
-        @-webkit-keyframes animatetop {
-            from {
-                top: -300px;
-                opacity: 0
-            }
-
-            to {
-                top: 0;
-                opacity: 1
-            }
-        }
-
-        @keyframes animatetop {
-            from {
-                top: -300px;
-                opacity: 0
-            }
-
-            to {
-                top: 0;
-                opacity: 1
-            }
-        }
-
-        /* The Close Button */
-        .close {
-            color: white;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .modal-header {
-            padding: 2px 16px;
-            background-color: #5cb85c;
-            color: white;
-        }
 
         #crachaIndividuais {
             background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
             background-size: cover;
             background-position: center;
-            width: 640px;
-            height: 1006px;
+            width: 733px !important;
+            height: 1006px !important;
             margin: 0px !important;
             padding: 0px !important;
-            left: 39% !important;
-            top: 3px !important;
-            margin-bottom: -10%;
-            padding-bottom: -10%;
+            left: 0% !important;
+            top: 0% !important;
             object-fit: cover;
-            position: fixed;
+            position: relative;
         }
 
         #qrcode_cracha {
-            position: fixed;
+            position: absolute;
             bottom: 8px;
             width: 20%;
             height: 30px;
             padding: 0;
-            top: 64%;
-            left: 40%;
+            top: 72%;
+            left: 10%;
         }
 
         #qrcode_cracha img {
+            position: absolute;
             width: 140px;
             height: 140px;
         }
 
         #informacoes_cracha {
-            position: fixed;
+            position: absolute;
             width: auto;
-            left: 47%;
-            top: 65%;
+            left: 35%;
+            top: 72%;
             text-align: start;
             padding: 0px;
             font-family: "Barlow Condensed", sans-serif;
@@ -253,20 +164,20 @@
         #informacoes_cracha h4 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            /*  font-weight: 700; */
-            font-size: 35px;
+            font-weight: 700;
+            font-size: 57px;
             color: #ff5205;
-            text-transform: capitalize;
+            text-transform: capitalize !important;
         }
 
         .image_usuario {
-            position: fixed;
-            top: 20.5%;
-            left: 45.75%;
+            position: absolute;
+            top: 22.8%;
+            left: 28.4%;
         }
 
         .image_usuario img {
-            width: 25.5%;
+            width:63.5%
         }
 
 
@@ -280,23 +191,23 @@
             background-color: #ff5205;
             padding: 20px;
             border-radius: 6px;
-        
+
         }
 
+        .save_cracha {
+            position: fixed;
+            display: inline;
+            top: 5%;
+            right: 5%;
+            z-index: 5;
+            background-color: #ff5205;
+            padding: 20px;
+            border-radius: 6px;
 
- /*       .modal-body {
-            padding: 2px 16px;
         }
 
-        .modal-footer {
-            padding: 2px 16px;
-            background-color: #5cb85c;
-            color: white;
-        }
-
-*/
         @media print {
-         
+
             @page {
                 /* Define o tamanho como A4 */
                 margin: 0px !important;
@@ -305,23 +216,24 @@
                 left: 0px !important;
                 width: 52mm;
                 height: 84mm;
-               
-            }            
+
+            }
 
         }
-
     </style>
 
     <!-- The Modal -->
-    <div id="modal_cracha" class="modal" style="z-index: 999999">
-        <!-- Modal content -->
-        <div class="modal-content" style="width:540px; padding:none !important">
-            <div class="modal-header">
-                <span class="close">&times;</span>
-                <h2>Crachás</h2>
-            </div>
-            <div class="modal-body" style="width:545px">
-                <div class="p-0" id="crachaIndividuais">
+
+    <div class="modal fade" id="modal_cracha" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Crachás</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-0" id="crachaIndividuais">
                         <div class="image_usuario p-0 m-0">
                             <img id="image_cracha" src="" alt="">
                         </div>
@@ -332,24 +244,26 @@
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
                             <h4 class="text-capitalize"><span id="cracha_funcao"></span></h4>
                         </div>
+                    </div>
                 </div>
-            </div>           
+                <div class="modal-footer">
+                    <div class="imprimir">
+                        <button type="button" class="btn btn-success" id="print_cracha">Imprimir</button>
+                    </div>
+                    <div class="salvar">
+                        <button type="button" class="btn btn-primary" id="save_cracha">Salvar</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="imprimir">
-            <button type="button" class="btn btn-success" id="print_cracha">Imprimir</button>
-        </div>
-        <div class="salvar">
-            <button type="button" class="btn btn-primary" id="save_cracha">Salvar</button>
-        </div>
-        
-
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/print-js@1.6.0/dist/print.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
     </script>
     <script></script>
     <script>
@@ -390,6 +304,8 @@
 
                 adicionarEventosEtiquetas();
                 adicionarEventosCrachas()
+
+                
             });
         }
 
@@ -496,21 +412,21 @@
                 });
             }
 
-            $('#save_cracha').on('click', function() { 
+            $('#save_cracha').on('click', function() {
                 captureAndSaveCracha();
             });
 
             function captureAndSaveCracha() {
                 html2canvas(document.getElementById('crachaIndividuais'), {
-                    width: 640,    // Largura desejada
-                    height: 1006,  // Altura desejada
-                    scale: 1  // Mantém a proporção
+                    width: 732, // Largura desejada
+                    height: 1006, // Altura desejada
+                    scale: 1 // Mantém a proporção
                 }).then(function(canvas) {
                     var image = canvas.toDataURL('image/png');
                     var link = document.createElement('a');
                     link.href = image;
-                    link.download = 'cracha.png';  // Nome do arquivo salvo
-                    link.click();  // Inicia o download
+                    link.download = 'cracha.png'; // Nome do arquivo salvo
+                    link.click(); // Inicia o download
                 });
             }
 
@@ -604,6 +520,8 @@
 
             return namePart;
         }
+
+        
     </script>
 
 @endsection
