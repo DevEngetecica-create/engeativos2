@@ -4,6 +4,7 @@
 @endsection
 @section('content')
 
+
 <style>
     @keyframes blink {
         0% { opacity: 1; }
@@ -82,13 +83,20 @@
         margin: 0 auto; /* Centraliza o container no desktop */
         padding: 0 15px; /* Adiciona um pouco de padding nas laterais */
     }
-    /* Alinhar os itens à esquerda */
+    /* Alinhar os itens a esquerda */
     .table th, .table td {
-        text-align: left; /* Alinha os itens à esquerda */
+        text-align: left; /* Alinha os itens a esquerda */
     }
 
-</style>
+    .blockquote.custom-blockquote h3, 
+    .blockquote.custom-blockquote h5 {
+    font-family: 'Georgia', serif; /*TROCAR FONTE */
+    }
 
+
+
+
+</style>
 <!-- Header -->
 <header></header>
 
@@ -111,9 +119,10 @@
     <div class="col-lg-12 text-center">
         <!-- Blockquote com nome e função -->
         <blockquote class="blockquote custom-blockquote blockquote-outline blockquote-primary rounded mb-4 material-shadow">
-            <p class="text-body mb-2"><strong>{{ $store->nome }}</strong></p>
-            <p class="text-body mb-2"><strong>{{ $store->funcao->funcao ?? 'Sem reg.' }}</strong></p>
+            <h3 class="text-body mb-2"><strong>{{ $store->nome }}</strong></h3>
+            <h5 class="text-body mb-2"><strong>{{ $store->funcao->funcao ?? 'Sem reg.' }}</strong></h5>
         </blockquote>
+        
 
         <!-- Box de informações original -->
         <div class="card">
