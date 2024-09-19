@@ -158,7 +158,8 @@
             font-style: normal;
             font-weight: 800;
             font-size: 51px;
-            color: black
+            color: black;
+            letter-spacing: -3px;
         }
 
         #informacoes_cracha h4 {
@@ -167,7 +168,6 @@
             font-weight: 700;
             font-size: 57px;
             color: #ff5205;
-            text-transform: capitalize !important;
         }
 
         .image_usuario {
@@ -242,7 +242,7 @@
 
                         <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
-                            <h4 class="text-capitalize"><span id="cracha_funcao"></span></h4>
+                            <h4><span id="cracha_funcao"></span></h4>
                         </div>
                     </div>
                 </div>
@@ -449,6 +449,7 @@
 
                     var funcao_funcionario_cracha = document.getElementById('cracha_funcao');
                     funcao_funcionario_cracha.textContent = funcao_cracha;
+                   
 
                 });
             });
