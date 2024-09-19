@@ -4748,3 +4748,6 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 =======
 [2024-09-19 13:56:57] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Guilherme Steilein  
 >>>>>>> imagens_funcionarios
+[2024-09-19 14:33:27] development.INFO: samuel.melo@engetecnica.com.br Error ao atualizar o funcionario| Bruno Mezzomo Rodrigues Klemz | Unable to write in the "/var/www/engeativos2/public/build/images/users/906" directory.  
+[2024-09-19 14:33:35] development.INFO: samuel.melo@engetecnica.com.br Error ao atualizar o funcionario| Bruno Mezzomo Rodrigues Klemz | Unable to write in the "/var/www/engeativos2/public/build/images/users/906" directory.  
+[2024-09-19 14:34:02] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Bruno Mezzomo Rodrigues Klemz  
