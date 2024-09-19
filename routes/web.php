@@ -55,7 +55,7 @@ use App\Http\Controllers\ApiController;
 
  */
 
-use App\Http\Controllers\Api\ApiRequisicao;
+
 use App\Http\Controllers\RelatorioAtivoInternoController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\RelatorioFornecedorController;
@@ -597,7 +597,7 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/veiculo/create',                                        [VeiculoController::class, 'create'])->name('veiculo.create');
     Route::get('admin/ativo/veiculo/edit/{id}',                                     [VeiculoController::class, 'edit'])->name('veiculo.edit');
     Route::post('admin/ativo/veiculo/store',                                        [VeiculoController::class, 'store'])->name('veiculo.store');
-    Route::put('admin/ativo/veiculo/update',                                        [VeiculoController::class, 'update'])->name('veiculo.update');
+    Route::put('admin/ativo/veiculo/update/{id}',                                   [VeiculoController::class, 'update'])->name('veiculo.update');
     Route::delete('admin/ativo/veiculo/delete/{id}',                                [VeiculoController::class, 'delete'])->name('veiculo.delete');
 
     Route::post('admin/ativo/veiculos/storeImage/{id}',                             [VeiculoController::class, 'storeImage'])->name('veiculos.storeImage');
@@ -664,6 +664,7 @@ Route::middleware(['auth',])->group(function () {
 
     Route::get('veiculo_preventivas_checklist/show/{id}',       [CheckListManutPreventivaController::class, 'show'])->name('veiculo_preventivas_checklist.show');
     Route::get('veiculo_preventivas_checklist/edit/{id}',       [CheckListManutPreventivaController::class, 'edit'])->name('veiculo_preventivas_checklist.edit');
+    Route::get('veiculo_preventivas_checklist/show/download/{id}/{fileIndex}',       [CheckListManutPreventivaController::class, 'edit'])->name('checklist.download');
 
     /* Veículos - Categorias */
 
@@ -926,14 +927,6 @@ Route::get('admin/ativo/veiculo/manutencao/servicos/{item}/delete', [VeiculoServ
 
     Route::get('admin/ferramental/requisicao/romaneio/{id}/obra/{obra}', [FerramentalRequisicaoController::class, 'romaneioObra'])->name('ferramental.requisicao.romaneio.obra');
     Route::get('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
-
-
-    /** Ferramental - Requisição API */
-
-    Route::get('admin/ferramental/requisicao/lista_ativo/{term?}', [ApiRequisicao::class, 'lista_ativo'])->name('ferramental.requisicao.lista_ativo');
-    Route::get('admin/ferramental/requisicao/ativo_externo_id/{id?}', [ApiRequisicao::class, 'ativo_externo_id'])->name('ferramental.requisicao.ativo_externo_id');
-
-    /* Manipulação de Anexos */
 
     Route::post('admin/anexo/upload', [AnexoController::class, 'upload'])->name('anexo.upload');
     Route::get('admin/anexo/excluir/{id?}/{modulo?}', [AnexoController::class, 'destroy'])->name('anexo.destroy');
