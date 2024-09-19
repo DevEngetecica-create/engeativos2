@@ -79,6 +79,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
 
         //Passar o array $veiculo com os dados salvos
         $this->docs_legais->store($veiculo->toArray());
+        $this->docs_tecnicos->store($veiculo->toArray());       
         $this->km->create($veiculo->toArray());
 
 
@@ -95,7 +96,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
     {
         $veiculo = Veiculo::findOrFail($id);
 
-        $imagem = $data['imagem'];
+        $imagem = $data['imagem'] ?? null;
 
         if ($imagem != "") {
 
@@ -140,6 +141,20 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         $veiculo->imagem = $image_name;
 
         $veiculo->save();
+
+        //Passar o array $veiculo com os dados salvos
+        $this->docs_legais->store($veiculo->toArray());
+
+        if($this->docs_tecnicos->pesquisa_veiculo($veiculo->id))
+        {
+            dd('exist');
+
+        }else {
+
+            $this->docs_tecnicos->store($veiculo->toArray());
+
+        }
+
 
         return true;
     }
