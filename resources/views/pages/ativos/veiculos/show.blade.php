@@ -89,6 +89,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
+                                <i class="fas fa-home"></i>
+                               Doc's Técnicos
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#manutencoes" role="tab">
                                 <i class="far fa-user"></i>
                                 Manutenções
