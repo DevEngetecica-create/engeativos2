@@ -157,7 +157,7 @@
             font-family: "Barlow Condensed", sans-serif;
             font-style: normal;
             font-weight: 800;
-            font-size: 51px;
+            font-size: 55px;
             color: black;
             letter-spacing: -3px;
         }
@@ -166,7 +166,7 @@
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
             font-weight: 700;
-            font-size: 57px;
+            font-size: 50px;
             color: #ff5205;
         }
 
