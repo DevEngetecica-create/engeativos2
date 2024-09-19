@@ -108,6 +108,11 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
     {
         return VeiculosDocsTecnicos::where('nome_documento', 'like', '%' . $query . '%')->get();
     }
+    
+    public function pesquisa_veiculo(string $query)
+    {
+        return VeiculosDocsTecnicos::where('id_veiculo', 'like', '%' . $query . '%') ->exists();
+    }
 
     public function paginate(int $perPage)
     {
