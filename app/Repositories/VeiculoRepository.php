@@ -9,6 +9,7 @@ use App\Interfaces\VeiculoQuilometragemRepositoryInterface;
 use App\Models\Veiculo;
 use App\Models\VeiculoImagens;
 use App\Model\Log;
+use App\Models\VeiculosDocsTecnicos;
 use App\Models\VeiculoSubCategoria;
 use Flasher\Laravel\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -79,7 +80,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
 
         //Passar o array $veiculo com os dados salvos
         $this->docs_legais->store($veiculo->toArray());
-        $this->docs_tecnicos->store($veiculo->toArray());       
+        $this->docs_tecnicos->store($veiculo->toArray());
         $this->km->create($veiculo->toArray());
 
 
@@ -151,13 +152,13 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         // Salva as alterações no banco de dados
         $veiculo->save();
 
-       //verificar se o veiculo já possui docs legais. cadastrado //se tiver não faz nada       //se não tiver cadastra
+        //verificar se o veiculo já possui docs legais. cadastrado //se tiver não faz nada       //se não tiver cadastra
         $this->docs_legais->store($veiculo->toArray());
 
         //verificar se o veiculo já possui docs cadastrado //se tiver não faz nada       //se não tiver cadastra
         if (!$this->docs_tecnicos->pesquisa_veiculo($veiculo->id)->exists()) {
             $this->docs_tecnicos->store($veiculo->toArray());
-        }      
+        }
 
         return true;
     }
@@ -165,6 +166,13 @@ class VeiculoRepository implements VeiculoRepositoryInterface
 
     public function delete($id)
     {
+
+        // Verificar se o veículo possui docs cadastrados
+        if ($this->docs_tecnicos->pesquisa_veiculo($id)->exists()) {
+            // Deletar todos os documentos relacionados ao id_veiculo
+            VeiculosDocsTecnicos::where('id_veiculo', $id)->delete();
+        }
+        
         return Veiculo::destroy($id);
     }
 
