@@ -112,28 +112,26 @@
 
         #crachaIndividuais {
             background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
-            background-size: contain; /* Muda de 'cover' para 'contain' */
-            background-position: center;
-            background-repeat: no-repeat; /* Adicione isso para evitar repetições se a imagem for menor que o container */
+            background-position: center; /* Centraliza a imagem no contêiner */
+            background-size: contain;
+            background-repeat: no-repeat; /* Evita repetições */
             width: 732px !important;
             height: 1006px !important;
             margin: 0px !important;
             padding: 0px !important;
-            left: 0% !important;
-            top: 0% !important;
-            object-fit: contain; /* Adiciona essa propriedade para garantir que a imagem mantenha a proporção sem cortes */
-            position: relative;
+            border: none !important;
+            box-shadow: none !important; /* Remove qualquer sombra */
+            position: relative; /* Garante que o conteúdo interno seja posicionado corretamente */
         }
-
 
         #qrcode_cracha {
             position: absolute;
             bottom: 8px;
-            width: 20%;
+            width: 10%;
             height: 30px;
             padding: 0;
-            top: 72%;
-            left: 10%;
+            top: 74.5%;
+            left: 6%;
         }
 
         #qrcode_cracha img {
@@ -145,7 +143,7 @@
         #informacoes_cracha {
             position: absolute;
             width: auto;
-            left: 35%;
+            left: 28%;
             top: 72%;
             text-align: start;
             padding: 0px;
@@ -161,28 +159,38 @@
             font-weight: 800;
             font-size: 55px;
             color: black;
+            margin-bottom: 5px; 
             letter-spacing: -3px;
+            margin-bottom: -5px;
         }
 
-        #informacoes_cracha h4 {
+        #cracha_funcao_css {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
             font-weight: 500;
             font-size: 50px;
             color: #ff5205;
+            margin-bottom: -5px; 
         }
+
+        #setor_css {
+            font-family: "Barlow Condensed", sans-serif;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 50px;
+            color: #000000;
+        }
+
 
         .image_usuario {
             position: absolute;
-            top: 22.8%;
-            left: 28.4%;
+            top: 25.1%;
+            left: 26.2%;
         }
 
         .image_usuario img {
-            width:63.5%
+            width:63%
         }
-
-
 
         .imprimir {
             position: fixed;
@@ -199,8 +207,6 @@
         .save_cracha {
             position: fixed;
             display: inline;
-            top: 5%;
-            right: 5%;
             z-index: 5;
             background-color: #ff5205;
             padding: 20px;
@@ -244,8 +250,8 @@
 
                         <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
-                            <h4><span id="cracha_funcao"></span></h4>
-                            <h4><span id="setor"></span></h4>
+                            <h4 id="cracha_funcao_css"><span id="cracha_funcao"></span></h4>
+                            <h4 id="setor_css"><span id="setor">Setor</span></h4>
                         </div>
                     </div>
                 </div>
@@ -324,8 +330,8 @@
                 // Gerar novo QRCode
                 new QRCode(qrcodeContainer, {
                     text: url,
-                    width: 140,
-                    height: 140,
+                    width: 100,
+                    height: 100,
                     correctLevel: QRCode.CorrectLevel.H
                 });
 
@@ -423,7 +429,7 @@
                 html2canvas(document.getElementById('crachaIndividuais'), {
                     width: 732, // Largura desejada
                     height: 1006, // Altura desejada
-                    scale: 1 // Mantém a proporção
+                    scale: 1,
                 }).then(function(canvas) {
                     var image = canvas.toDataURL('image/png');
                     var link = document.createElement('a');
