@@ -165,7 +165,7 @@
         #informacoes_cracha h4 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 700;
+            font-weight: 500;
             font-size: 50px;
             color: #ff5205;
         }
