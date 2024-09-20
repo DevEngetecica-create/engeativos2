@@ -66,7 +66,7 @@
         header, footer {
             height: 120px; 
             background-size: cover; 
-            margin-bottom: -150px;
+            margin-bottom: -100px;
         }
     }
 
