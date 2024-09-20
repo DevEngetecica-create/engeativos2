@@ -59,6 +59,7 @@
         background-size: cover; 
         background-position: center;
         background-repeat: no-repeat;
+        z-index: 999;
     }
 
     /* Ajustes para dispositivos móveis */
@@ -66,7 +67,6 @@
         header, footer {
             height: 120px; 
             background-size: cover; 
-            margin-bottom: -100px;
         }
     }
 
@@ -97,6 +97,7 @@
     }
 
     .avatar-lg{
+        margin-top: 100px;
         margin-bottom: 10px;
     }
 
