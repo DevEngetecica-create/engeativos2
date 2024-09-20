@@ -72,6 +72,7 @@
 
     header {
         background-image: url('{{ asset("build/images/usuarios/header.png") }}'); /* Caminho da imagem do header */
+        position: fixed;
     }
 
     footer {
