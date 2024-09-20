@@ -57,8 +57,8 @@
             <div class="col-auto text-center">
                 
                 <div class="avatar-lg">
-                    @if ($store->imagem)
-                        <img src="{{ asset('imagens/usuarios') }}/{{ $store->id }}" class="img-thumbnail rounded-circle" />
+                    @if ($store->imagem_usuario)
+                        <img src="{{ asset('build/images/users') }}/{{ $store->id }}/{{$store->imagem_usuario}}" class="img-thumbnail rounded-circle" />
                     @else
                         <img src="{{ asset('imagens/usuarios/lista-de-usuarios.png') }}"
                             class="img-thumbnail rounded-circle" />

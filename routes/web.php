@@ -115,6 +115,7 @@ use App\Http\Controllers\DocsLegaisController;
 use App\Http\Controllers\DocsTecnicosController;
 use App\Http\Controllers\TiposVeiculosController;
 use App\Http\Controllers\VeiculosDocsTecnicosController;
+use App\Models\Api\ApiRequisicao;
 
 /*
 
@@ -936,6 +937,8 @@ Route::get('admin/ativo/veiculo/manutencao/servicos/{item}/delete', [VeiculoServ
 
     Route::post('adicionar-marca', [VeiculoController::class, 'adicionarMarca'])->name('adicionar.marca');
 
+    Route::get('admin/ferramental/requisicao/lista_ativo/{term?}', [ApiRequisicao::class, 'lista_ativo'])->name('ferramental.requisicao.lista_ativo');
+    Route::get('admin/ferramental/requisicao/ativo_externo_id/{id?}', [ApiRequisicao::class, 'ativo_externo_id'])->name('ferramental.requisicao.ativo_externo_id');
 
     /* API de Controles */
 
