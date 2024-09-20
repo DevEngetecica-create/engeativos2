@@ -35,7 +35,7 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
         $create_docs = DocsTecnicos::where('tipo_veiculo', $data['tipo'])->get();
 
         foreach ($create_docs as $documentos) {
-           
+
             $docs = new VeiculosDocsTecnicos;
 
             // Preencha os campos do documento tecnico do veículo
@@ -108,10 +108,10 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
     {
         return VeiculosDocsTecnicos::where('nome_documento', 'like', '%' . $query . '%')->get();
     }
-    
-    public function pesquisa_veiculo(string $query)
+
+    public function pesquisa_veiculo(string $id_veiculo)
     {
-        return VeiculosDocsTecnicos::where('id_veiculo', 'like', '%' . $query . '%') ->exists();
+        return VeiculosDocsTecnicos::where('id_veiculo', $id_veiculo);
     }
 
     public function paginate(int $perPage)
@@ -128,17 +128,16 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
     public function download(int $id)
     {
         try {
-            
+
             $doc = VeiculosDocsTecnicos::findOrFail($id);
-    
+
             // Caminho do arquivo no storage público
             $path = "uploads/veiculos/docs_tecnicos/" . $doc->id_veiculo . "/" . $doc->arquivo;
-    
+
             // Verifica se o arquivo existe no disco 'public'
             if (Storage::disk('public')->exists($path)) {
 
                 return Storage::disk('public')->download($path);
-
             } else {
 
                 throw new \Exception('Arquivo não encontrado.');
@@ -147,7 +146,6 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
 
             Log::error('Erro ao fazer o download: ' . $e->getMessage());
             return redirect()->back()->withErrors('Erro ao fazer o download');
-
         }
     }
 }

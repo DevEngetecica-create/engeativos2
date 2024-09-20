@@ -151,19 +151,13 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         // Salva as alterações no banco de dados
         $veiculo->save();
 
-        //Passar o array $veiculo com os dados salvos
+       //verificar se o veiculo já possui docs legais. cadastrado //se tiver não faz nada       //se não tiver cadastra
         $this->docs_legais->store($veiculo->toArray());
 
-        if($this->docs_tecnicos->pesquisa_veiculo($veiculo->id))
-        {
-            dd('exist');
-
-        }else {
-
+        //verificar se o veiculo já possui docs cadastrado //se tiver não faz nada       //se não tiver cadastra
+        if (!$this->docs_tecnicos->pesquisa_veiculo($veiculo->id)->exists()) {
             $this->docs_tecnicos->store($veiculo->toArray());
-
-        }
-
+        }      
 
         return true;
     }
