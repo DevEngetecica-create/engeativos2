@@ -112,17 +112,19 @@
 
         #crachaIndividuais {
             background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
-            background-size: cover;
+            background-size: contain; /* Muda de 'cover' para 'contain' */
             background-position: center;
-            width: 733px !important;
+            background-repeat: no-repeat; /* Adicione isso para evitar repetições se a imagem for menor que o container */
+            width: 732px !important;
             height: 1006px !important;
             margin: 0px !important;
             padding: 0px !important;
             left: 0% !important;
             top: 0% !important;
-            object-fit: cover;
+            object-fit: contain; /* Adiciona essa propriedade para garantir que a imagem mantenha a proporção sem cortes */
             position: relative;
         }
+
 
         #qrcode_cracha {
             position: absolute;
@@ -243,6 +245,7 @@
                         <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
                             <h4><span id="cracha_funcao"></span></h4>
+                            <h4><span id="setor"></span></h4>
                         </div>
                     </div>
                 </div>
