@@ -32,7 +32,7 @@ use Carbon\Carbon;
 
 
 
-class GraficosPessoas extends Model
+class GraficosVeiculos extends Model
 
 
 
