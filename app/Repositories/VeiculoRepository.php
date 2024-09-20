@@ -96,12 +96,11 @@ class VeiculoRepository implements VeiculoRepositoryInterface
     {
         $veiculo = Veiculo::findOrFail($id);
 
-<<<<<<< HEAD
+
         $imagem = $data['imagem'] ?? null;
-=======
+
         // Verifica se uma nova imagem foi enviada
         $imagem = $data['imagem'] ?? null; // Verifica se o campo 'imagem' está presente
->>>>>>> viewa_veciculo
 
         // Define $image_name como a imagem existente por padrão
         $image_name = $veiculo->imagem;
