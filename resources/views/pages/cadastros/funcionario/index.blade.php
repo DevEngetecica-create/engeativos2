@@ -388,7 +388,7 @@
                 });
 
                 // Definir o caminho da imagem com base na existência de 'image_usuario'
-                var imagePath = image_usuario ? `{{ URL::asset('build/images/usuarios/${id}/${image_usuario}') }}` :
+                var imagePath = image_usuario ? `{{ URL::asset('build/images/users/${id}/${image_usuario}') }}` :
                     `{{ URL::asset('build/images/usuarios/user-dummy-img.jpg') }}`;
 
                 // Atualize o atributo 'src' da imagem de uma única vez
@@ -483,7 +483,7 @@
 
         function atualizarImagemCracha(id, image_usuario) {
             // Defina o caminho base para a imagem do usuário
-            var imagePath = `{{ URL::asset('build/images/usuarios/${id}/${image_usuario}') }}`;
+            var imagePath = `{{ URL::asset('build/images/users/${id}/${image_usuario}') }}`;
 
             // Verifique se a imagem do usuário existe
             fetch(imagePath, {

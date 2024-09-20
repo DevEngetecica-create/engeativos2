@@ -447,7 +447,7 @@ class CadastroFuncionarioController extends Controller
         try {
             $funcionario = CadastroFuncionario::findOrFail($id);
 
-            if ($request->hasFile('imagem_usuario') && $request->file('imagem_usuario')->isValid()) {
+            if ($request->File('imagem_usuario') && $request->file('imagem_usuario')->isValid()) {
                 $imageName = $request->file('imagem_usuario')->getClientOriginalName();
                 $request->file("imagem_usuario")->move(public_path("build/images/users/{$funcionario->id}"), $imageName);
             } else {
