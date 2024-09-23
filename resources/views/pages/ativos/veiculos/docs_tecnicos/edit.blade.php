@@ -5,8 +5,8 @@
         <div class="card">
             <div class="card-body">
 
-                <h1>Editar Documento Legal</h1>
-                <form action="{{ route('docs_legais.update', $doc->id) }}" method="POST">
+                <h1>Editar Documento Técnico</h1>
+                <form action="{{ route('veiculo_docs_tecnico.update', $doc->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="row mb-5">
@@ -17,8 +17,7 @@
                             @foreach ($tipo_veiculo as $tipo)
                                 @if ($tipo->id == $doc->tipo_veiculo)
                                     <input type="hidden" name="tipo_veiculo" value="{{ $tipo->id }}">
-                                    <input type="text" class="form-control" value="{{ $tipo->nome_tipo_veiculo }}"
-                                        readonly>
+                                    <input type="text" class="form-control" value="{{ $tipo->nome_tipo_veiculo }}" readonly>
                                 @endif
                             @endforeach
 
@@ -36,7 +35,6 @@
                                         <span class="btn btn-warning text-white py-1 px-2 rounded"><i
                                                 class="fa fa-minus"></i></span>
                                     </a>
-
                                 </div>
                             </div>
                         </div>
