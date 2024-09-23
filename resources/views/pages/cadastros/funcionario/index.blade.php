@@ -175,12 +175,11 @@
 
         #setor_css {
             font-family: "Barlow Condensed", sans-serif;
-            font-style: normal;
+            font-style: italic;
             font-weight: 500;
             font-size: 50px;
             color: #000000;
         }
-
 
         .image_usuario {
             position: absolute;
