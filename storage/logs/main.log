@@ -4760,8 +4760,12 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 [2024-09-19 14:34:02] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Bruno Mezzomo Rodrigues Klemz  
 =======
 [2024-09-19 14:56:49] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Guilherme Steilein  
+<<<<<<< HEAD
 >>>>>>> crachas_funcionarios
 =======
 [2024-09-19 11:41:06] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  
 >>>>>>> Stashed changes
 >>>>>>> layout_dados_publicos_func
+=======
+[2024-09-23 09:04:08] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
+>>>>>>> origin/docs_tecnicos

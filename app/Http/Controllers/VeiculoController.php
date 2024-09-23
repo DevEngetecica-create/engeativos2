@@ -265,6 +265,20 @@ class VeiculoController extends Controller
             $media_emissao_carbono = 0;
         }
 
+        foreach ($docs_tecnicos as $doc) {
+            if (!empty($doc->data_documento) && !empty($doc->data_validade)) {
+                // Só faz o parse se os campos não estiverem vazios
+                $data_documento = Carbon::parse($doc->data_documento);
+                $data_validade = Carbon::parse($doc->data_validade);
+
+                // Calcula a diferença em dias (ou meses, ou anos)
+                $doc->diferenca_dias = $data_documento->diffInDays($data_validade);
+            } else {
+                // Se os campos forem vazios, a diferença será null
+                $doc->diferenca_dias = null;
+            }
+        }
+
 
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
