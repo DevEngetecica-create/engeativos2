@@ -69,10 +69,16 @@ class VeiculosDocsTecnicosController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
             $this->repository->update($id, $request->all(), $request->file('arquivo'));
-            toastr()->success('Documento atualizado com sucesso!');
-            return redirect()->route('veiculos_docs_tecnicos.index');
+
+            $notification = array(
+                'title' => "Sucesso!!!",
+                'message' => "Documento atualizado com sucesso!",
+                'type' => 'success'
+            );
+
+            return redirect()->route('veiculo.show', $request->veiculo_id."#abastecimentos")->with($notification);
+
         } catch (\Exception $e) {
 
             Log::error('Erro ao atualizar documento: ' . $e->getMessage());
@@ -90,6 +96,24 @@ class VeiculosDocsTecnicosController extends Controller
 
             Log::error('Erro ao deletar documento: ' . $e->getMessage());
             return redirect()->back()->withErrors('Erro ao deletar documento');
+        }
+    }
+
+    public function upload(Request $request, $id)
+    {
+        try {
+
+            $doc_tecnico = $this->repository->upload($id, $request->all(), $request->file('arquivo'));
+
+            Log::info('Adicionado arquivo', ['doc_tecnico' => $doc_tecnico]);
+
+            return response()->json('ok');
+
+        } catch (\Exception $e) {
+
+            Log::error('Erro ao atualizar arquivo', ['error' => $e->getMessage()]);
+
+            return response()->json('ok');
         }
     }
 

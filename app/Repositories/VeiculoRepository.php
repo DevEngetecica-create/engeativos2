@@ -172,7 +172,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
             // Deletar todos os documentos relacionados ao id_veiculo
             VeiculosDocsTecnicos::where('id_veiculo', $id)->delete();
         }
-        
+
         return Veiculo::destroy($id);
     }
 

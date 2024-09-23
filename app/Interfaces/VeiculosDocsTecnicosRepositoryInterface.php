@@ -14,6 +14,6 @@ interface VeiculosDocsTecnicosRepositoryInterface
     public function search(string $query);
     public function pesquisa_veiculo(string $id_veiculo);
     public function paginate(int $perPage);
-    public function anexo(int $id);
+    public function upload($id, array $data, $arquivos);
     public function download(int $id);
 }

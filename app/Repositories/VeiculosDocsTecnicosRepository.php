@@ -6,6 +6,8 @@ use App\Interfaces\VeiculosDocsTecnicosRepositoryInterface;
 use App\Interfaces\DocsTecnicosRepositoryInterface;
 use App\Models\DocsTecnicos;
 use App\Models\VeiculosDocsTecnicos;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -119,10 +121,48 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
         return VeiculosDocsTecnicos::paginate($perPage);
     }
 
-    public function anexo(int $id)
+    public function upload($id, array $data, $arquivos)
     {
-        $doc = VeiculosDocsTecnicos::findOrFail($id);
-        // Logica para manipular o anexo
+        $doc_tecnicos = VeiculosDocsTecnicos::findOrFail($id);
+
+        if ($arquivos) {
+
+            $nome_arquivo = $arquivos->getClientOriginalName();
+            $caminho_arquivo = 'uploads/veiculos/docs_tecnicos/' . $doc_tecnicos->id_veiculo  . "/";
+
+            // Verifica se o arquivo já existe e o exclui antes de salvar o novo
+            if (Storage::disk('public')->exists($caminho_arquivo)) {
+                Storage::disk('public')->delete($caminho_arquivo);
+            }
+            // Atualiza o campo de nome de arquivo no banco de dados
+            $doc_tecnicos->user_edit = Auth::user()->email;
+            $doc_tecnicos->arquivo = $nome_arquivo;
+
+
+            $doc_tecnicos->data_documento = $data['data_documento'];
+
+            if (isset($data['data_documento']) && isset($doc_tecnicos->validade)) {
+                // Parseando a data do documento
+                $data_documento = Carbon::parse($data['data_documento']);
+
+                // Adicionando os meses de validade à data do documento
+                $data_calculado = $data_documento->addMonths($doc_tecnicos->validade);
+
+                // Atribuindo a data calculada ao campo data_validade
+                $doc_tecnicos->data_validade = $data_calculado;
+            }
+
+
+            $caminho_arquivo = 'uploads/veiculos/docs_tecnicos/' . $doc_tecnicos->id_veiculo  . "/";
+            // Armazena o novo arquivo
+            $arquivos->storeAs($caminho_arquivo, $nome_arquivo, 'public');
+
+            $doc_tecnicos->save();
+        }
+
+        Log::info('Manutenção atualizada', ['manutencao' => $doc_tecnicos]);
+
+        return $doc_tecnicos;
     }
 
     public function download(int $id)
