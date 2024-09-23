@@ -48,6 +48,7 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
             $docs->data_documento = $documentos->data_documento ?? null;
             $docs->validade = $documentos->validade ?? null;
             $docs->data_validade = $documentos->data_validade ?? null;
+            $docs->status = 'atualizado';
 
             // Salve o documento tecnico do veículo
             $docs->save();
@@ -86,6 +87,7 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
         // Atualiza os outros campos
         $doc->data_documento = $data['data_documento'];
         $doc->data_validade = $data['data_validade'];
+        $doc->status = 'atualizado';
 
         // Salva as alterações
         $doc->save();
