@@ -207,8 +207,8 @@
 
                         <!--end tab-pane-->
                         <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
-                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}"
-                                class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                            <a href="{{ route('veiculo_docs_tecnico.email') }}" class="btn btn-warning rounded">Email</a>
                             <div class="card-body">
                                 <div class="card">
 
@@ -228,7 +228,7 @@
                                             @foreach ($docs_tecnicos as $doc_tec)
                                                 <tr>
                                                     <td>{{ $doc_tec->id }}</td>
-                                                    <td>{{ $doc_tec->tipo_doc_legal->nome_documento }}</td>
+                                                    <td>{{ $doc_tec->tipo_doc_tecnico->nome_documento }}</td>
                                                     <td>{{ $doc_tec->arquivo }}</td>
 
                                                     {{-- Exibir data do documento --}}
