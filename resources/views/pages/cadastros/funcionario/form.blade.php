@@ -203,13 +203,13 @@
                                         <div class="col-md-4">
                                             <label class="form-label" for="estado_civil">Setor</label>
                                             <select class="form-control" id="id_setor" name="id_setor">
-
-                                                    <option value="">Selecione uma opção</option>
-                                                    <option value="casado">Casado</option>
-                                                    <option value="solteiro">Solteiro</option>
-                                                    <option value="divorciado">Divorciado</option>
-                                                    <option value="outros">Outros</option>
-                                            </select>
+                                                <option value="">Selecione um setor</option>
+                                                    @foreach($setores as $setor)
+                                                        <option value="{{ $setor->id }}" {{ (isset($store) && $store->id_setor == $setor->id ? 'selected' : '') }}>
+                                                            {{ $setor->nome_setor }}
+                                                        </option>
+                                                    @endforeach
+                                            </select>                                            
                                         </div>
                                     </div>
 
