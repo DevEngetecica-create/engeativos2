@@ -217,7 +217,7 @@
 
                         </div>
 
-                        <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
+                        <div class="tab-pane" id="docs_legais" role="tabpanel">
                             <a href="{{ route('veiculos_docs_legais.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Legal</a>
                           
                             <div class="card-body">
