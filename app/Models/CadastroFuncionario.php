@@ -16,6 +16,7 @@ class CadastroFuncionario extends Model
     protected $fillable = [
         'matricula',
         'id_obra',
+        'id_setor',
         'password',
         'data_altera_password',
         'nome',
