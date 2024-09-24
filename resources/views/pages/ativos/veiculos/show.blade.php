@@ -218,8 +218,8 @@
                         </div>
 
                         <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
-                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
-                            <a href="{{ route('veiculo_docs_tecnico.email') }}" class="btn btn-warning rounded">Email</a>
+                            <a href="{{ route('veiculos_docs_legais.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Legal</a>
+                          
                             <div class="card-body">
                                 <div class="card">
 
@@ -279,10 +279,10 @@
                                                         <button type="button"
                                                             class="btn btn-primary btn-sm btn_modal_doc_tecnico "
                                                             data-id="{{ $doc_legal->id }}"></i>inserir/ Alterar</button>
-                                                        {{-- <a class="btn btn-warning" href="{{ route('veiculo_docs_tecnico.edit', $doc_tec->id) }}">Editar</a>
-                                                        <a class="btn btn-danger" href="{{ route('veiculo_docs_tecnico.delete', $doc_tec->id) }}">Excluir</a> --}}
+                                                        {{-- <a class="btn btn-warning" href="{{ route('veiculos_docs_legais.edit', $doc_tec->id) }}">Editar</a>
+                                                        <a class="btn btn-danger" href="{{ route('veiculos_docs_legais.delete', $doc_tec->id) }}">Excluir</a> --}}
                                                         <a class="btn btn-success btn-sm"
-                                                            href="{{ route('veiculo_docs_tecnico.download', $doc_legal->id) }}">Download</a>
+                                                            href="{{ route('veiculos_docs_legais.download', $doc_legal->id) }}">Download</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
