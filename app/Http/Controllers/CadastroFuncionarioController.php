@@ -458,6 +458,7 @@ class CadastroFuncionarioController extends Controller
             $funcionario->update([
                 'matricula'         => $request->matricula,
                 'id_obra'           => $request->id_obra,
+                'id_setor'           => $request->id_setor,
                 'nome'              => $request->nome,
                 'data_nascimento'   => $request->data_nascimento,
                 'cpf'               => $request->cpf,
