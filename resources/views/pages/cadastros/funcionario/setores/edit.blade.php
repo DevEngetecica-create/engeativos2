@@ -19,13 +19,13 @@
                     @endif
 
                 </div>
-                <form action="{{ route('cadastro.funcionario.setores.update', $funcionario->id) }}" method="POST">
+                <form action="{{ route('cadastro.funcionario.setores.update', $setor->id) }}" method="POST">
                     @csrf
 
                     @csrf
                     <div class="form-group">
                         <label for="nome_setor">Nome do Setor:</label>
-                        <input type="text" name="nome_setor" class="form-control" value="{{ $funcionario->nome_setor ?? old('nome_setor') }}">                        
+                        <input type="text" name="nome_setor" class="form-control" value="{{ $setor->nome_setor ?? old('nome_setor') }}">                        
                     </div>
 
                     <button class="btn btn-success btn-ms mt-4" type="submit">Salvar</button>
