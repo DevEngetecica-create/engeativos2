@@ -616,8 +616,6 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/veiculo/manut_preventiva/update',                       [VeiculoPreventivaController::class, 'update'])->name('veiculo.manut_preventiva.update');
     Route::delete('admin/ativo/veiculo/manut_preventivadelete/{id}',                [VeiculoPreventivaController::class, 'delete'])->name('veiculo.manut_preventiva.delete');
     
-    //Route::get('/veiculo_doc_tecnico',                          [CheckListManutPreventivaController::class, 'index'])->name('veiculo_doc_tecnico.index');
-
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/{tipo_veiculo_id}',        [VeiculosDocsLegaisController::class, 'index'])->name('veiculos_docs_legais.index');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/create/{tipo_veiculo_id}', [VeiculosDocsLegaisController::class, 'create'])->name('veiculos_docs_legais.create');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/edit/{tipo_veiculo_id}',   [VeiculosDocsLegaisController::class, 'edit'])->name('veiculos_docs_legais.edit');
