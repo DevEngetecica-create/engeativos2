@@ -111,11 +111,11 @@
 
 
         #crachaIndividuais {
-            background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
+            background-image: url("{{ url('build/images/usuarios/cracha_v00.png') }}");
             background-position: center; /* Centraliza a imagem no contêiner */
             background-size: contain;
             background-repeat: no-repeat; /* Evita repetições */
-            width: 732px !important;
+            width: 640px !important;
             height: 1006px !important;
             margin: 0px !important;
             padding: 0px !important;
@@ -130,21 +130,21 @@
             width: 10%;
             height: 30px;
             padding: 0;
-            top: 74.5%;
-            left: 6%;
+            top: 71.5%;
+            left: 2.5%;
         }
 
         #qrcode_cracha img {
             position: absolute;
-            width: 140px;
-            height: 140px;
+            width: 170px;
+            height: 170px;
         }
 
         #informacoes_cracha {
             position: absolute;
             width: auto;
-            left: 28%;
-            top: 72%;
+            left: 31.5%;
+            top: 70.7%;
             text-align: start;
             padding: 0px;
             font-family: "Barlow Condensed", sans-serif;
@@ -156,18 +156,19 @@
         #informacoes_cracha h3 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: normal;
-            font-weight: 800;
-            font-size: 55px;
+            font-weight: 700;
+            font-size: 57px;
             color: black;
             margin-bottom: 5px; 
             letter-spacing: -3px;
             margin-bottom: -5px;
+        
         }
 
         #cracha_funcao_css {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 500;
+            font-weight: 400;
             font-size: 50px;
             color: #ff5205;
             margin-bottom: -5px; 
@@ -176,19 +177,19 @@
         #setor_css {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 500;
+            font-weight: 400;
             font-size: 50px;
             color: #000000;
         }
 
         .image_usuario {
             position: absolute;
-            top: 25.1%;
-            left: 26.2%;
+            top: 23%;
+            left: 24.1%;
         }
 
         .image_usuario img {
-            width:63%
+            width:67.5%
         }
 
         .imprimir {
@@ -426,7 +427,7 @@
 
             function captureAndSaveCracha() {
                 html2canvas(document.getElementById('crachaIndividuais'), {
-                    width: 732, // Largura desejada
+                    width: 640, // Largura desejada
                     height: 1006, // Altura desejada
                     scale: 1,
                 }).then(function(canvas) {
