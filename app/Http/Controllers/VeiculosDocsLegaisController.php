@@ -94,6 +94,27 @@ class VeiculosDocsLegaisController extends Controller
     }
 
 
+    public function upload($id)
+    {
+        try {
+            // Obter o documento
+            $doc = $this->repository->index()->where('id', $id)->first();
+
+            if($doc->arquivo)
+
+            // Executar o download através do método do repositório
+            return $this->repository->download($id);
+
+            toastr()->success('Download efetuado com sucesso!');
+
+            return redirect()->back()->withErrors('Erro ao atualizar documento');
+            
+        } catch (\Exception $e) {
+            Log::error('Erro ao fazer o download: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Erro ao fazer o download');
+        }
+    }
+    
     public function download($id)
     {
         try {
