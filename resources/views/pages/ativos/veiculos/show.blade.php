@@ -217,6 +217,81 @@
 
                         </div>
 
+                        <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
+                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                            <a href="{{ route('veiculo_docs_tecnico.email') }}" class="btn btn-warning rounded">Email</a>
+                            <div class="card-body">
+                                <div class="card">
+
+                                    <table class="table table-grid">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome Documento</th>
+                                                <th>Arquivo</th>
+                                                <th>Dt Documento</th>
+                                                <th>Dt Validade</th>
+                                                <th>Restan</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($docs_legais as $doc_legal)
+                                                <tr>
+                                                    <td>{{ $doc_legal->id }}</td>
+                                                    <td>{{ $doc_legal->tipo_doc_tecnico->nome_documento }}</td>
+                                                    <td>{{ $doc_legal->arquivo }}</td>
+
+                                                    {{-- Exibir data do documento --}}
+                                                    <td>{{ $doc_legal->data_documento ? Tratamento::dateBr($doc_legal->data_documento) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir data de validade --}}
+                                                    <td>{{ $doc_legal->data_validade ? Tratamento::dateBr($doc_legal->data_validade) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir a diferença em dias ou 'N/A' se não houver diferença --}}
+                                                    <td>
+
+                                                        @if($doc_legal->diferenca_dias >= 40)
+                                                            
+                                                            <span class="btn btn-success btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+                                                            
+                                                        @elseif($doc_legal->diferenca_dias < 39 && $doc_legal->diferenca_dias >= 15)
+
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+
+                                                        @elseif($doc_legal->diferenca_dias < 14 && $doc_legal->diferenca_dias >= 1)
+
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+
+                                                        @endif
+                                                           
+                                                    </td>
+
+                                                    <td>
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm btn_modal_doc_tecnico "
+                                                            data-id="{{ $doc_legal->id }}"></i>inserir/ Alterar</button>
+                                                        {{-- <a class="btn btn-warning" href="{{ route('veiculo_docs_tecnico.edit', $doc_tec->id) }}">Editar</a>
+                                                        <a class="btn btn-danger" href="{{ route('veiculo_docs_tecnico.delete', $doc_tec->id) }}">Excluir</a> --}}
+                                                        <a class="btn btn-success btn-sm"
+                                                            href="{{ route('veiculo_docs_tecnico.download', $doc_legal->id) }}">Download</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <!--end tab-pane-->
                         <div class="tab-pane" id="manutencoes" role="tabpanel">
 
