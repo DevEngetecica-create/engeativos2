@@ -57,6 +57,11 @@ class CadastroFuncionario extends Model
         return $this->belongsTo(FuncaoFuncionario::class, 'id_funcao');
     }
 
+    public function setor()
+    {
+        return $this->belongsTo(CadastroFuncionarioSetor::class, 'id_setor');
+    }
+
     public function qualificacoes()
     {
         return $this->hasMany(FuncionarioQualificacao::class, 'id_funcionario', 'id');
