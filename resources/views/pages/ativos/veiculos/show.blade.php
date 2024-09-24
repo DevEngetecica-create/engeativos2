@@ -713,20 +713,18 @@
                 buttons.forEach(function(button) {
                     button.addEventListener('click', function() {
                         var doc_legal_id = this.getAttribute('data-id');
-                        var url_doc_legal =
-                            "{{ route('veiculos_docs_legais.upload', ['id' => ':id']) }}";
+                        var url_doc_legal = "{{ route('veiculos_docs_legais.upload', ['id' => ':id']) }}";
                         url_doc_legal = url_doc_legal.replace(':id', doc_legal_id);
 
                         (async () => {
                             const {
                                 value: formValues
                             } = await Swal.fire({
-                                title: '<div class="icon active">' +
-                                    '<lord-icon src="https://media.lordicon.com/icons/wired/outline/120-folder.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>' +
-                                    '</div>',
+                                title: '<h3>Docs Legais',
                                 html: ` 
                                         <form id="uploadForm_docs_legais" method="POST" class="m-0 p-0" enctype="multipart/form-data">
-                                
+                                            @csrf
+                                            @method('PUT')
                                             <div class="row">
                                                 <input type="hidden" id="doc_legal_id" name="doc_legal_id" value="${doc_legal_id}">
                                              
