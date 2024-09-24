@@ -13,6 +13,7 @@ use App\Models\VeiculoSubCategoria;
 use Flasher\Laravel\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\OneDriveAPI;
 
 class VeiculoRepository implements VeiculoRepositoryInterface
 {
@@ -199,39 +200,49 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         return true;
     }
 
-
     public function updateImage($id, $imagem, $data)
     {
         // Encontra o registro da imagem no banco de dados
         $veiculoImagem = VeiculoImagens::findOrFail($data['id_imagem']);
-
+    
         if ($imagem) {
-
-            // Defina o caminho completo da imagem antiga
-            $imagePath = public_path("imagens/veiculos/" . $data['veiculo_id'] . "/" . $veiculoImagem->imagens);
-
-            // Verifique se o arquivo existe e, se sim, exclua-o
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
-
-            // Salva a nova imagem
+            // Nome da nova imagem
             $imageName = $imagem->getClientOriginalName();
-            $imagem->move(public_path("imagens/veiculos/" . $data['veiculo_id'] . "/"), $imageName);
-
-            // Atualiza o nome da imagem e a descrição no banco de dados
-            $veiculoImagem->imagens = $imageName;
-            $veiculoImagem->descricao = $data['descricao'];
+    
+            // Converta o conteúdo do arquivo para string
+            $fileContent = file_get_contents($imagem->getPathname());
+    
+            // Inicializar a API do OneDrive com o token de acesso
+            $oneDriveAPI = new OneDriveAPI('eyJ0eXAiOiJKV1QiLCJub25jZSI6IllvMkV6NnNQaFNJVlJpejBmb0NtNEt1ZWs4Y0MyZUJ6NnVKRUJsV1U5VUEiLCJhbGciOiJSUzI1NiIsIng1dCI6Ikg5bmo1QU9Tc3dNcGhnMVNGeDdqYVYtbEI5dyIsImtpZCI6Ikg5bmo1QU9Tc3dNcGhnMVNGeDdqYVYtbEI5dyJ9.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zZTExY2NmZS1hYzJkLTQwNmItOTMwNS0wZjIxN2EwOTZmNjYvIiwiaWF0IjoxNzI3MTEyODEzLCJuYmYiOjE3MjcxMTI4MTMsImV4cCI6MTcyNzExNjcxMywiYWlvIjoiRTJkZ1lEaFVMNlcxOTVhdm9XbnRoQlg3ajFzOEFBQT0iLCJhcHBfZGlzcGxheW5hbWUiOiJJbnRlZ3Jhw6fDo28gTGlzdGEgZGUgVXN1w6FyaW9zIiwiYXBwaWQiOiI1OGY5NjgyNC04MjEyLTRlMzMtOTc5ZS0zMWRiYWY5ZjUwYjciLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zZTExY2NmZS1hYzJkLTQwNmItOTMwNS0wZjIxN2EwOTZmNjYvIiwiaWR0eXAiOiJhcHAiLCJvaWQiOiJhNjAwMTAwZS0xOGRjLTQxMDQtYTI0YS02ZDRmNjExZTllYjIiLCJyaCI6IjAuQVh3QV9zd1JQaTJzYTBDVEJROGhlZ2x2WmdNQUFBQUFBQUFBd0FBQUFBQUFBQUM3QUFBLiIsInJvbGVzIjpbIlNpdGVzLlJlYWRXcml0ZS5BbGwiLCJGaWxlcy5SZWFkV3JpdGUuQWxsIiwiRGlyZWN0b3J5LlJlYWQuQWxsIiwiVXNlci5SZWFkLkFsbCJdLCJzdWIiOiJhNjAwMTAwZS0xOGRjLTQxMDQtYTI0YS02ZDRmNjExZTllYjIiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiU0EiLCJ0aWQiOiIzZTExY2NmZS1hYzJkLTQwNmItOTMwNS0wZjIxN2EwOTZmNjYiLCJ1dGkiOiJ1bWgxOE05SURrMk5QOEhlbFpvM0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyIwOTk3YTFkMC0wZDFkLTRhY2ItYjQwOC1kNWNhNzMxMjFlOTAiXSwieG1zX2lkcmVsIjoiNyAyMiIsInhtc190Y2R0IjoxNjc1ODc2Nzg2fQ.PaWvugHWzwTSnGi4rHqmV-XFD7M8rj3LYlUJlqL2qGYk43UvveNwwCQmwEqsAQmDHZkrEsBMi-Z4u6vKhgLt0fi44Y35KCcxzeDofk75IL6Z7SZAMzJ6CmC6_yGeVZAZgjsAUpClISKwwAp_u0cD-pq8W9vMNfMW2csx-o-D9eYhDeWWYGjxx_lwLC1wTyIEdyUqXxTSXcCMDGihsYKkdCbv8jR-wWjHYTMO6Xvl_nDIoDkE84DWeeoJ_fUDfohRoyjjNdQvC0XK1Ccf4VDexLHTJWU1rjLdgh-JubTDvATtbm3nVoeKifC0tp6AyNibz15LxJGl0U9dKdbBMiR4Gg'); // Coloque seu token de acesso aqui
+    
+            // Fazer o upload da imagem para a pasta especificada no SharePoint
+            $uploadSuccess = $oneDriveAPI->uploadToOneDrive($imageName, $fileContent);
+    
+            if ($uploadSuccess) {
+                // Atualiza o nome da imagem e a descrição no banco de dados
+                $veiculoImagem->imagens = $imageName;
+                $veiculoImagem->descricao = $data['descricao'];
+            } else {
+                echo "Falha ao fazer o upload da imagem.<br>";
+                return false; // Caso o upload falhe
+            }
         } else {
             // Se não houver nova imagem, apenas atualize a descrição
             $veiculoImagem->descricao = $data['descricao'];
         }
-
-        // Salva as mudanças no banco de dados
-        $veiculoImagem->save();
-
+    
+        // Tentar salvar no banco de dados e verificar se há erros
+        try {
+            $veiculoImagem->save();
+            echo "Imagem salva com sucesso no banco de dados.";
+        } catch (\Exception $e) {
+            echo "Erro ao salvar a imagem no banco de dados: " . $e->getMessage() . "<br>";
+            return false;
+        }
+    
         return true;
     }
+
 
 
     public function deleteImage($id)
