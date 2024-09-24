@@ -356,6 +356,17 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/funcao/ajax',                       [FuncaoFuncionarioController::class, 'storeFuncao'])->name('cadastro.funcionario.funcoes.ajax');
     Route::get('admin/cadastro/funcionario/funcoes/delete_epi/{id}',            [FuncaoFuncionarioController::class, 'delete_epi'])->name('cadastro.funcionario.funcoes.delete_epi');
     Route::post('admin/cadastro/funcionario/funcoes/delete_funcao/{id}',        [FuncaoFuncionarioController::class, 'delete_funcao'])->name('cadastro.funcionario.funcoes.delete_funcao');
+    
+    
+    /* Cadastros - Setores - Funcionário */
+
+    Route::get('admin/cadastro/funcionario/setores',                            [SetoresFuncionarioController::class, 'index'])->name('cadastro.funcionario.setores.index');
+    Route::get('admin/cadastro/funcionario/setores/adicionar',                  [SetoresFuncionarioController::class, 'create'])->name('cadastro.funcionario.setores.create');
+    Route::post('admin/cadastro/funcionario/setores',                           [SetoresFuncionarioController::class, 'store'])->name('cadastro.funcionario.setores.store');
+    Route::get('admin/cadastro/funcionario/setores/editar/{id}',                [SetoresFuncionarioController::class, 'edit'])->name('cadastro.funcionario.setores.edit');
+    Route::get('admin/cadastro/funcionario/setores/show/{id}',                  [SetoresFuncionarioController::class, 'show'])->name('cadastro.funcionario.setores.show');
+    Route::post('admin/cadastro/funcionario/setores/update/{id}',               [SetoresFuncionarioController::class, 'update'])->name('cadastro.funcionario.setores.update');
+    Route::delete('admin/cadastro/funcionario/setores/{id}',                    [SetoresFuncionarioController::class, 'delete'])->name('cadastro.funcionario.setores.delete');
 
     /* Fucnionário - Folga */
 
