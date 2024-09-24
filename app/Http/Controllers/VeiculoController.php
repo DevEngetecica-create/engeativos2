@@ -228,6 +228,21 @@ class VeiculoController extends Controller
             }
         }
 
+        //calcular a data de validade dos documentos Legais
+        foreach ($docs_legais as $docs_legal) {
+            if (!empty($docs_legal->data_documento) && !empty($docs_legal->data_validade)) {
+                // Só faz o parse se os campos não estiverem vazios
+                $data_documento = Carbon::parse($docs_legal->data_documento);
+                $data_validade = Carbon::parse($docs_legal->data_validade);
+
+                // Calcula a diferença em dias (ou meses, ou anos)
+                $docs_legal->diferenca_dias = $data_documento->diffInDays($data_validade);
+            } else {
+                // Se os campos forem vazios, a diferença será null
+                $docs_legal->diferenca_dias = null;
+            }
+        }
+
 
 
         $imagens = VeiculoImagens::where('veiculo_id', $id)->get();
