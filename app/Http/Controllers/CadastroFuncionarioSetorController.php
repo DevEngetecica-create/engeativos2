@@ -70,8 +70,15 @@ class CadastroFuncionarioSetorController extends Controller
 
     public function edit($id)
     {
-        $funcionario = $this->repository->getById($id);
-        return view('pages.cadastros.funcionario.setores.edit', compact('funcionario'));
+        $setor = $this->repository->getById($id);
+        return view('pages.cadastros.funcionario.setores.edit', compact('setor'));
+    }
+
+    public function show($id)
+    {
+        $setor = $this->repository->getById($id);
+        
+        return view('pages.cadastros.funcionario.setores.show', compact('setor'));
     }
 
     public function update(Request $request, $id)
