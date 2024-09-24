@@ -239,7 +239,7 @@
                                             @foreach ($docs_legais as $doc_legal)
                                                 <tr>
                                                     <td>{{ $doc_legal->id }}</td>
-                                                    <td>{{ $doc_legal->tipo_doc_tecnico->nome_documento }}</td>
+                                                    <td>{{ $doc_legal->tipo_doc_legal->nome_documento ?? "nome_documento" }}</td>
                                                     <td>{{ $doc_legal->arquivo }}</td>
 
                                                     {{-- Exibir data do documento --}}
