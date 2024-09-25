@@ -9,6 +9,7 @@
                         <th>Matrícula</th>
                         <th>Nome Completo</th>
                         <th>Função</th>
+                        <th>Documentos</th>
                         <th>Setor</th>
                         <th>WhatsApp</th>
                         <th>E-mail</th>
@@ -23,23 +24,8 @@
                             <td class="text-center">{{ $v->id }}</span></td>
                             <td>{{ $v->obra->codigo_obra ?? 'Obra desativada' }}</td>
                             <td>{{ $v->matricula ?? '-' }}</td>
-                            <td class="text-uppercase">{{ $v->nome }}
-                                @php
-                                    $count_1 = $v->qualificacoes->where('situacao', 1)->count();
-                                    $count_18 = $v->qualificacoes->where('situacao', 18)->count();
-                                @endphp
-
-                                @if ($count_1 > 0 || $count_18 > 0)
-                                    <lord-icon data-bs-toggle="tooltip" data-bs-placement="top"
-                                        title="Falta  {{ $count_1 }} documento(s)" target="div"
-                                        loading="interaction" trigger="hover"
-                                        src="https://media.lordicon.com/icons/wired/outline/1140-error.json">
-                                        <img alt="" loading="eager"
-                                            src="https://media.lordicon.com/icons/wired/outline/1140-error.svg">
-                                    </lord-icon>
-                                @else
-                                @endif
-                            </td>
+                            <td class="text-uppercase">{{ $v->nome }}                               
+                           
 
                             @if ($v->funcao && $v->funcao->funcao)
                                 <td>
@@ -49,6 +35,20 @@
                                 <td class="text-danger">Falta cadastrar a função</td>
                             @endif
 
+                           
+                            <td>
+                                @php
+                                $contar_situacao_1 = $v->qualificacoes->where('situacao')->count();
+                                $contar_doc = $v->anexo_funcionarios->where('id_funcionario')->count();
+                                $contar_dor_pendentes = $contar_situacao_1 - $contar_doc;
+
+                                @endphp
+
+                                @if ($contar_situacao_1)
+                                    {{ $contar_situacao_1 }} doc's, desses faltam {{$contar_dor_pendentes}}
+                                @else
+                                @endif
+                            </td>
 
 
                             <td>
