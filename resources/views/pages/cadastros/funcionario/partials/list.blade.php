@@ -9,6 +9,7 @@
                         <th>Matrícula</th>
                         <th>Nome Completo</th>
                         <th>Função</th>
+                        <th>Setor</th>
                         <th>WhatsApp</th>
                         <th>E-mail</th>
                         <th>Status</th>
@@ -50,7 +51,17 @@
 
 
 
+                            <td>
+                                @if($v->setor && $v->setor->nome_setor)
 
+                                    {{$v->setor->nome_setor }}
+
+                                    @else
+
+                                    <span class="text-center text-danger">-- Sem reg. --</span>
+                                @endif
+
+                            </td>
                             <td>{{ $v->celular }}</td>
                             <td>{{ $v->email }}</td>
                             <td>{{ $v->status }} </td>
