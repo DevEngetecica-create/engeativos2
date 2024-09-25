@@ -51,7 +51,7 @@ class CadastroFuncionarioController extends Controller
         $id_obra = Session::get('obra')['id'] ?? null;
     
         // Lógica para obter a lista de funcionários
-        $lista = CadastroFuncionario::when(request('funcionario') != null, function ($query) {
+        $lista = CadastroFuncionario::when(request('funcionario', 'setor') != null, function ($query) {
             return $query->where('nome', 'like', '%' . request('funcionario') . '%');
         })
         ->with('funcao', 'obra', 'qualificacoes')
@@ -75,6 +75,8 @@ class CadastroFuncionarioController extends Controller
                 }
             }
         }
+
+
     
         return view('pages.cadastros.funcionario.partials.list', compact('lista', 'contar_situacao_1', 'contar_situacao_18'));
     }
