@@ -9,6 +9,7 @@ use App\Models\{
     CadastroFuncionario,
     CadastroObra,
     CadastroFuncao,
+    CadastroFuncionarioSetor,
     ConfiguracaoNotificacaoEmail,
     FerramentalRetirada,
     FuncaoEpi,
@@ -85,8 +86,9 @@ class CadastroFuncionarioController extends Controller
         $estados = Configuracao::estados();
         $obras = CadastroObra::where('status_obra', 'Ativo')->get();
         $funcoes = FuncaoFuncionario::all();
+        $setores = CadastroFuncionarioSetor::get();
 
-        return view('pages.cadastros.funcionario.form', compact('estados', 'obras', 'funcoes', 'empresas'));
+        return view('pages.cadastros.funcionario.form', compact('estados', 'obras', 'funcoes', 'setores', 'empresas'));
     }
     
      public function store(Request $request)
@@ -157,6 +159,7 @@ class CadastroFuncionarioController extends Controller
         $funcionario = new CadastroFuncionario([
             'matricula'         => $request->matricula,
             'id_obra'           => $request->id_obra,
+            'id_setor'           => $request->id_setor,
             'nome'              => $request->nome,
             'data_nascimento'   => $request->data_nascimento,
             'cpf'               => $request->cpf,
@@ -333,14 +336,12 @@ class CadastroFuncionarioController extends Controller
                ($nivel_usuario >= 3 && $id_funcionario_sessao == $id); //bloqueia visualizar os dados de outro usuário
     }
     
-    private function loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $view)
+    private function loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, $view)
     {
         if (!$id || !$store) {
             return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
         }
         
-    
-     
         $anexos_funcionarios = AnexoFuncionario::where('id_funcionario', $id)
                                                ->where('id_qualificacao', "=", 0)
                                                ->get();
@@ -363,11 +364,11 @@ class CadastroFuncionarioController extends Controller
         $qualificacao_epis = FuncaoEpi::where('id_funcao', $store->id_funcao)->get();
     
         return view($view, compact(
-            'store', 'estados', 'obras', 'funcoes', 'empresas', 'qualificacao_funcoes', 'qualificacao_epis', 'anexos_funcionarios'
+            'store', 'estados', 'obras', 'funcoes', 'empresas', 'setores','qualificacao_funcoes', 'qualificacao_epis', 'anexos_funcionarios'
         ));
     }
     
-    private function loadAndPresentShowInfo($id, $store, $estados, $obras, $funcoes, $empresas, $view)
+    private function loadAndPresentShowInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, $view)
     {
         if (!$id || !$store) {
             return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
@@ -411,13 +412,12 @@ class CadastroFuncionarioController extends Controller
                                              ->get();
     
         return view($view, compact(
-            'store', 'estados', 'obras', 'funcoes', 'empresas', 'anexos_funcionarios', 'qualificacao_funcoes', 'qualificacao_epis', 'itensRetirados'
+            'store', 'estados', 'obras', 'funcoes', 'setores', 'empresas', 'anexos_funcionarios', 'qualificacao_funcoes', 'qualificacao_epis', 'itensRetirados'
         ));
     }
 
     public function edit($id)
-    {
-      
+    {      
         
         $id_funcionario_sessao = session('usuario_vinculo.id_funcionario');
         $nivel_usuario = session('usuario_vinculo.id_nivel');
@@ -427,6 +427,9 @@ class CadastroFuncionarioController extends Controller
         $estados = Configuracao::estados();
         $obras = CadastroObra::where('status_obra', 'Ativo')->get();
         $funcoes = FuncaoFuncionario::all();
+        $setores = CadastroFuncionarioSetor::all();
+
+        
     
         if ($this->isAccessDenied($nivel_usuario, $id_funcionario_sessao, $id)) {
             return $this->denyAccess($id_funcionario_sessao);
@@ -434,7 +437,7 @@ class CadastroFuncionarioController extends Controller
     
         if ($this->needsQualificationInfo($nivel_usuario, $id_funcionario_sessao, $id)) {
               
-            return $this->loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, 'pages.cadastros.funcionario.form');
+            return $this->loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, 'pages.cadastros.funcionario.form');
             
         }
     
@@ -457,6 +460,7 @@ class CadastroFuncionarioController extends Controller
             $funcionario->update([
                 'matricula'         => $request->matricula,
                 'id_obra'           => $request->id_obra,
+                'id_setor'           => $request->id_setor,
                 'nome'              => $request->nome,
                 'data_nascimento'   => $request->data_nascimento,
                 'cpf'               => $request->cpf,

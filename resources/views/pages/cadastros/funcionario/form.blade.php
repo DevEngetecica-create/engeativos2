@@ -143,7 +143,7 @@
 
 
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="form-label" for="matricula">Matrícula</label><span
                                                 class="text-danger" title="Campo obrigatório">*</span>
                                             <input class="form-control" id="matricula" name="matricula" type="text"
@@ -151,7 +151,7 @@
 
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label" for="id_obra">Obra</label>
                                             <select class="form-select select2" id="id_obra" name="id_obra">
 
@@ -200,6 +200,17 @@
                                             </select>
                                         </div>
 
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="estado_civil">Setor</label>
+                                            <select class="form-control" id="id_setor" name="id_setor">
+                                                <option value="">Selecione um setor</option>
+                                                    @foreach($setores as $setor)
+                                                        <option value="{{ $setor->id }}" {{ (isset($store) && $store->id_setor == $setor->id ? 'selected' : '') }}>
+                                                            {{ $setor->nome_setor }}
+                                                        </option>
+                                                    @endforeach
+                                            </select>                                            
+                                        </div>
                                     </div>
 
 
