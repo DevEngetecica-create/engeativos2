@@ -339,7 +339,7 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/cad_edi_password_func/{id}',        [CadastroFuncionarioController::class, 'cad_edi_password_func'])->name('cadastro.funcionario.cad_edi_password_func');
     Route::get('admin/cadastro/funcionario/obter-motivo/{id}',                  [CadastroFuncionarioController::class, 'obter_motivo'])->name('cadastro.funcionario.obter_motivo');
     Route::post('admin/cadastro/funcionario/excluir-qualificacao',              [CadastroFuncionarioController::class, 'excluir_qualificacao'])->name('cadastro.funcionario.excluir_qualificacao');
-    Route::post('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
+    Route::put('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
 
 
 
