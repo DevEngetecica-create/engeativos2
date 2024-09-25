@@ -15,11 +15,8 @@ use App\Interfaces\VeiculoAcessoriosRepositoryInterface;
 use App\Interfaces\VeiculoIpvaRepositoryInterface;
 use App\Interfaces\VeiculoManutencaoRepositoryInterface;
 use App\Interfaces\VeiculoPreventivaRepositoryInterface;
-
 use App\Interfaces\VeiculoQuilometragemRepositoryInterface;
-
 use App\Interfaces\VeiculosDocsLegaisRepositoryInterface;
-
 use App\Interfaces\VeiculoSeguroRepositoryInterface;
 use App\Interfaces\VeiculoSubCategoriaRepositoryInterface;
 use App\Interfaces\VeiculoTacografoRepositoryInterface;
@@ -29,6 +26,8 @@ use App\Interfaces\DocsTecnicosRepositoryInterface;
 use App\Interfaces\TiposVeiculosRepositoryInterface;
 use App\Interfaces\VeiculosDocsTecnicosRepositoryInterface;
 
+use App\Repositories\CadastroFuncionarioSetorRepository;
+use App\Interfaces\CadastroFuncionarioSetorRepositoryInterface;
 
 use App\Repositories\CheckListManutPreventivaRepository;
 use App\Repositories\DocsLegaisRepository;
@@ -73,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DocsLegaisRepositoryInterface::class, DocsLegaisRepository::class);
         $this->app->bind(DocsTecnicosRepositoryInterface::class, DocsTecnicosRepository::class);
         $this->app->bind(TiposVeiculosRepositoryInterface::class, TiposVeiculosRepository::class);
+
+        //funcionarios
+        $this->app->bind(CadastroFuncionarioSetorRepositoryInterface::class, CadastroFuncionarioSetorRepository::class);
     }
 
     /**
