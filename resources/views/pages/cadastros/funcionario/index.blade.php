@@ -168,7 +168,7 @@
         #cracha_funcao_css {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 400;
+            font-weight: 600;
             font-size: 50px;
             color: #ff5205;
             margin-bottom: -5px; 
@@ -177,7 +177,7 @@
         #setor_css {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 400;
+            font-weight: 600;
             font-size: 50px;
             color: #000000;
         }
@@ -251,7 +251,7 @@
                         <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
                             <h4 id="cracha_funcao_css"><span id="cracha_funcao"></span></h4>
-                            <h4 id="setor_css"><span id="setor">Setor</span></h4>
+                            <h4 id="setor_css"><span id="setores">Setor</span></h4>
                         </div>
                     </div>
                 </div>
@@ -450,14 +450,18 @@
 
                     // Obtenha os dados da linha
                     var id_cracha = row.cells[0].textContent;
-                    var funcionario_cracha = formatEmailName(row.cells[6].textContent);
+                    var funcionario_cracha = formatEmailName(row.cells[7].textContent);
                     var funcao_cracha = row.cells[4].textContent;
+                    var setor_cracha = row.cells[5].textContent;
 
                     var nome_funcionario_cracha = document.getElementById('nome_funcionario');
                     nome_funcionario_cracha.textContent = funcionario_cracha;
 
                     var funcao_funcionario_cracha = document.getElementById('cracha_funcao');
                     funcao_funcionario_cracha.textContent = funcao_cracha;
+                    
+                    var setor_funcionario_cracha = document.getElementById('setores');
+                    setor_funcionario_cracha.textContent = setor_cracha;
                    
 
                 });
