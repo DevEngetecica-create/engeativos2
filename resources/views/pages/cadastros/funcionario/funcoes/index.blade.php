@@ -178,7 +178,7 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <!-- O container para o gráfico -->
-                    <<div id="funcoes" style="width:100%; height:1000px; margin: 0 auto;"></div>
+                    <div id="funcoes" style="width:100%; height:1000px; margin: 0 auto;"></div>
 
                 </div>
             </div>
