@@ -27,12 +27,13 @@ class FuncaoFuncionarioController extends Controller
 {
     public function index()
     {
-        $funcoes = FuncaoFuncionario::when(request('funcao') != null, function ($query) {
+        $funcoes = FuncaoFuncionario::when(request('funcao', 'funcionarios') != null, function ($query) {
             return  $query->where('funcao', 'like', '%' . request('funcao') . '%');
         })
             ->with('funcionarios')
             ->orderBy('id', 'desc')
             ->paginate(7);
+
         return view('pages.cadastros.funcionario.funcoes.index', compact('funcoes'));
     }
 
@@ -201,7 +202,9 @@ class FuncaoFuncionarioController extends Controller
 
         $lista_epis = FuncaoEpi::with('funcao')->where('id_funcao', $funcao->id)->get();
 
-        return view('pages.cadastros.funcionario.funcoes.show', compact('funcao', 'qualificacoes', 'lista_epis'));
+        $funcionarios = CadastroFuncionario::where('id_funcao', $id)->get();
+
+        return view('pages.cadastros.funcionario.funcoes.show', compact('funcao', 'qualificacoes', 'lista_epis', 'funcionarios'));
     }
 
     public function update(Request $request, $id)
