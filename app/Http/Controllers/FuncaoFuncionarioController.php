@@ -17,6 +17,7 @@ use App\Helpers\Tratamento;
 use App\Models\Estoque;
 use App\Models\FuncaoEpi;
 use App\Models\AnexoFuncionario;
+use App\Models\CadastroFuncionarioSetor;
 use App\Models\FuncionarioQualificacao;
 use App\Models\Notification;
 use Exception;
@@ -28,10 +29,10 @@ class FuncaoFuncionarioController extends Controller
 {
     public function index()
     {
-        $funcoes = FuncaoFuncionario::when(request('funcao', 'funcionarios') != null, function ($query) {
+        $funcoes = FuncaoFuncionario::when(request('funcao', 'funcionarios', 'setor') != null, function ($query) {
             return  $query->where('funcao', 'like', '%' . request('funcao') . '%');
         })
-            ->with('funcionarios')
+            ->with('funcionarios', 'setor')
             ->orderBy('id', 'desc')
             ->paginate(7);
 
@@ -47,20 +48,21 @@ class FuncaoFuncionarioController extends Controller
 
     public function create()
     {
-        return view('pages.cadastros.funcionario.funcoes.create');
+        $setores = CadastroFuncionarioSetor::all();
+
+        return view('pages.cadastros.funcionario.funcoes.create', compact('setores'));
     }
 
     public function store(Request $request)
     {
-
-
         try {
 
             //cadastrar a função
             $create_funcao = new FuncaoFuncionario(
                 [
                     'codigo' => $request->codigo ?? 0,
-                    'funcao' => $request->funcao
+                    'funcao' => $request->funcao,
+                    'id_setor' => $request->id_setor
                 ]
             );
 
@@ -199,7 +201,9 @@ class FuncaoFuncionarioController extends Controller
             $epis = $epis->merge($epis_individual); // Acumula os resultados em uma única coleção
         }
 
-        return view('pages.cadastros.funcionario.funcoes.edit', compact('funcao', 'qualificacoes', 'epis_funcao', 'epis'));
+        $setores = CadastroFuncionarioSetor::all();
+
+        return view('pages.cadastros.funcionario.funcoes.edit', compact('funcao', 'qualificacoes', 'epis_funcao', 'epis', 'setores'));
     }
 
     public function show($id)
@@ -212,7 +216,9 @@ class FuncaoFuncionarioController extends Controller
 
         $funcionarios = CadastroFuncionario::where('id_funcao', $id)->get();
 
-        return view('pages.cadastros.funcionario.funcoes.show', compact('funcao', 'qualificacoes', 'lista_epis', 'funcionarios'));
+        $setores = CadastroFuncionarioSetor::all();
+
+        return view('pages.cadastros.funcionario.funcoes.show', compact('funcao', 'qualificacoes', 'lista_epis', 'funcionarios', 'setores'));
     }
 
     public function update(Request $request, $id)
@@ -224,7 +230,8 @@ class FuncaoFuncionarioController extends Controller
         $update_funcao->update(
             [
                 'codigo' => $request->codigo ?? 0,
-                'funcao' => $request->funcao
+                'funcao' => $request->funcao,
+                'id_setor' => $request->id_setor
             ]
         );
 
@@ -242,7 +249,6 @@ class FuncaoFuncionarioController extends Controller
                 ]
 
             );
-
 
             $nome_qualificacao = $request->nome_qualificacao;
             $data_validade = $request->tempo_validade;

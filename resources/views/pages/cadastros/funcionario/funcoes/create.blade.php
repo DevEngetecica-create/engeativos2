@@ -37,7 +37,7 @@
 
     <div class="row">
 
-        <div class="col-xl-6 mb-0">
+        <div class="col-xl-8 mb-0">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">Dados da Função</h4>
@@ -50,12 +50,23 @@
 
 
                         <div class="row mt-3">
-                            <div class="col-md-8">
+                            <div class="col-md-5">
+                                <label class="form-label" for="funcao">Setor</label>
+                                <select class="form-select form-control-sm" id="id_setor" name="id_setor">
+                                
+                                <option value="">Selecione um setor</option>
+                                    @foreach($setores as $setor)
+                                        <option value="{{$setor->id}}">{{$setor->nome_setor}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-5">
                                 <label class="form-label" for="funcao">Função</label>
                                 <input class="form-control" id="funcao" name="funcao" type="text" placeholder="Nome da função">
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <label class="form-label" for="codigo">Código CBO</label>
                                 <input class="form-control" id="codigo" name="codigo" type="text">
                             </div>
@@ -121,7 +132,7 @@
         </div>
         <!-- end col -->
 
-        <div class="col-xl-6 mb-0">
+        <div class="col-xl-4 mb-0">
             <div class="card">
                 <div class="card-header align-items-center d-flex p-2 ">
                     <h4 class="card-title mb-0 flex-grow-1 mb-0 mt-2 mx-4">EPIs' Obrigatórios</h4>
