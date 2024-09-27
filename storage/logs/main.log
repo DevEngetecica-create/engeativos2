@@ -4733,8 +4733,12 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 =======
 [2024-09-13 12:44:45] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
 >>>>>>> e1f28b04390a133d491aa73c7716c3c3f42226ff
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
 <<<<<<< Updated upstream
 =======
+>>>>>>> layout_dados_publicos_func
 [2024-09-18 08:37:02] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  
 [2024-09-18 09:48:26] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  
 [2024-09-18 13:37:05] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  
@@ -4746,6 +4750,19 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 [2024-09-18 15:12:23] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
 [2024-09-18 15:13:17] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Bruno Mezzomo Rodrigues Klemz  
 [2024-09-18 15:14:31] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Samuel Ferreira de Melo  
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+[2024-09-19 13:56:57] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Guilherme Steilein  
+>>>>>>> imagens_funcionarios
+[2024-09-19 14:33:27] development.INFO: samuel.melo@engetecnica.com.br Error ao atualizar o funcionario| Bruno Mezzomo Rodrigues Klemz | Unable to write in the "/var/www/engeativos2/public/build/images/users/906" directory.  
+[2024-09-19 14:33:35] development.INFO: samuel.melo@engetecnica.com.br Error ao atualizar o funcionario| Bruno Mezzomo Rodrigues Klemz | Unable to write in the "/var/www/engeativos2/public/build/images/users/906" directory.  
+[2024-09-19 14:34:02] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Bruno Mezzomo Rodrigues Klemz  
+=======
+[2024-09-19 14:56:49] development.INFO: samuel.melo@engetecnica.com.br | UPDATED FUNCIONÁRIO: Guilherme Steilein  
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> crachas_funcionarios
+=======
 [2024-09-19 11:41:06] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  
 >>>>>>> Stashed changes
-[2024-09-20 08:15:19] development.INFO: bruno.klemz@engetecnica.com.br | LOGIN NO SISTEMA  

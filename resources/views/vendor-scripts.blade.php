@@ -42,20 +42,22 @@
  */
         var currentId = null;
         var currentSelectValue = null;
+        var currentIDqualificacao = null;
 
         $('.situacao-select').change(function() {
             var id = $(this).data('id');
-            var selectValue = $(this).val();
+            var id_qualificacao = $(this).data('id_qualificacao');
+            var selectValue = $(this).val(); 
 
             if (selectValue == 18) {
                 // Armazenar o ID e o valor selecionado
                 currentId = id;
                 currentSelectValue = selectValue;
+                
 
                 // Fazer uma solicitação AJAX para obter o motivo existente
                 $.ajax({
-                    url: "{{ route('cadastro.funcionario.obter_motivo', ['id' => ':id']) }}"
-                        .replace(':id', id),
+                    url: "{{ route('cadastro.funcionario.obter_motivo', ['id' => ':id']) }}".replace(':id', id),
                     method: 'get',
                     success: function(data) {
                         // Exibir o motivo existente na modal
@@ -80,7 +82,7 @@
 
 
                 // Enviar a solicitação AJAX sem o motivo da reprovação
-                enviarSolicitacao(id, selectValue);
+                enviarSolicitacao(id, selectValue, id_qualificacao);
             }
 
             $(this).data('previous', selectValue); // Armazenar a seleção anterior
@@ -90,7 +92,7 @@
             var motivoReprovacao = $('#motivoReprovacao').val();
             if (motivoReprovacao) {
                 // Enviar a solicitação AJAX com o motivo da reprovação
-                enviarSolicitacao(currentId, currentSelectValue, motivoReprovacao);
+                enviarSolicitacao(currentId, currentSelectValue, motivoReprovacao, id_qualificacao);
                 // Fechar o modal
                 motivoReprovacaoModal.hide();
             } else {
@@ -98,7 +100,8 @@
             }
         });
 
-        function enviarSolicitacao(id, selectValue, motivoReprovacao = '') {
+        function enviarSolicitacao(id, selectValue, id_qualificacao, motivoReprovacao = '') {
+
             var url = "{{ route('cadastro.funcionario.aprovar_documentos', ['id' => ':id']) }}";
             url = url.replace(':id', id);
 
@@ -114,7 +117,8 @@
                 data: {
                     id: id,
                     selectValue: selectValue,
-                    motivoReprovacao: motivoReprovacao
+                    motivoReprovacao: motivoReprovacao,
+                    id_qualificacao: id_qualificacao,
                 },
                 success: function(data) {
 

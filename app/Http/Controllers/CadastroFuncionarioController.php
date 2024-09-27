@@ -9,6 +9,7 @@ use App\Models\{
     CadastroFuncionario,
     CadastroObra,
     CadastroFuncao,
+    CadastroFuncionarioSetor,
     ConfiguracaoNotificacaoEmail,
     FerramentalRetirada,
     FuncaoEpi,
@@ -35,9 +36,9 @@ use ZipArchive;
 class CadastroFuncionarioController extends Controller
 {
     private $defaultImageName = "user-dummy-img.jpg";
-    
+
     use Configuracao;
-   /**
+    /**
      * Stores uploaded files and associated data.
      *
      * @param array $files
@@ -48,61 +49,65 @@ class CadastroFuncionarioController extends Controller
     public function index(Request $request)
     {
         $id_obra = Session::get('obra')['id'] ?? null;
-    
+
         // Lógica para obter a lista de funcionários
-        $lista = CadastroFuncionario::when(request('funcionario') != null, function ($query) {
+        $lista = CadastroFuncionario::when(request('funcionario', 'setor') != null, function ($query) {
             return $query->where('nome', 'like', '%' . request('funcionario') . '%');
         })
-        ->with('funcao', 'obra', 'qualificacoes')
-        ->when($id_obra !== null && $id_obra > 0, function ($query) use ($id_obra) {
-            return $query->where('id_obra', $id_obra);
-        })
-        ->orderBy('id', 'desc')
-        ->paginate(10);
-    
+            ->with('funcao', 'obra', 'qualificacoes')
+            ->when($id_obra !== null && $id_obra > 0, function ($query) use ($id_obra) {
+                return $query->where('id_obra', $id_obra);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
         // Inicializa as variáveis de contagem
         $contar_situacao_1 = 0;
-        $contar_situacao_18 = 0;
-    
+        $contar_doc = 0;
+
         // Itera sobre cada funcionário para contar as qualificações
         foreach ($lista as $funcionario) {
             foreach ($funcionario->qualificacoes as $qualificacao) {
-                if ($qualificacao->situacao == 1) {
-                    $contar_situacao_1++;
-                } elseif ($qualificacao->situacao == 18) {
-                    $contar_situacao_18++;
-                }
+
+                $contar_situacao_1++;
+            }
+
+            foreach ($funcionario->anexo_funcionarios as $anexo_funcionarios) {
+                $contar_doc++;
             }
         }
-    
-        return view('pages.cadastros.funcionario.partials.list', compact('lista', 'contar_situacao_1', 'contar_situacao_18'));
+
+
+
+        return view('pages.cadastros.funcionario.partials.list', compact('lista', 'contar_situacao_1', 'contar_doc'));
     }
 
-    
+
     public function create()
     {
         $empresas = CadastroEmpresa::where('status', 'Ativo')->get();
         $estados = Configuracao::estados();
         $obras = CadastroObra::where('status_obra', 'Ativo')->get();
         $funcoes = FuncaoFuncionario::all();
+        $setores = CadastroFuncionarioSetor::get();
 
-        return view('pages.cadastros.funcionario.form', compact('estados', 'obras', 'funcoes', 'empresas'));
+        return view('pages.cadastros.funcionario.form', compact('estados', 'obras', 'funcoes', 'setores', 'empresas'));
     }
-    
-     public function store(Request $request)
+
+    public function store(Request $request)
     {
         // Validate input data
-       $validatedData = $request->validate([
-           
-        
-           'id_obra' => 'required',
-            /*'nome' => 'required',
-            'data_nascimento' => 'required|date',
-            
+        $validatedData = $request->validate(
+            [
+
+
+                'id_obra' => 'required',
+                /*'nome' => 'required',
+            'data_nascimento' => 'required|date',            
             */
-            'cpf' => 'required|unique:funcionarios,cpf,NULL,id,deleted_at,NULL',
-            'celular' => 'required',
-           /* 'rg' => 'required',
+                'cpf' => 'required|unique:funcionarios,cpf,NULL,id,deleted_at,NULL',
+                'celular' => 'required',
+                /* 'rg' => 'required',
             'id_funcao' => 'required',
             'cep' => 'required',
             'endereco' => 'required',
@@ -112,9 +117,9 @@ class CadastroFuncionarioController extends Controller
             'estado' => 'required',
             'celular' => 'required',
             'status' => 'required'*/
-        ],
-        
-        [      //'matricula.required' => 'Digite corretamente a matrícula',
+            ],
+
+            [      //'matricula.required' => 'Digite corretamente a matrícula',
                 'id_obra.required'          => 'É necessário selecionar uma obra para este Funcionário',
                 //'nome.required'             => 'Digite corretamente o nome',
                 //'data_nascimento.required'  => 'Data de Nascimento Inválida',
@@ -131,32 +136,32 @@ class CadastroFuncionarioController extends Controller
                 'estado.required'           => 'Selecione o Estado corretamente',              */
                 'celular.required'          => 'Digite corretamente o telefone celular / whatsapp',
                 //'status.required'           => 'Selecione o Status'
-            ]        
+            ]
         );
-   
-    
-        
-                
+
+
+
+
         // Default image handling
         $defaultImageName = "user-dummy-img.jpg";
         $imagePath = $request->file('imagem_usuario');
         $imageName = $defaultImageName;
         $defaultImagePath = public_path("build/images/users/" . $defaultImageName); // Path to the default image
         $imagePath = $request->file('imagem_usuario');
-      
-      
-        if($request->file('imagem_usuario')){
-            
+
+
+        if ($request->file('imagem_usuario')) {
+
             $imageName = $request->file('imagem_usuario')->getClientOriginalName();
-            
-        }else{
-            
-              $imageName = $defaultImageName;
+        } else {
+
+            $imageName = $defaultImageName;
         }
-        
+
         $funcionario = new CadastroFuncionario([
             'matricula'         => $request->matricula,
             'id_obra'           => $request->id_obra,
+            'id_setor'           => $request->id_setor,
             'nome'              => $request->nome,
             'data_nascimento'   => $request->data_nascimento,
             'cpf'               => $request->cpf,
@@ -179,12 +184,12 @@ class CadastroFuncionarioController extends Controller
             'situacao'          => 18,
             'imagem_usuario'    => $imageName,
         ]);
-    
+
         $funcionario->save();
-        
+
         $targetDir = public_path("build/images/users/{$funcionario->id}");
         $targetPath = $targetDir . '/' . $defaultImageName;
-        
+
         if ($request->hasFile('imagem_usuario') && $imagePath && $imagePath->isValid()) {
             $imageName = $imagePath->getClientOriginalName(); // Get the original name if the file is valid
             // Move the uploaded image to the desired directory
@@ -206,17 +211,17 @@ class CadastroFuncionarioController extends Controller
                 throw new Exception("Default image does not exist.");
             }
         }
-    
+
         // Handling file attachments if any
         if ($request->hasFile('file')) {
             $this->salvarAnexoFuncionario($request->file('file'),  $request->data_conclusao, $request, $funcionario);
         }
-    
+
         // Handling qualifications if any
         if ($request->filled('id_qualificacao')) {
             $this->salvarFuncionarioQualificacoes($request, $funcionario);
         }
-    
+
         $notificacoes_emails = ConfiguracaoNotificacaoEmail::where("id_obra", Session::get('obra')['id'])->get();
 
         // Criar um mapa de ID de usuário para email
@@ -261,11 +266,11 @@ class CadastroFuncionarioController extends Controller
         // Log activity
         $userLog = Auth::user()->email;
         Log::channel('main')->info("$userLog | ADD FUNCIONÁRIO : {$funcionario->nome} | CPF : {$funcionario->cpf}");
-    
+
         // Redirect with success notification
         return redirect('admin/cadastro/funcionario')->with($notification);
     }
-    
+
     public function salvarAnexoFuncionario($files, $datas_conclusao, $request, $funcionario)
     {
         if ($files) {
@@ -307,12 +312,12 @@ class CadastroFuncionarioController extends Controller
             }
         }
     }
-    
+
     private function isAccessDenied($nivel_usuario, $id_funcionario_sessao, $id)
     {
         return $nivel_usuario >= 3  && $id_funcionario_sessao != $id && $nivel_usuario != 14 && $nivel_usuario != 15  && $nivel_usuario != 10;
     }
-    
+
     private function denyAccess($id_funcionario_sessao)
     {
         $notification = [
@@ -322,122 +327,138 @@ class CadastroFuncionarioController extends Controller
         ];
         return redirect()->route('cadastro.funcionario.editar', $id_funcionario_sessao)->with($notification);
     }
-    
+
     private function needsQualificationInfo($nivel_usuario, $id_funcionario_sessao, $id)
     {
         return ($nivel_usuario <= 2 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
-               ($nivel_usuario <= 2 && $id_funcionario_sessao == $id) || //permite editar ou visualizar os dados de outro usuário
-               ($nivel_usuario == 10 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
-               ($nivel_usuario == 14 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
-               ($nivel_usuario == 15 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
-               ($nivel_usuario >= 3 && $id_funcionario_sessao == $id); //bloqueia visualizar os dados de outro usuário
+            ($nivel_usuario <= 2 && $id_funcionario_sessao == $id) || //permite editar ou visualizar os dados de outro usuário
+            ($nivel_usuario == 10 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
+            ($nivel_usuario == 14 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
+            ($nivel_usuario == 15 && $id_funcionario_sessao != $id) || //permite editar ou visualizar os dados de outro usuário
+            ($nivel_usuario >= 3 && $id_funcionario_sessao == $id); //bloqueia visualizar os dados de outro usuário
     }
-    
-    private function loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $view)
+
+    private function loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, $view)
     {
         if (!$id || !$store) {
             return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
         }
-        
-    
-     
+
         $anexos_funcionarios = AnexoFuncionario::where('id_funcionario', $id)
-                                               ->where('id_qualificacao', "=", 0)
-                                               ->get();
-    
+            ->where('id_qualificacao', "=", 0)
+            ->get();
 
-             $qualificacao_funcoes = FuncionarioQualificacao::with('qualificacoes')
-                                ->leftJoin('anexos_funcionarios', function ($join) {
-                                    $join->on('funcionarios_qualificacoes.id_funcionario', '=', 'anexos_funcionarios.id_funcionario')
-                                         ->on('funcionarios_qualificacoes.id_funcao', '=', 'anexos_funcionarios.id_funcao')
-                                         ->on('funcionarios_qualificacoes.id_qualificacao', '=', 'anexos_funcionarios.id_qualificacao');
-                                })
-                                ->where('funcionarios_qualificacoes.id_funcionario', $id)
-                                ->where('funcionarios_qualificacoes.id_qualificacao', '!=', 0)
-                                ->select('funcionarios_qualificacoes.*', 'anexos_funcionarios.id as id_anexos', 'anexos_funcionarios.nome_arquivo', 'anexos_funcionarios.data_conclusao', 'anexos_funcionarios.data_validade_doc', 'anexos_funcionarios.situacao_doc', 'anexos_funcionarios.usuario_cad', 'anexos_funcionarios.usuario_aprov', 'anexos_funcionarios.data_aprovacao', 'anexos_funcionarios.observacoes')
-                                ->get();
 
-                                                        
-           //dd($qualificacao_funcoes);                                              
-    
+        $qualificacao_funcoes = FuncionarioQualificacao::with('qualificacoes')
+            ->leftJoin('anexos_funcionarios', function ($join) {
+                $join->on('funcionarios_qualificacoes.id_funcionario', '=', 'anexos_funcionarios.id_funcionario')
+                    ->on('funcionarios_qualificacoes.id_funcao', '=', 'anexos_funcionarios.id_funcao')
+                    ->on('funcionarios_qualificacoes.id_qualificacao', '=', 'anexos_funcionarios.id_qualificacao');
+            })
+            ->where('funcionarios_qualificacoes.id_funcionario', $id)
+            ->where('funcionarios_qualificacoes.id_qualificacao', '!=', 0)
+            ->select('funcionarios_qualificacoes.*', 'anexos_funcionarios.id as id_anexos', 'anexos_funcionarios.nome_arquivo', 'anexos_funcionarios.data_conclusao', 'anexos_funcionarios.data_validade_doc', 'anexos_funcionarios.situacao_doc', 'anexos_funcionarios.usuario_cad', 'anexos_funcionarios.usuario_aprov', 'anexos_funcionarios.data_aprovacao', 'anexos_funcionarios.observacoes')
+            ->get();
+
+
+        //dd($qualificacao_funcoes);                                              
+
         $qualificacao_epis = FuncaoEpi::where('id_funcao', $store->id_funcao)->get();
-    
+
         return view($view, compact(
-            'store', 'estados', 'obras', 'funcoes', 'empresas', 'qualificacao_funcoes', 'qualificacao_epis', 'anexos_funcionarios'
+            'store',
+            'estados',
+            'obras',
+            'funcoes',
+            'empresas',
+            'setores',
+            'qualificacao_funcoes',
+            'qualificacao_epis',
+            'anexos_funcionarios'
         ));
     }
-    
-    private function loadAndPresentShowInfo($id, $store, $estados, $obras, $funcoes, $empresas, $view)
+
+    private function loadAndPresentShowInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, $view)
     {
         if (!$id || !$store) {
             return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
         }
-    
+
         $anexos_funcionarios = AnexoFuncionario::with('situacoes')->where('id_funcionario', $id)
-                                               ->where('id_qualificacao' ,"=", 0)
-                                               ->get();
-    
-      $qualificacao_funcoes = FuncionarioQualificacao::with('qualificacoes')
-                                ->leftJoin('anexos_funcionarios', function ($join) {
-                                    $join->on('funcionarios_qualificacoes.id_funcionario', '=', 'anexos_funcionarios.id_funcionario')
-                                         ->on('funcionarios_qualificacoes.id_funcao', '=', 'anexos_funcionarios.id_funcao')
-                                         ->on('funcionarios_qualificacoes.id_qualificacao', '=', 'anexos_funcionarios.id_qualificacao');
-                                })
-                                ->where('funcionarios_qualificacoes.id_funcionario', $id)
-                                ->where('funcionarios_qualificacoes.id_qualificacao', '!=', 0)
-                                ->select('funcionarios_qualificacoes.*', 'anexos_funcionarios.id as id_anexos', 'anexos_funcionarios.nome_arquivo', 'anexos_funcionarios.data_conclusao', 'anexos_funcionarios.data_validade_doc', 'anexos_funcionarios.situacao_doc', 'anexos_funcionarios.usuario_cad', 'anexos_funcionarios.usuario_aprov', 'anexos_funcionarios.data_aprovacao', 'anexos_funcionarios.observacoes')
-                                ->get();
-    
+            ->where('id_qualificacao', "=", 0)
+            ->get();
+
+        $qualificacao_funcoes = FuncionarioQualificacao::with('qualificacoes')
+            ->leftJoin('anexos_funcionarios', function ($join) {
+                $join->on('funcionarios_qualificacoes.id_funcionario', '=', 'anexos_funcionarios.id_funcionario')
+                    ->on('funcionarios_qualificacoes.id_funcao', '=', 'anexos_funcionarios.id_funcao')
+                    ->on('funcionarios_qualificacoes.id_qualificacao', '=', 'anexos_funcionarios.id_qualificacao');
+            })
+            ->where('funcionarios_qualificacoes.id_funcionario', $id)
+            ->where('funcionarios_qualificacoes.id_qualificacao', '!=', 0)
+            ->select('funcionarios_qualificacoes.*', 'anexos_funcionarios.id as id_anexos', 'anexos_funcionarios.nome_arquivo', 'anexos_funcionarios.data_conclusao', 'anexos_funcionarios.data_validade_doc', 'anexos_funcionarios.situacao_doc', 'anexos_funcionarios.usuario_cad', 'anexos_funcionarios.usuario_aprov', 'anexos_funcionarios.data_aprovacao', 'anexos_funcionarios.observacoes')
+            ->get();
+
         $qualificacao_epis = FuncaoEpi::where('id_funcao', $store->id_funcao)->get();
-    
+
         $itensRetirados = FerramentalRetirada::select('ativos_ferramental_retirada')
-                                             ->select(
-                                                 'ativos_ferramental_retirada.*',
-                                                 'ativos_ferramental_retirada.status as statusRetirada',
-                                                 'ativos_ferramental_retirada.created_at as dataRetirada',
-                                                 'ativos_ferramental_retirada.data_devolucao',
-                                                 'funcionarios.nome as funcionario',
-                                                 'funcionarios.matricula as funcionario_matricula',
-                                                 'ativos_ferramental_retirada_item.id_ativo_externo as id_ferramenta_retirada',
-                                                 'ativos_externos.titulo as nome_ferramenta',
-                                                 'ativos_externos_estoque.patrimonio'
-                                             )
-                                             ->join("funcionarios",  "ativos_ferramental_retirada.id_funcionario", "=", "funcionarios.id")
-                                             ->join("ativos_ferramental_retirada_item", "ativos_ferramental_retirada.id", "=", "ativos_ferramental_retirada_item.id_retirada")
-                                             ->join("ativos_externos_estoque", "ativos_ferramental_retirada_item.id_ativo_externo", "=", "ativos_externos_estoque.id")
-                                             ->join("ativos_externos", "ativos_externos_estoque.id_ativo_externo", "=", "ativos_externos.id")
-                                             ->where('ativos_ferramental_retirada.id_funcionario', $id)
-                                             ->orderByDesc("ativos_ferramental_retirada_item.created_at")
-                                             ->get();
-    
+            ->select(
+                'ativos_ferramental_retirada.*',
+                'ativos_ferramental_retirada.status as statusRetirada',
+                'ativos_ferramental_retirada.created_at as dataRetirada',
+                'ativos_ferramental_retirada.data_devolucao',
+                'funcionarios.nome as funcionario',
+                'funcionarios.matricula as funcionario_matricula',
+                'ativos_ferramental_retirada_item.id_ativo_externo as id_ferramenta_retirada',
+                'ativos_externos.titulo as nome_ferramenta',
+                'ativos_externos_estoque.patrimonio'
+            )
+            ->join("funcionarios",  "ativos_ferramental_retirada.id_funcionario", "=", "funcionarios.id")
+            ->join("ativos_ferramental_retirada_item", "ativos_ferramental_retirada.id", "=", "ativos_ferramental_retirada_item.id_retirada")
+            ->join("ativos_externos_estoque", "ativos_ferramental_retirada_item.id_ativo_externo", "=", "ativos_externos_estoque.id")
+            ->join("ativos_externos", "ativos_externos_estoque.id_ativo_externo", "=", "ativos_externos.id")
+            ->where('ativos_ferramental_retirada.id_funcionario', $id)
+            ->orderByDesc("ativos_ferramental_retirada_item.created_at")
+            ->get();
+
         return view($view, compact(
-            'store', 'estados', 'obras', 'funcoes', 'empresas', 'anexos_funcionarios', 'qualificacao_funcoes', 'qualificacao_epis', 'itensRetirados'
+            'store',
+            'estados',
+            'obras',
+            'funcoes',
+            'setores',
+            'empresas',
+            'anexos_funcionarios',
+            'qualificacao_funcoes',
+            'qualificacao_epis',
+            'itensRetirados'
         ));
     }
 
     public function edit($id)
     {
-      
-        
+
         $id_funcionario_sessao = session('usuario_vinculo.id_funcionario');
         $nivel_usuario = session('usuario_vinculo.id_nivel');
-    
+
         $empresas = CadastroEmpresa::where('status', 'Ativo')->get();
         $store = CadastroFuncionario::with('funcao')->find($id);
         $estados = Configuracao::estados();
         $obras = CadastroObra::where('status_obra', 'Ativo')->get();
         $funcoes = FuncaoFuncionario::all();
-    
+        $setores = CadastroFuncionarioSetor::all();
+
+
+
         if ($this->isAccessDenied($nivel_usuario, $id_funcionario_sessao, $id)) {
             return $this->denyAccess($id_funcionario_sessao);
         }
-    
+
         if ($this->needsQualificationInfo($nivel_usuario, $id_funcionario_sessao, $id)) {
-              
-            return $this->loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, 'pages.cadastros.funcionario.form');
-            
+
+            return $this->loadAndPresentQualificationInfo($id, $store, $estados, $obras, $funcoes, $empresas, $setores, 'pages.cadastros.funcionario.form');
         }
-    
+
         return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
     }
 
@@ -447,7 +468,7 @@ class CadastroFuncionarioController extends Controller
         try {
             $funcionario = CadastroFuncionario::findOrFail($id);
 
-            if ($request->hasFile('imagem_usuario') && $request->file('imagem_usuario')->isValid()) {
+            if ($request->file('imagem_usuario') && $request->file('imagem_usuario')->isValid()) {
                 $imageName = $request->file('imagem_usuario')->getClientOriginalName();
                 $request->file("imagem_usuario")->move(public_path("build/images/users/{$funcionario->id}"), $imageName);
             } else {
@@ -457,6 +478,7 @@ class CadastroFuncionarioController extends Controller
             $funcionario->update([
                 'matricula'         => $request->matricula,
                 'id_obra'           => $request->id_obra,
+                'id_setor'           => $request->id_setor,
                 'nome'              => $request->nome,
                 'data_nascimento'   => $request->data_nascimento,
                 'cpf'               => $request->cpf,
@@ -481,7 +503,7 @@ class CadastroFuncionarioController extends Controller
 
             // Verificar e salvar anexos e qualificações
             $this->salvarAnexoFuncionario($request->file('file'), $request->data_conclusao, $request, $funcionario);
-            
+
             $this->salvarFuncionarioQualificacoes($request, $funcionario);
 
             $notification = array(
@@ -509,26 +531,26 @@ class CadastroFuncionarioController extends Controller
             return redirect()->route('cadastro.funcionario.editar', $funcionario->id)->with($notification);
         }
     }
-    
+
     public function show($id)
     {
         $id_funcionario_sessao = session('usuario_vinculo.id_funcionario');
         $nivel_usuario = session('usuario_vinculo.id_nivel');
-    
+
         $empresas = CadastroEmpresa::where('status', 'Ativo')->get();
         $store = CadastroFuncionario::with('funcao', 'obra')->where('id', $id)->first();
         $estados = Configuracao::estados();
         $obras = CadastroObra::where('status_obra', 'Ativo')->get();
         $funcoes = FuncaoFuncionario::all();
-    
+
         if ($this->isAccessDenied($nivel_usuario, $id_funcionario_sessao, $id)) {
             return $this->denyAccess($id_funcionario_sessao);
         }
-    
+
         if ($this->needsQualificationInfo($nivel_usuario, $id_funcionario_sessao, $id)) {
             return $this->loadAndPresentShowInfo($id, $store, $estados, $obras, $funcoes, $empresas, 'pages.cadastros.funcionario.show');
         }
-    
+
         return redirect('admin/cadastro/funcionario')->with('fail', 'Esse registro não foi encontrado.');
     }
 
@@ -537,42 +559,42 @@ class CadastroFuncionarioController extends Controller
     {
         // Encontra o funcionário pelo ID
         $funcionario = CadastroFuncionario::find($id);
-        
+
         // Verifica se o funcionário foi encontrado
         if (!$funcionario) {
             return response()->json(['mensagem' => 'Funcionário não encontrado'], 404);
         }
-    
+
         $password = $funcionario->password;
         $cpf = $funcionario->cpf;
-        
+
         // Verifica se o CPF fornecido corresponde ao CPF do funcionário
         if ($password != null && $request->cpf != $cpf) {
             return response()->json([
-                                    'mensagem' => 'CPF inválido',
-                                    'icon' => 'warning'        
-            
+                'mensagem' => 'CPF inválido',
+                'icon' => 'warning'
+
             ]);
         }
-    
+
         // Se a senha já existe, altera a senha
         if ($password != null) {
             $dataHoraAtual = Carbon::now();
             $dataHoraFormatada = $dataHoraAtual->format('Y-m-d H:i:s');
-    
+
             $funcionario->update([
-                "password" =>$request->password,
+                "password" => $request->password,
                 "data_altera_password" => $dataHoraFormatada,
             ]);
-    
+
             return response()->json(['mensagem' => 'Senha alterada com sucesso']);
         }
-    
+
         // Se a senha não existe, cadastra a senha
         $funcionario->update([
             "password" => $request->password,
         ]);
-        
+
         return response()->json(['mensagem' => 'Senha cadastrada com sucesso']);
     }
 
@@ -600,7 +622,7 @@ class CadastroFuncionarioController extends Controller
 
             foreach ($files as $key => $file) {
 
-              
+
                 $nome_arquivo = $request->nome_qualificacao[$key];
                 $dataHoraAtual = Carbon::now();
                 // Formata a data e hora conforme necessário
@@ -673,10 +695,12 @@ class CadastroFuncionarioController extends Controller
     public function aprovar_documentos(Request $request)
     {
 
+        // dd($request->id_qualificacao);
+
         $aprovar_documento = AnexoFuncionario::find($request->id);
-        
-       // dd($request->id);
-        
+
+        $editar_qualificacao = FuncionarioQualificacao::find($request->id_qualificacao);
+
         $formattedDate = Carbon::now()->format('d/m/Y h:m:s');
         $data_hora_atual = $formattedDate;
         $motivo = $request->motivoReprovacao ? $aprovar_documento->observacoes . "<p class='m-0 p-2 text-success'>" . $data_hora_atual . ": " . $request->motivoReprovacao . "</p><hr class='m-0 p-0'>" : '';
@@ -701,14 +725,18 @@ class CadastroFuncionarioController extends Controller
         Log::channel('main')->info($userLog . ' | APROVOU O DOCUMENTO: ' . $aprovedOrcamento->id);
         
  */
-//
+        //
 
         if ($request->selectValue == 2) {
-            
-            //dd($request->selectValue);
+
+
             $aprovar_documento->update([
                 'situacao_doc'   => 2,
                 'usuario_aprov' => Auth::user()->email
+            ]);
+
+            $editar_qualificacao->update([
+                'situacao' => 2
             ]);
 
             $notification = array(
@@ -716,12 +744,16 @@ class CadastroFuncionarioController extends Controller
                 'message' => "Documento aprovado com sucesso!!!",
                 'type' => 'success'
             );
-            
-        }else if ($request->selectValue == 18) {
+        } else if ($request->selectValue == 18) {
+
             $aprovar_documento->update([
                 'situacao_doc'   => 18,
                 'usuario_reprov' => Auth::user()->email,
                 'observacoes' => $motivo
+            ]);
+
+            $editar_qualificacao->update([
+                'situacao' => 18
             ]);
 
             $notification = array(
@@ -729,11 +761,15 @@ class CadastroFuncionarioController extends Controller
                 'message' => "Documento pendente!!!",
                 'type' => 'warning'
             );
-            
-        }else {
+        } else {
+
             $aprovar_documento->update([
                 'situacao_doc'   => 1,
                 'usuario_reprov' => Auth::user()->email,
+            ]);
+
+            $editar_qualificacao->update([
+                'situacao' => 1
             ]);
 
             $notification = array(
@@ -758,54 +794,50 @@ class CadastroFuncionarioController extends Controller
     {
         //dd($id);
         if ($id) {
-            
+
             // Procurar o registro pelo ID
             $anexoFuncionario = AnexoFuncionario::find($id);
             $download_documento = $anexoFuncionario->arquivo;
             $id_funcionario = $anexoFuncionario->id_funcionario;
-    
+
             // Verificar se o registro foi encontrado
             if ($anexoFuncionario) {
-               
-                
+
+
                 //dd($id_funcionario);
-    
-                    // Fazer o download do arquivo
-                    $path = 'public/uploads/usuarios/' . $id_funcionario . '/' . $download_documento;
-                    $path_sem_id = 'public/uploads/usuarios/' . $download_documento;
-        
-                    if (Storage::exists($path)) {
-                        
-                        return Storage::download($path);
-                          $notification = array(
-                            'title' => "Atenção!",
-                            'message' => "Download efetuado com sucesso.",
-                            'type' => 'success'
-                        );
-                        
-                         return redirect()->route('cadastro.funcionario.show', $id_funcionario."#projects")->with($notification);
-                        
-                    } else {
-                        
-                        // Trate o caso em que o arquivo não existe
-                        return Storage::download($path_sem_id);
-                        
-                        $notification = array(
+
+                // Fazer o download do arquivo
+                $path = 'public/uploads/usuarios/' . $id_funcionario . '/' . $download_documento;
+                $path_sem_id = 'public/uploads/usuarios/' . $download_documento;
+
+                if (Storage::exists($path)) {
+
+                    return Storage::download($path);
+                    $notification = array(
+                        'title' => "Atenção!",
+                        'message' => "Download efetuado com sucesso.",
+                        'type' => 'success'
+                    );
+
+                    return redirect()->route('cadastro.funcionario.show', $id_funcionario . "#projects")->with($notification);
+                } else {
+
+                    // Trate o caso em que o arquivo não existe
+                    return Storage::download($path_sem_id);
+
+                    $notification = array(
                         'title' => "Atenção!",
                         'message' => "'Download efetuado porem não foi possivel encontrar a pasta'",
                         'type' => 'error'
-                                );
-                            }
-                             // Redirecionar com mensagem de erro
-                        return redirect()->route('cadastro.funcionario.show', $id_funcionario."#projects")->with($notification);
-                        
-                    }
-                    
-               
+                    );
+                }
+                // Redirecionar com mensagem de erro
+                return redirect()->route('cadastro.funcionario.show', $id_funcionario . "#projects")->with($notification);
+            }
         }
     }
 
-    
+
     public function downloads_zip($id)
     {
 
@@ -870,10 +902,10 @@ class CadastroFuncionarioController extends Controller
 
         $anexos = AnexoFuncionario::find($id);
 
-         if (File::exists("public/uploads/usuarios/{$anexos->id_funcionario}/" . $anexos->arquivo)) {
+        if (File::exists("public/uploads/usuarios/{$anexos->id_funcionario}/" . $anexos->arquivo)) {
 
             File::delete("public/uploads/usuarios/{$anexos->id_funcionario}/" . $anexos->arquivo);
-     }
+        }
 
         //dd($anexos->id_funcionario);
 
@@ -911,13 +943,14 @@ class CadastroFuncionarioController extends Controller
             return redirect()->route('cadastro.funcionario.editar', $anexos->id_funcionario)->with($notification);
         }
     }
-    
+
     public function salvarFuncionarioQualificacoes($request, $funcionario)
     {
         $id_qualificacoes = $request->id_qualificacao;
         $tempo_validades = $request->tempo_validade;
 
         if ($id_qualificacoes) {
+
             foreach ($request->id_qualificacao as $index => $id_qualificacao) {
                 $situacao_doc = $request->situacao_doc[$index] ?? 1;
                 $tempo_validade = $tempo_validades[$index];
@@ -944,22 +977,23 @@ class CadastroFuncionarioController extends Controller
             }
         }
     }
-    
+
     // Função para salvar um anexo de funcionário quando for editar os dados
     public function editar_anexos_funcionarios(Request $request)
 
     {
-        
+        dd($request->all());
+
         $dataHoraAtual = Carbon::now();
         $dataFormatada = $dataHoraAtual->format('Y-m-d H:i:s');
 
         $editar_data_conclusao = Carbon::parse($request->data_conclusao);
         $data_calculado = $editar_data_conclusao->addMonths($request->tempo_validade);
 
-      
-         if($request->acao_cadastrar_editar == "editar_qualificacao" ){
-          
-        
+
+        if ($request->acao_cadastrar_editar == "editar_qualificacao") {
+
+
             if ($request->file == null && $request->data_conclusao == null) {
                 return response()->json([
                     'notification' => [
@@ -969,42 +1003,43 @@ class CadastroFuncionarioController extends Controller
                     ]
                 ]);
             }
-            
-              
-    
+
+
+
             $editar_anexo_funcionario = AnexoFuncionario::find($request->id_anexo);
-            
-            if($request->file){
-            
+
+            if ($request->file) {
+
                 $file = $request->file;
             }
-        
-    
-                $editar_anexo_funcionario->update([
-                    'usuario_cad'       => Auth::user()->email,
-                    'arquivo'           => $file->getClientOriginalName(),
-                    'nome_arquivo'      => $file->getClientOriginalName(),
-                    'data_conclusao'    => $request->data_conclusao,
-                    'data_aprovacao'    => $dataFormatada,
-                    'data_validade_doc' => $data_calculado,
-                ]);
-    
-    
-              $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
-    
-                return response()->json([
-                    'message' => [
-                        'title' => 'Sucesso!!!',
-                        'message' => 'Arquivos adicionados com sucesso!!!',
-                        'type' => 'success'
-                    ],
-                    'data' => [
-                        $editar_anexo_funcionario
-                    ]
-                    
-                ]);
-            
-    
+
+
+
+            $editar_anexo_funcionario->update([
+                'usuario_cad'       => Auth::user()->email,
+                'arquivo'           => $file->getClientOriginalName(),
+                'nome_arquivo'      => $file->getClientOriginalName(),
+                'data_conclusao'    => $request->data_conclusao,
+                'data_aprovacao'    => $dataFormatada,
+                'data_validade_doc' => $data_calculado,
+            ]);
+
+
+            $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
+
+            return response()->json([
+                'message' => [
+                    'title' => 'Sucesso!!!',
+                    'message' => 'Arquivos adicionados com sucesso!!!',
+                    'type' => 'success'
+                ],
+                'data' => [
+                    $editar_anexo_funcionario
+                ]
+
+            ]);
+
+
             return response()->json([
                 'notification' => [
                     'title' => 'Erro!',
@@ -1012,15 +1047,14 @@ class CadastroFuncionarioController extends Controller
                     'type' => 'error'
                 ]
             ]);
-            
-         } else {            
-            
+        } else {
+
             // Cadastrando novo arquivo
-            
+
             if ($request->file) {
-                
+
                 $file = $request->file;
-                
+
                 $salvar_anexo_funcionario = new AnexoFuncionario([
                     'id_funcionario' => $request->id_funcionario_anexo,
                     'id_qualificacao' => $request->id_qualificacao,
@@ -1032,11 +1066,11 @@ class CadastroFuncionarioController extends Controller
                     'data_validade_doc' => $data_calculado,
                     'situacao_doc' => 1,
                 ]);
-                
+
                 $salvar_anexo_funcionario->save();
-                
-               $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
-    
+
+                $file->storeAs('public/uploads/usuarios/' . $request->id_funcionario_anexo, $file->getClientOriginalName());
+
                 return response()->json([
                     'message' => [
                         'title' => 'Sucesso!!!',
@@ -1046,23 +1080,23 @@ class CadastroFuncionarioController extends Controller
                     'data' => $salvar_anexo_funcionario
                 ]);
             }
-    
-                return response()->json([
-                    'notification' => [
-                        'title' => 'Erro!',
-                        'message' => 'Ocorreu um erro ao tentar salvar o arquivo.',
-                        'type' => 'error'
-                    ]
-                ]);
-            }
+
+            return response()->json([
+                'notification' => [
+                    'title' => 'Erro!',
+                    'message' => 'Ocorreu um erro ao tentar salvar o arquivo.',
+                    'type' => 'error'
+                ]
+            ]);
+        }
     }
-    
-    
+
+
     public function consultar_qualificacao(Request $request)
     {
         $consulta = [];
-        
-//dd($request->all());
+
+        //dd($request->all());
 
 
         $id_qualificacao = $request->id_qualificacao;
@@ -1104,13 +1138,13 @@ class CadastroFuncionarioController extends Controller
                     return response()->json($consulta);
                 }
             }
-            
-            
+
+
 
             // Calcula a validade do certificado
             if ($request->data_conclusao) {
-                
-                
+
+
 
                 $data_calculado = FuncaoQualificacao::where('id', $id_qualificacao)
                     ->orderBy('id')
@@ -1125,79 +1159,71 @@ class CadastroFuncionarioController extends Controller
                     return response()->json(['data_calculado' => $data_calculado->format('d/m/Y')]);
                 }
             }
-            
-            
+
+
 
             // Calcula a validade do certificado
             if ($request->editar_data_conclusao) {
 
-            // dd($request->all());
-               
+                // dd($request->all());
+
                 $existeAnexo = AnexoFuncionario::where('id', $id_anexo)->where('id_funcionario', $id_funcionario)->exists();
 
                 if ($existeAnexo) {
-                    
+
                     $data_calculado = AnexoFuncionario::with('qualificacoes')->find($id_anexo);
                     $data_calculado = $data_calculado->qualificacoes;
-                    
                 } else {
-                    
+
                     //dd($request->all());
-                    
+
                     $data_calculado = FuncionarioQualificacao::find($id_anexo);
                 }
-            
+
                 if ($data_calculado) {
-                    
+
                     $editar_data_conclusao = Carbon::parse($editar_data_conclusao);
-                    
+
                     $data_calculado = $editar_data_conclusao->addMonths($data_calculado->tempo_validade);
-            
+
                     return response()->json(['data_calculado' => $data_calculado->format('d/m/Y')]);
                 }
-            
+
                 return response()->json(['error' => 'Não foi possível calcular a data de validade'], 400);
-                
-                
             }
 
-            if ($id_anexo) {  
-                
-                if($request->acao_cadastrar_editar == "editar_qualificacao" ){
-                 
-                 //dd($request->all());
+            if ($id_anexo) {
 
-                $anexo = AnexoFuncionario::find($id_anexo);
-//dd($anexo);
-                return response()->json([
-                    'id_anexo' => $anexo->id,
-                    'nome_qualificacao' => $anexo->qualificacao->nome_qualificacao,
-                    'id_qualificacao' => $anexo->id_qualificacao,
-                    'tempo_validade' => $anexo->qualificacao->tempo_validade,
-                    'data_conclusao' => $anexo->data_conclusao,
-                    'situacao_doc' => $anexo->situacao_doc
-                ]);
-                
-                    
-                }elseif($request->acao_cadastrar_editar == "cadastrar_qualificacao" ){
-                    
-                     // Obtém as qualificações obrigatórias para a nova função
-                    $anexo = FuncionarioQualificacao::find($id_anexo);
-                    
+                if ($request->acao_cadastrar_editar == "editar_qualificacao") {
+
+                    //dd($request->all());
+
+                    $anexo = AnexoFuncionario::find($id_anexo);
                     //dd($anexo);
-                    
                     return response()->json([
-                    'id_anexo' => $anexo->id,
-                    'nome_qualificacao' => $anexo->qualificacoes->nome_qualificacao,
-                    'id_qualificacao' => $anexo->id_qualificacao,
-                    'id_funcao_qualificacao' => $anexo->qualificacoes->id_qualificacao,
-                    'tempo_validade' => $anexo->qualificacoes->tempo_validade,
-                    'situacao_doc' => $anexo->situacao_doc
-                ]);
-                    
-                
+                        'id_anexo' => $anexo->id,
+                        'nome_qualificacao' => $anexo->qualificacao->nome_qualificacao,
+                        'id_qualificacao' => $anexo->id_qualificacao,
+                        'tempo_validade' => $anexo->qualificacao->tempo_validade,
+                        'data_conclusao' => $anexo->data_conclusao,
+                        'situacao_doc' => $anexo->situacao_doc
+                    ]);
+                } elseif ($request->acao_cadastrar_editar == "cadastrar_qualificacao") {
+
+                    // Obtém as qualificações obrigatórias para a nova função
+                    $anexo = FuncionarioQualificacao::find($id_anexo);
+
+                    //dd($anexo);
+
+                    return response()->json([
+                        'id_anexo' => $anexo->id,
+                        'nome_qualificacao' => $anexo->qualificacoes->nome_qualificacao,
+                        'id_qualificacao' => $anexo->id_qualificacao,
+                        'id_funcao_qualificacao' => $anexo->qualificacoes->id_qualificacao,
+                        'tempo_validade' => $anexo->qualificacoes->tempo_validade,
+                        'situacao_doc' => $anexo->situacao_doc
+                    ]);
                 }
-                
             }
 
             // Obtém as qualificações obrigatórias para a nova função
@@ -1211,7 +1237,6 @@ class CadastroFuncionarioController extends Controller
             ];
 
             return response()->json($consulta);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Ocorreu um erro ao processar sua solicitação',
@@ -1241,62 +1266,4 @@ class CadastroFuncionarioController extends Controller
             ], 500);
         }
     }
-
-    
-    
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

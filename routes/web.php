@@ -101,8 +101,8 @@ use App\Http\Controllers\EstoqueCategoriaController;
 use App\Http\Controllers\EstoqueMarcasController;
 use App\Http\Controllers\EstoqueSubCategoriaController;
 
-use App\Http\Controllers\Auth\MicrosoftController;
-
+use App\Http\Controllers\OneDriveController;
+use App\Http\Controllers\CadastroFuncionarioSetorController;
 use App\Http\Controllers\ConfiguracaoNotificacaoEmailController;
 use App\Http\Controllers\FipeController;
 use App\Http\Controllers\FuncionarioPublicController;
@@ -339,8 +339,11 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/cad_edi_password_func/{id}',        [CadastroFuncionarioController::class, 'cad_edi_password_func'])->name('cadastro.funcionario.cad_edi_password_func');
     Route::get('admin/cadastro/funcionario/obter-motivo/{id}',                  [CadastroFuncionarioController::class, 'obter_motivo'])->name('cadastro.funcionario.obter_motivo');
     Route::post('admin/cadastro/funcionario/excluir-qualificacao',              [CadastroFuncionarioController::class, 'excluir_qualificacao'])->name('cadastro.funcionario.excluir_qualificacao');
-    Route::post('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
+    Route::put('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
 
+
+    Route::get('admin/uploadOndrive', [OneDriveController::class, 'index'])->name('upload.index');
+    Route::put('admin/uploadOndrive/upload_file', [OneDriveController::class, 'uploadFile'])->name('upload.file');
 
 
     /* Cadastros - Funções - Funcionário */
@@ -356,6 +359,17 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/funcao/ajax',                       [FuncaoFuncionarioController::class, 'storeFuncao'])->name('cadastro.funcionario.funcoes.ajax');
     Route::get('admin/cadastro/funcionario/funcoes/delete_epi/{id}',            [FuncaoFuncionarioController::class, 'delete_epi'])->name('cadastro.funcionario.funcoes.delete_epi');
     Route::post('admin/cadastro/funcionario/funcoes/delete_funcao/{id}',        [FuncaoFuncionarioController::class, 'delete_funcao'])->name('cadastro.funcionario.funcoes.delete_funcao');
+    
+    
+    /* Cadastros - Setores - Funcionário */
+
+    Route::get('admin/cadastro/funcionario/setores',                            [CadastroFuncionarioSetorController::class, 'index'])->name('cadastro.funcionario.setores.index');
+    Route::get('admin/cadastro/funcionario/setores/adicionar',                  [CadastroFuncionarioSetorController::class, 'create'])->name('cadastro.funcionario.setores.create');
+    Route::post('admin/cadastro/funcionario/setores',                           [CadastroFuncionarioSetorController::class, 'store'])->name('cadastro.funcionario.setores.store');
+    Route::get('admin/cadastro/funcionario/setores/editar/{id}',                [CadastroFuncionarioSetorController::class, 'edit'])->name('cadastro.funcionario.setores.edit');
+    Route::get('admin/cadastro/funcionario/setores/show/{id}',                  [CadastroFuncionarioSetorController::class, 'show'])->name('cadastro.funcionario.setores.show');
+    Route::post('admin/cadastro/funcionario/setores/update/{id}',               [CadastroFuncionarioSetorController::class, 'update'])->name('cadastro.funcionario.setores.update');
+    Route::delete('admin/cadastro/funcionario/setores/{id}',                    [CadastroFuncionarioSetorController::class, 'delete'])->name('cadastro.funcionario.setores.delete');
 
     /* Fucnionário - Folga */
 
@@ -635,7 +649,9 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/veiculo/veiculo_docs_tecnico/update/{id}',               [VeiculosDocsTecnicosController::class, 'update'])->name('veiculo_docs_tecnico.update');
     Route::delete('admin/ativo/veiculo/veiculo_docs_tecnico/delete/{id}',            [VeiculosDocsTecnicosController::class, 'delete'])->name('veiculo_docs_tecnico.delete');
     // Rota para download de arquivos
+    Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/upload/{id}',             [VeiculosDocsTecnicosController::class, 'upload'])->name('veiculo_docs_tecnico.upload');
     Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/download/{id}',             [VeiculosDocsTecnicosController::class, 'download'])->name('veiculo_docs_tecnico.download');
+    Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/not_emai',                  [VeiculosDocsTecnicosController::class, 'email'])->name('veiculo_docs_tecnico.email');
 
     Route::get('admin/ativo/veiculo/docs_legais/{id}',                              [DocsLegaisController::class, 'index'])->name('docs_legais.index');
     Route::get('admin/ativo/veiculo/docs_legais/create/{veiculo_tipo}',             [DocsLegaisController::class, 'create'])->name('docs_legais.create');
@@ -912,26 +928,26 @@ Route::get('admin/ativo/veiculo/manutencao/servicos/{item}/delete', [VeiculoServ
 
     /* Ferramental - Requisição */
 
-    Route::get('admin/ferramental/requisicao', [FerramentalRequisicaoController::class, 'index'])->name('ferramental.requisicao.index');
-    Route::get('admin/ferramental/requisicao/adicionar', [FerramentalRequisicaoController::class, 'create'])->name('ferramental.requisicao.create');
-    Route::post('admin/ferramental/requisicao', [FerramentalRequisicaoController::class, 'store'])->name('ferramental.requisicao.store');
-    Route::get('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'show'])->name('ferramental.requisicao.show');
+    Route::get('admin/ferramental/requisicao',                      [FerramentalRequisicaoController::class, 'index'])->name('ferramental.requisicao.index');
+    Route::get('admin/ferramental/requisicao/adicionar',            [FerramentalRequisicaoController::class, 'create'])->name('ferramental.requisicao.create');
+    Route::post('admin/ferramental/requisicao',                     [FerramentalRequisicaoController::class, 'store'])->name('ferramental.requisicao.store');
+    Route::get('admin/ferramental/requisicao/{id}',                 [FerramentalRequisicaoController::class, 'show'])->name('ferramental.requisicao.show');
 
     // Route::get('admin/ferramental/requisicao/{id}/editar', [FerramentalRequisicaoController::class, 'edit'])->name('ferramental.requisicao.edit');
 
 
-    Route::put('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'update'])->name('ferramental.requisicao.update');
+    Route::put('admin/ferramental/requisicao/{id}',                 [FerramentalRequisicaoController::class, 'update'])->name('ferramental.requisicao.update');
 
-    Route::post('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneio'])->name('ferramental.requisicao.romaneio');
-    Route::patch('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'recept'])->name('ferramental.requisicao.recept');
+    Route::post('admin/ferramental/requisicao/romaneio/{id}',       [FerramentalRequisicaoController::class, 'romaneio'])->name('ferramental.requisicao.romaneio');
+    Route::patch('admin/ferramental/requisicao/{id}',               [FerramentalRequisicaoController::class, 'recept'])->name('ferramental.requisicao.recept');
     // Route::delete('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'destroy'])->name('ferramental.requisicao.destroy');
 
     Route::get('admin/ferramental/requisicao/romaneio/{id}/obra/{obra}', [FerramentalRequisicaoController::class, 'romaneioObra'])->name('ferramental.requisicao.romaneio.obra');
-    Route::get('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
+    Route::get('admin/ferramental/requisicao/romaneio/{id}',        [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
 
-    Route::post('admin/anexo/upload', [AnexoController::class, 'upload'])->name('anexo.upload');
-    Route::get('admin/anexo/excluir/{id?}/{modulo?}', [AnexoController::class, 'destroy'])->name('anexo.destroy');
-    Route::get('admin/anexo/download/{id}', [AnexoController::class, 'download'])->name('anexo.download');
+    Route::post('admin/anexo/upload',                               [AnexoController::class, 'upload'])->name('anexo.upload');
+    Route::get('admin/anexo/excluir/{id?}/{modulo?}',               [AnexoController::class, 'destroy'])->name('anexo.destroy');
+    Route::get('admin/anexo/download/{id}',                         [AnexoController::class, 'download'])->name('anexo.download');
 
     // Adicionar marca
 
