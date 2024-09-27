@@ -89,9 +89,21 @@
                             </a>
                         </li>
                         <li class="nav-item">
+<<<<<<< HEAD
                             <a class="nav-link " data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
                                 <i class="fas fa-home"></i>
                                 Doc's Técnicos
+=======
+                            <a class="nav-link" data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
+                                <i class="fas fa-home"></i>
+                                Doc's Técnicos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#docs_legais" role="tab">
+                                <i class="fas fa-home"></i>
+                                Doc's Legais
+>>>>>>> docs_legais
                             </a>
                         </li>
                         <li class="nav-item">
@@ -203,6 +215,77 @@
                                 @endforeach
                             </div>
 
+                        </div>
+
+                        <div class="tab-pane" id="docs_legais" role="tabpanel">
+                            <a href="{{ route('veiculos_docs_legais.create', $veiculo->id) }}"
+                                class="btn btn-success rounded">Cacadastrar Docs's Legal</a>
+
+                            <div class="card-body">
+                                <div class="card">
+
+                                    <table class="table table-grid">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome Documento</th>
+                                                <th>Arquivo</th>
+                                                <th>Dt Documento</th>
+                                                <th>Dt Validade</th>
+                                                <th>Restan</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($docs_legais as $doc_legal)
+                                                <tr>
+                                                    <td>{{ $doc_legal->id }}</td>
+                                                    <td>{{ $doc_legal->tipo_doc_legal->nome_documento ?? 'nome_documento' }}
+                                                    </td>
+                                                    <td>{{ $doc_legal->arquivo }}</td>
+
+                                                    {{-- Exibir data do documento --}}
+                                                    <td>{{ $doc_legal->data_documento ? Tratamento::dateBr($doc_legal->data_documento) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir data de validade --}}
+                                                    <td>{{ $doc_legal->data_validade ? Tratamento::dateBr($doc_legal->data_validade) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir a diferença em dias ou 'N/A' se não houver diferença --}}
+                                                    <td>
+
+                                                        @if ($doc_legal->diferenca_dias >= 40)
+                                                            <span class="btn btn-success btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+                                                        @elseif($doc_legal->diferenca_dias < 39 && $doc_legal->diferenca_dias >= 15)
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+                                                        @elseif($doc_legal->diferenca_dias < 14 && $doc_legal->diferenca_dias >= 1)
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_legal->diferenca_dias ? $doc_legal->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+                                                        @endif
+
+                                                    </td>
+
+                                                    <td>
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm btn_modal_doc_legal "
+                                                            data-id="{{ $doc_legal->id }}"></i>inserir/ Alterar</button>
+                                                        {{-- <a class="btn btn-warning" href="{{ route('veiculos_docs_legais.edit', $doc_tec->id) }}">Editar</a>
+                                                        <a class="btn btn-danger" href="{{ route('veiculos_docs_legais.delete', $doc_tec->id) }}">Excluir</a> --}}
+                                                        <a class="btn btn-success btn-sm"
+                                                            href="{{ route('veiculos_docs_legais.download', $doc_legal->id) }}">Download</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
                         <!--end tab-pane-->
@@ -533,7 +616,13 @@
                                                     <th class="text-center ">Ações</th>
                                                 </tr>
                                             </thead>
+<<<<<<< HEAD
                                             <tbody>
+=======
+
+                                            <tbody>
+
+>>>>>>> docs_legais
                                                 @foreach ($ipvas as $ipva)
                                                     <tr>
                                                         <td class="text-center">{{ $ipva->id }}</td>
@@ -615,7 +704,11 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($abastecimentos as $abastecimento)
+<<<<<<< HEAD
                                                     <tr class="text-center">
+=======
+                                                    <tr>
+>>>>>>> docs_legais
                                                         <td>{{ $abastecimento->id }}</td>
                                                         <td>{{ $abastecimento->km_inicial }}</td>
                                                         <td>{{ $abastecimento->km_final }}</td>
@@ -696,8 +789,91 @@
             </div>
         </div>
     @endsection
+
+
     @section('script')
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var buttons = document.querySelectorAll('.btn_modal_doc_legal');
+
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var doc_legal_id = this.getAttribute('data-id');
+                        var url_doc_legal = "{{ route('veiculos_docs_legais.upload', ['id' => ':id']) }}";
+                        url_doc_legal = url_doc_legal.replace(':id', doc_legal_id);
+
+                        (async () => {
+                            const {
+                                value: formValues
+                            } = await Swal.fire({
+                                title: '<h3>Docs Legais',
+                                html: ` 
+                                        <form id="uploadForm_docs_legais" method="POST" class="m-0 p-0" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="row">
+                                                <input type="hidden" id="doc_legal_id" name="doc_legal_id" value="${doc_legal_id}">
+                                             
+                                                <div class="col-12 text-start mb-3">
+                                                    <label for="arquivo" class="form-label small">Inserir/ Alterar arquivo</label>
+                                                    <input type="file" class="form-control" name="arquivo" id="arquivo">
+                                                </div>   
+                                                
+                                                <div class="col-12  text-start small">                                                    
+                                                    <label class="form-label mb-0">Data do documento</label>                                                   
+                                                    <input type="date" name="data_documento" id="data_documento"  class="form-control flatpickr-input active" data-provider="flatpickr" data-date-format="d M, Y">
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    `,
+
+                                showCancelButton: true,
+                                confirmButtonText: 'Salvar',
+                                cancelButtonText: 'Cancelar',
+                                preConfirm: () => {
+                                    var form = document.getElementById( 'uploadForm_docs_legais');
+
+                                    var formData = new FormData(form);
+
+                                    return fetch(url_doc_legal, {
+                                        method: 'POST', // Ou 'PUT' dependendo do que a sua rota espera
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector( 'meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: formData
+                                    }).then(response => {
+                                        if (!response.ok) {
+                                            throw new Error( 'Erro ao salvar o arquivo' );
+                                        }
+                                        return response
+                                            .json(); // Certifique-se de que a resposta seja JSON válida
+                                    }).catch(error => {
+                                        Swal.showValidationMessage(
+                                            `Request failed: ${error.message}`
+                                        );
+                                    });
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Swal.fire({
+                                        title: 'Sucesso!',
+                                        text: 'O arquivo foi salvo com sucesso.',
+                                        icon: 'success',
+                                    });
+                                }
+                            });
+                        })(); // Auto-executando a função async corretamente
+                    });
+                });
+            });
+
+
+
+
+
+
+
             document.addEventListener('DOMContentLoaded', function() {
                 var buttons = document.querySelectorAll('.btn_modal_uploada_arq_manut');
 
