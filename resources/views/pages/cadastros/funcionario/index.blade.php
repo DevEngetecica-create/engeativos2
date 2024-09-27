@@ -111,40 +111,40 @@
 
 
         #crachaIndividuais {
-            background-image: url("{{ url('build/images/usuarios/cracha_v00.png') }}");
-            background-position: center; /* Centraliza a imagem no contêiner */
-            background-size: contain;
-            background-repeat: no-repeat; /* Evita repetições */
-            width: 640px !important;
+            background-image: url("{{ url('build/images/usuarios/cracha_v00.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            width: 733px !important;
             height: 1006px !important;
             margin: 0px !important;
             padding: 0px !important;
-            border: none !important;
-            box-shadow: none !important; /* Remove qualquer sombra */
-            position: relative; /* Garante que o conteúdo interno seja posicionado corretamente */
+            left: 0% !important;
+            top: 0% !important;
+            object-fit: cover;
+            position: relative;
         }
 
         #qrcode_cracha {
             position: absolute;
             bottom: 8px;
-            width: 10%;
+            width: 20%;
             height: 30px;
             padding: 0;
-            top: 71.5%;
-            left: 2.5%;
+            top: 72%;
+            left: 10%;
         }
 
         #qrcode_cracha img {
             position: absolute;
-            width: 170px;
-            height: 170px;
+            width: 140px;
+            height: 140px;
         }
 
         #informacoes_cracha {
             position: absolute;
             width: auto;
-            left: 31.5%;
-            top: 70.7%;
+            left: 35%;
+            top: 72%;
             text-align: start;
             padding: 0px;
             font-family: "Barlow Condensed", sans-serif;
@@ -156,41 +156,31 @@
         #informacoes_cracha h3 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: normal;
-            font-weight: 700;
-            font-size: 57px;
+            font-weight: 800;
+            font-size: 55px;
             color: black;
-            margin-bottom: 5px; 
             letter-spacing: -3px;
-            margin-bottom: -5px;
-        
         }
 
-        #cracha_funcao_css {
+        #informacoes_cracha h4 {
             font-family: "Barlow Condensed", sans-serif;
             font-style: italic;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 50px;
             color: #ff5205;
-            margin-bottom: -5px; 
-        }
-
-        #setor_css {
-            font-family: "Barlow Condensed", sans-serif;
-            font-style: italic;
-            font-weight: 600;
-            font-size: 50px;
-            color: #000000;
         }
 
         .image_usuario {
             position: absolute;
-            top: 23%;
-            left: 24.1%;
+            top: 22.8%;
+            left: 28.4%;
         }
 
         .image_usuario img {
-            width:67.5%
+            width:63.5%
         }
+
+
 
         .imprimir {
             position: fixed;
@@ -207,6 +197,8 @@
         .save_cracha {
             position: fixed;
             display: inline;
+            top: 5%;
+            right: 5%;
             z-index: 5;
             background-color: #ff5205;
             padding: 20px;
@@ -250,8 +242,7 @@
 
                         <div class="p-0 m-0" id="informacoes_cracha">
                             <h3 class="text-uppercase"><span id="nome_funcionario"></span></h3>
-                            <h4 id="cracha_funcao_css"><span id="cracha_funcao"></span></h4>
-                            <h4 id="setor_css"><span id="setores">Setor</span></h4>
+                            <h4><span id="cracha_funcao"></span></h4>
                         </div>
                     </div>
                 </div>
@@ -330,8 +321,8 @@
                 // Gerar novo QRCode
                 new QRCode(qrcodeContainer, {
                     text: url,
-                    width: 100,
-                    height: 100,
+                    width: 140,
+                    height: 140,
                     correctLevel: QRCode.CorrectLevel.H
                 });
 
@@ -427,9 +418,9 @@
 
             function captureAndSaveCracha() {
                 html2canvas(document.getElementById('crachaIndividuais'), {
-                    width: 640, // Largura desejada
+                    width: 732, // Largura desejada
                     height: 1006, // Altura desejada
-                    scale: 1,
+                    scale: 1 // Mantém a proporção
                 }).then(function(canvas) {
                     var image = canvas.toDataURL('image/png');
                     var link = document.createElement('a');
@@ -450,18 +441,14 @@
 
                     // Obtenha os dados da linha
                     var id_cracha = row.cells[0].textContent;
-                    var funcionario_cracha = formatEmailName(row.cells[7].textContent);
+                    var funcionario_cracha = formatEmailName(row.cells[6].textContent);
                     var funcao_cracha = row.cells[4].textContent;
-                    var setor_cracha = row.cells[5].textContent;
 
                     var nome_funcionario_cracha = document.getElementById('nome_funcionario');
                     nome_funcionario_cracha.textContent = funcionario_cracha;
 
                     var funcao_funcionario_cracha = document.getElementById('cracha_funcao');
                     funcao_funcionario_cracha.textContent = funcao_cracha;
-                    
-                    var setor_funcionario_cracha = document.getElementById('setores');
-                    setor_funcionario_cracha.textContent = setor_cracha;
                    
 
                 });
