@@ -621,10 +621,36 @@
                                                     <th class="text-center">Nome Doc.</th>
                                                     <th class="text-center ">Ações</th>
                                                 </tr>
+<<<<<<<<< Temporary merge branch 1
+                                            </thead>                        
+                                            <tbody>                        
+                                                @foreach ($ipvas as $ipva)                        
+                                                <tr>
+                                                    <td class="text-center">{{ $ipva->id }}</td>
+                                                    <td class="text-center">{{ $ipva->referencia_ano }}</td>
+                                                    <td class="text-center">R$ {{ Tratamento::currencyFormatBr($ipva->valor) }}</td>  
+                                                    <td class="text-center">{{ Tratamento::dateBr($ipva->data_de_pagamento) }}</td>
+                                                    <td class="text-center">{{ Tratamento::dateBr($ipva->data_de_vencimento) }}</td>
+                                                    <td class="text-center">{{ ($ipva->nome_anexo_ipva) }}</td>
+                        
+                                                    <td class="d-flex justify-content-center">
+                                                        <a href="{{ route('ativo.veiculo.ipva.download', $ipva->id) }}">
+                                                            <span class="btn btn-success btn-sm">Baixar anexo</span>
+                                                        </a>
+                        
+                                                        <a href="{{ route('ativo.veiculo.ipva.editar', $ipva->id) }}">
+                                                            <span class="btn btn-info btn-sm mx-2" title="Editar">Editar</span>
+                                                        </a>
+                        
+                                                        <form action="{{ route('ativo.veiculo.ipva.delete', $ipva->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('delete')
+                                                            <a class="excluir-padrao" data-id="{{ $ipva->id }}" data-table="empresas" data-module="cadastro/empresa">
+                                                                <button class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" type="submit" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                                                                    Excluir
+                                                                </button>
+=========
                                             </thead>
-<<<<<<< HEAD
-                                            <tbody>
-=======
 
                                             <tbody>
 
@@ -645,6 +671,7 @@
                                                             <a
                                                                 href="{{ route('ativo.veiculo.ipva.download', $ipva->id) }}">
                                                                 <span class="btn btn-success btn-sm">Baixar anexo</span>
+>>>>>>>>> Temporary merge branch 2
                                                             </a>
 
                                                             <a href="{{ route('ativo.veiculo.ipva.editar', $ipva->id) }}">
@@ -709,12 +736,16 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+<<<<<<<<< Temporary merge branch 1
+                                                @foreach($abastecimentos as $abastecimento)
+                                                    <tr class="text-center">
+=========
                                                 @foreach ($abastecimentos as $abastecimento)
 <<<<<<< HEAD
                                                     <tr class="text-center">
 =======
                                                     <tr>
->>>>>>> docs_legais
+>>>>>>>>> Temporary merge branch 2
                                                         <td>{{ $abastecimento->id }}</td>
                                                         <td>{{ $abastecimento->km_inicial }}</td>
                                                         <td>{{ $abastecimento->km_final }}</td>
