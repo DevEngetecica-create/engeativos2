@@ -94,6 +94,24 @@ class VeiculosDocsLegaisController extends Controller
     }
 
 
+    public function upload(Request $request, $id)
+    {
+      
+        try {
+
+            $doc_legal = $this->repository->upload($id, $request->all(), $request->file('arquivo'));
+
+            Log::info('Adicionado arquivo', ['doc_tecnico' => $doc_legal]);
+
+            return response()->json('ok');
+        } catch (\Exception $e) {
+
+            Log::error('Erro ao atualizar arquivo', ['error' => $e->getMessage()]);
+
+            return response()->json('ok');
+        }
+    }
+    
     public function download($id)
     {
         try {

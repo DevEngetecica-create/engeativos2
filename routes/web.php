@@ -617,8 +617,6 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/veiculo/manut_preventiva/update',                       [VeiculoPreventivaController::class, 'update'])->name('veiculo.manut_preventiva.update');
     Route::delete('admin/ativo/veiculo/manut_preventivadelete/{id}',                [VeiculoPreventivaController::class, 'delete'])->name('veiculo.manut_preventiva.delete');
     
-    //Route::get('/veiculo_doc_tecnico',                          [CheckListManutPreventivaController::class, 'index'])->name('veiculo_doc_tecnico.index');
-
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/{tipo_veiculo_id}',        [VeiculosDocsLegaisController::class, 'index'])->name('veiculos_docs_legais.index');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/create/{tipo_veiculo_id}', [VeiculosDocsLegaisController::class, 'create'])->name('veiculos_docs_legais.create');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/edit/{tipo_veiculo_id}',   [VeiculosDocsLegaisController::class, 'edit'])->name('veiculos_docs_legais.edit');
@@ -627,6 +625,8 @@ Route::middleware(['auth',])->group(function () {
     Route::delete('admin/ativo/veiculo/veiculos_docs_legais/delete/{id}',           [VeiculosDocsLegaisController::class, 'delete'])->name('veiculos_docs_legais.delete');
     // Rota para download de arquivos
     Route::get('veiculos_docs_legais/download/{id}',                                [VeiculosDocsLegaisController::class, 'download'])->name('veiculos_docs_legais.download');
+    Route::put('admin/ativo/veiculo/veiculos_docs_legais/upload/{id}',              [VeiculosDocsLegaisController::class, 'upload'])->name('veiculos_docs_legais.upload');
+
 
     Route::get('admin/ativo/veiculo/veiculo_docs_tecnico/{tipo_veiculo_id}',         [VeiculosDocsTecnicosController::class, 'index'])->name('veiculo_docs_tecnico.index');
     Route::get('admin/ativo/veiculo/veiculo_docs_tecnico/create/{tipo_veiculo_id}',  [VeiculosDocsTecnicosController::class, 'create'])->name('veiculo_docs_tecnico.create');
