@@ -16,6 +16,7 @@ class CadastroFuncionario extends Model
     protected $fillable = [
         'matricula',
         'id_obra',
+        'id_setor',
         'password',
         'data_altera_password',
         'nome',
@@ -54,6 +55,11 @@ class CadastroFuncionario extends Model
     public function funcao()
     {
         return $this->belongsTo(FuncaoFuncionario::class, 'id_funcao');
+    }
+
+    public function setor()
+    {
+        return $this->belongsTo(CadastroFuncionarioSetor::class, 'id_setor');
     }
 
     public function qualificacoes()

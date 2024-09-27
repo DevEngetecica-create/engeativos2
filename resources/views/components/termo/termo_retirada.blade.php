@@ -21,7 +21,7 @@
         
 
         body {
-            //background-image: url('assets/images/background-termo.jpg');
+            
             background-size: cover;
             background-repeat: no-repeat;
             z-index: -1000;

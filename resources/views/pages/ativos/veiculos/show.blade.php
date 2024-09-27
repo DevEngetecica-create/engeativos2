@@ -89,15 +89,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
+                            <a class="nav-link " data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
                                 <i class="fas fa-home"></i>
                                 Doc's Técnicos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#docs_legais" role="tab">
-                                <i class="fas fa-home"></i>
-                                Doc's Legais
                             </a>
                         </li>
                         <li class="nav-item">
@@ -134,12 +128,6 @@
                             <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
                                 <i class="far fa-envelope"></i>
                                 Quilometragem
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab">
-                                <i class="far fa-envelope"></i>
-                                Abastecimentos
                             </a>
                         </li>
                         <li class="nav-item">
@@ -289,6 +277,81 @@
                         </div>
 
                         <!--end tab-pane-->
+                        <div class="tab-pane" id="docs_tecnicos" role="tabpanel">
+                            <a href="{{ route('veiculo_docs_tecnico.create', $veiculo->id) }}" class="btn btn-success rounded">Cacadastrar Docs's Técnicos</a>
+                            <a href="{{ route('veiculo_docs_tecnico.email') }}" class="btn btn-warning rounded">Email</a>
+                            <div class="card-body">
+                                <div class="card">
+
+                                    <table class="table table-grid">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nome Documento</th>
+                                                <th>Arquivo</th>
+                                                <th>Dt Documento</th>
+                                                <th>Dt Validade</th>
+                                                <th>Restan</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($docs_tecnicos as $doc_tec)
+                                                <tr>
+                                                    <td>{{ $doc_tec->id }}</td>
+                                                    <td>{{ $doc_tec->tipo_doc_tecnico->nome_documento }}</td>
+                                                    <td>{{ $doc_tec->arquivo }}</td>
+
+                                                    {{-- Exibir data do documento --}}
+                                                    <td>{{ $doc_tec->data_documento ? Tratamento::dateBr($doc_tec->data_documento) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir data de validade --}}
+                                                    <td>{{ $doc_tec->data_validade ? Tratamento::dateBr($doc_tec->data_validade) : '' }}
+                                                    </td>
+
+                                                    {{-- Exibir a diferença em dias ou 'N/A' se não houver diferença --}}
+                                                    <td>
+
+                                                        @if($doc_tec->diferenca_dias >= 40)
+                                                            
+                                                            <span class="btn btn-success btn-sm">
+                                                                {{ $doc_tec->diferenca_dias ? $doc_tec->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+                                                            
+                                                        @elseif($doc_tec->diferenca_dias < 39 && $doc_tec->diferenca_dias >= 15)
+
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_tec->diferenca_dias ? $doc_tec->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+
+                                                        @elseif($doc_tec->diferenca_dias < 14 && $doc_tec->diferenca_dias >= 1)
+
+                                                            <span class="btn btn-danger btn-sm">
+                                                                {{ $doc_tec->diferenca_dias ? $doc_tec->diferenca_dias . ' dias' : 'N/A' }}
+                                                            </span>
+
+                                                        @endif
+                                                           
+                                                    </td>
+
+                                                    <td>
+                                                        <button type="button"
+                                                            class="btn btn-primary btn-sm btn_modal_doc_tecnico "
+                                                            data-id="{{ $doc_tec->id }}"></i>inserir/ Alterar</button>
+                                                        {{-- <a class="btn btn-warning" href="{{ route('veiculo_docs_tecnico.edit', $doc_tec->id) }}">Editar</a>
+                                                        <a class="btn btn-danger" href="{{ route('veiculo_docs_tecnico.delete', $doc_tec->id) }}">Excluir</a> --}}
+                                                        <a class="btn btn-success btn-sm"
+                                                            href="{{ route('veiculo_docs_tecnico.download', $doc_tec->id) }}">Download</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="tab-pane" id="manutencoes" role="tabpanel">
 
                             <div class="card shadow">
@@ -316,8 +379,8 @@
                                                     <td>{{ $manutencao->id }}</td>
                                                     <td>{{ $manutencao->tipo }}</td>
                                                     <td>{{ $manutencao->quilometragem_atual }}</td>
-                                                    <td>{{ $manutencao->data_de_execucao }}</td>
-                                                    <td>{{ $manutencao->data_de_vencimento }}</td>
+                                                    <td>{{ Tratamento::dateBr($manutencao->data_de_execucao) }}</td>
+                                                    <td>{{ Tratamento::dateBr($manutencao->data_de_vencimento) }}</td>
                                                     <td>{{ $manutencao->descricao }}</td>
                                                     <td>{{ $manutencao->valor_do_servico }}</td>
 
@@ -541,9 +604,13 @@
                                                     <th class="text-center ">Ações</th>
                                                 </tr>
                                             </thead>
+<<<<<<< HEAD
+                                            <tbody>
+=======
 
                                             <tbody>
 
+>>>>>>> docs_legais
                                                 @foreach ($ipvas as $ipva)
                                                     <tr>
                                                         <td class="text-center">{{ $ipva->id }}</td>
@@ -608,33 +675,40 @@
                                         <table class="table table-sm table-hover table-bordered align-middle">
 
                                             <thead>
-                                                <tr>
+                                                <tr class="bg-light text-muted text-center">
                                                     <th>ID</th>
-                                                    <th>Quilometragem Inicial</th>
-                                                    <th>Quilometragem Final</th>
-                                                    <th>Quilometragem Percorrida</th>
-                                                    <th>Quantidade de Combustível</th>
-                                                    <th>Consumo Médio (km/l)</th>
-                                                    <th>Custo por Litro</th>
-                                                    <th>Custo por Quilômetro</th>
+                                                    <th>km Inicial</th>
+                                                    <th>km Final</th>
+                                                    <th>km Percorrido</th>
+                                                    <th>Qtde.</th>
+                                                    <th>R$ Médio (km/l)</th>
+                                                    <th>R$/ litro</th>
+                                                    <th>R$/ km</th>
                                                     <th>Valor Total</th>
-                                                    <th>Data do Abastecimento</th>
+                                                    <th>Data do Abast.</th>
+                                                    <th>Qtde. de Carbono</th>
                                                     <th>Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($abastecimentos as $abastecimento)
+<<<<<<< HEAD
+                                                    <tr class="text-center">
+=======
                                                     <tr>
+>>>>>>> docs_legais
                                                         <td>{{ $abastecimento->id }}</td>
-                                                        <td>{{ $abastecimento->quilometragem_inicial }}</td>
-                                                        <td>{{ $abastecimento->quilometragem_final }}</td>
+                                                        <td>{{ $abastecimento->km_inicial }}</td>
+                                                        <td>{{ $abastecimento->km_final }}</td>
                                                         <td>{{ $abastecimento->quilometragem_percorrida }}</td>
-                                                        <td>{{ $abastecimento->quantidade_combustivel }}</td>
+                                                        <td>{{ $abastecimento->quantidade }}</td>
                                                         <td>{{ number_format($abastecimento->consumo_medio, 2) }} km/l</td>
                                                         <td>R$ {{ number_format($abastecimento->custo_por_litro, 2) }}</td>
                                                         <td>R$ {{ number_format($abastecimento->custo_por_km, 2) }}</td>
                                                         <td>R$ {{ number_format($abastecimento->valor_total, 2) }}</td>
-                                                        <td>{{ $abastecimento->data_abastecimento }}</td>
+                                                        <td>{{ Tratamento::dateBr($abastecimento->data_abastecimento) }}
+                                                        </td>
+                                                        <td>{{ $abastecimento->emissao_carbono }} kg de CO₂</td>
                                                         <td class="d-flex justify-content-center">
                                                             <a href="{{ route('ativo.veiculo.abastecimento.edit', $abastecimento->id) }}"
                                                                 class="btn btn-warning btn-sm">Editar</a>
@@ -864,6 +938,103 @@
                     });
                 });
             });
+
+
+
+
+
+
+
+
+
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var buttons = document.querySelectorAll('.btn_modal_doc_tecnico');
+
+                buttons.forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        var doc_tecnico_id = this.getAttribute('data-id');
+                        var url_doc_tecnico =
+                            "{{ route('veiculo_docs_tecnico.upload', ['id' => ':id']) }}";
+                        url_doc_tecnico = url_doc_tecnico.replace(':id', doc_tecnico_id);
+
+                        console.log(url_doc_tecnico);
+
+
+                        (async () => {
+                            const {
+                                value: formValues
+                            } = await Swal.fire({
+                                title: '<div class="icon active">' +
+                                    '<lord-icon src="https://media.lordicon.com/icons/wired/outline/120-folder.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>' +
+                                    '</div>',
+                                html: ` 
+                                        <form id="uploadForm_docs_tecnicos" method="POST" class="m-0 p-0" enctype="multipart/form-data">
+                                
+                                            <div class="row">
+                                                <input type="hidden" id="doc_tecnico_id" name="doc_tecnico_id" value="${doc_tecnico_id}">
+                                             
+                                                <div class="col-12 text-start mb-3">
+                                                    <label for="arquivo" class="form-label small">Inserir/ Alterar arquivo</label>
+                                                    <input type="file" class="form-control" name="arquivo" id="arquivo">
+                                                </div>   
+                                                
+                                                <div class="col-12  text-start small">                                                    
+                                                    <label class="form-label mb-0">Data do documento</label>                                                   
+                                                    <input type="date" name="data_documento" id="data_documento"  class="form-control flatpickr-input active" data-provider="flatpickr" data-date-format="d M, Y">
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    `,
+
+                                showCancelButton: true,
+                                confirmButtonText: 'Salvar',
+                                cancelButtonText: 'Cancelar',
+                                preConfirm: () => {
+                                    var form = document.getElementById(
+                                        'uploadForm_docs_tecnicos');
+                                    var formData = new FormData(form);
+
+                                    return fetch(url_doc_tecnico, {
+                                        method: 'POST', // Ou 'PUT' dependendo do que a sua rota espera
+                                        headers: {
+                                            'X-CSRF-TOKEN': document
+                                                .querySelector(
+                                                    'meta[name="csrf-token"]'
+                                                    ).getAttribute(
+                                                    'content')
+                                        },
+                                        body: formData
+                                    }).then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(
+                                                'Erro ao salvar o arquivo'
+                                            );
+                                        }
+                                        return response
+                                            .json(); // Certifique-se de que a resposta seja JSON válida
+                                    }).catch(error => {
+                                        Swal.showValidationMessage(
+                                            `Request failed: ${error.message}`
+                                        );
+                                    });
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    Swal.fire({
+                                        title: 'Sucesso!',
+                                        text: 'O arquivo foi salvo com sucesso.',
+                                        icon: 'success',
+                                    });
+                                }
+                            });
+                        })(); // Auto-executando a função async corretamente
+                    });
+                });
+            });
+
 
 
             $(document).ready(function() {
