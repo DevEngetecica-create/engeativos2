@@ -13,11 +13,17 @@ class FuncaoFuncionario extends Model
 
     protected $fillable = [
         'codigo',
-        'funcao'
+        'funcao',
+        'id_setor'
     ];
 
     public function funcionarios()
     {
         return $this->hasMany(CadastroFuncionario::class, 'id_funcao');
+    }
+
+    public function setor()
+    {
+        return $this->belongsTo(CadastroFuncionarioSetor::class, 'id_setor');
     }
 }
