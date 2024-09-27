@@ -4799,6 +4799,7 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 >>>>>>> Stashed changes
 <<<<<<< HEAD
 >>>>>>> funcionarios
+<<<<<<< HEAD
 =======
 [2024-09-25 20:56:30] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
 [2024-09-26 08:15:30] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
@@ -4808,3 +4809,6 @@ Cecilia Ferreira Wieczorkowski, `funcionarios`.`updated_at` = 2024-06-12 09:02:0
 [2024-09-26 08:20:38] development.INFO: samuel.melo@engetecnica.com.br | EDIT MODULO: Dashboard | URL: admin/cadastro/funcionario/dashboard  
 >>>>>>> lista_funcionarios_funcao
 [2024-09-27 10:09:56] development.INFO: samuel.melo@engetecnica.com.br | LOGIN NO SISTEMA  
+=======
+[2024-09-27 11:10:03] development.INFO: samuel.melo@engetecnica.com.br | EDIT TIPO USUARIO: Administrador  
+>>>>>>> upload_ondrive

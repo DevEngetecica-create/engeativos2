@@ -90,6 +90,7 @@
                         </li>
                         <li class="nav-item">
 <<<<<<< HEAD
+<<<<<<< HEAD
                             <a class="nav-link " data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
                                 <i class="fas fa-home"></i>
                                 Doc's Técnicos
@@ -104,6 +105,11 @@
                                 <i class="fas fa-home"></i>
                                 Doc's Legais
 >>>>>>> docs_legais
+=======
+                            <a class="nav-link " data-bs-toggle="tab" href="#docs_tecnicos" role="tab">
+                                <i class="fas fa-home"></i>
+                                Doc's Técnicos
+>>>>>>> upload_ondrive
                             </a>
                         </li>
                         <li class="nav-item">

@@ -101,7 +101,7 @@ use App\Http\Controllers\EstoqueCategoriaController;
 use App\Http\Controllers\EstoqueMarcasController;
 use App\Http\Controllers\EstoqueSubCategoriaController;
 
-use App\Http\Controllers\Auth\MicrosoftController;
+use App\Http\Controllers\OneDriveController;
 use App\Http\Controllers\CadastroFuncionarioSetorController;
 use App\Http\Controllers\ConfiguracaoNotificacaoEmailController;
 use App\Http\Controllers\FipeController;
@@ -341,6 +341,9 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/excluir-qualificacao',              [CadastroFuncionarioController::class, 'excluir_qualificacao'])->name('cadastro.funcionario.excluir_qualificacao');
     Route::put('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
 
+
+    Route::get('admin/uploadOndrive', [OneDriveController::class, 'index'])->name('upload.index');
+    Route::put('admin/uploadOndrive/upload_file', [OneDriveController::class, 'uploadFile'])->name('upload.file');
 
 
     /* Cadastros - Funções - Funcionário */
@@ -925,26 +928,26 @@ Route::get('admin/ativo/veiculo/manutencao/servicos/{item}/delete', [VeiculoServ
 
     /* Ferramental - Requisição */
 
-    Route::get('admin/ferramental/requisicao', [FerramentalRequisicaoController::class, 'index'])->name('ferramental.requisicao.index');
-    Route::get('admin/ferramental/requisicao/adicionar', [FerramentalRequisicaoController::class, 'create'])->name('ferramental.requisicao.create');
-    Route::post('admin/ferramental/requisicao', [FerramentalRequisicaoController::class, 'store'])->name('ferramental.requisicao.store');
-    Route::get('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'show'])->name('ferramental.requisicao.show');
+    Route::get('admin/ferramental/requisicao',                      [FerramentalRequisicaoController::class, 'index'])->name('ferramental.requisicao.index');
+    Route::get('admin/ferramental/requisicao/adicionar',            [FerramentalRequisicaoController::class, 'create'])->name('ferramental.requisicao.create');
+    Route::post('admin/ferramental/requisicao',                     [FerramentalRequisicaoController::class, 'store'])->name('ferramental.requisicao.store');
+    Route::get('admin/ferramental/requisicao/{id}',                 [FerramentalRequisicaoController::class, 'show'])->name('ferramental.requisicao.show');
 
     // Route::get('admin/ferramental/requisicao/{id}/editar', [FerramentalRequisicaoController::class, 'edit'])->name('ferramental.requisicao.edit');
 
 
-    Route::put('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'update'])->name('ferramental.requisicao.update');
+    Route::put('admin/ferramental/requisicao/{id}',                 [FerramentalRequisicaoController::class, 'update'])->name('ferramental.requisicao.update');
 
-    Route::post('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneio'])->name('ferramental.requisicao.romaneio');
-    Route::patch('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'recept'])->name('ferramental.requisicao.recept');
+    Route::post('admin/ferramental/requisicao/romaneio/{id}',       [FerramentalRequisicaoController::class, 'romaneio'])->name('ferramental.requisicao.romaneio');
+    Route::patch('admin/ferramental/requisicao/{id}',               [FerramentalRequisicaoController::class, 'recept'])->name('ferramental.requisicao.recept');
     // Route::delete('admin/ferramental/requisicao/{id}', [FerramentalRequisicaoController::class, 'destroy'])->name('ferramental.requisicao.destroy');
 
     Route::get('admin/ferramental/requisicao/romaneio/{id}/obra/{obra}', [FerramentalRequisicaoController::class, 'romaneioObra'])->name('ferramental.requisicao.romaneio.obra');
-    Route::get('admin/ferramental/requisicao/romaneio/{id}', [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
+    Route::get('admin/ferramental/requisicao/romaneio/{id}',        [FerramentalRequisicaoController::class, 'romaneioGeral'])->name('ferramental.requisicao.romaneio.geral');
 
-    Route::post('admin/anexo/upload', [AnexoController::class, 'upload'])->name('anexo.upload');
-    Route::get('admin/anexo/excluir/{id?}/{modulo?}', [AnexoController::class, 'destroy'])->name('anexo.destroy');
-    Route::get('admin/anexo/download/{id}', [AnexoController::class, 'download'])->name('anexo.download');
+    Route::post('admin/anexo/upload',                               [AnexoController::class, 'upload'])->name('anexo.upload');
+    Route::get('admin/anexo/excluir/{id?}/{modulo?}',               [AnexoController::class, 'destroy'])->name('anexo.destroy');
+    Route::get('admin/anexo/download/{id}',                         [AnexoController::class, 'download'])->name('anexo.download');
 
     // Adicionar marca
 
