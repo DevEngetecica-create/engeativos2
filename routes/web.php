@@ -101,7 +101,7 @@ use App\Http\Controllers\EstoqueCategoriaController;
 use App\Http\Controllers\EstoqueMarcasController;
 use App\Http\Controllers\EstoqueSubCategoriaController;
 
-use App\Http\Controllers\Auth\MicrosoftController;
+use App\Http\Controllers\OneDriveController;
 use App\Http\Controllers\CadastroFuncionarioSetorController;
 use App\Http\Controllers\ConfiguracaoNotificacaoEmailController;
 use App\Http\Controllers\FipeController;
@@ -342,6 +342,8 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/cadastro/funcionario/editar_anexos_funcionarios/{id}',   [CadastroFuncionarioController::class, 'editar_anexos_funcionarios'])->name('cadastro.funcionario.editar_anexos_funcionarios');
 
 
+    Route::get('admin/uploadOndrive', [OneDriveController::class, 'index'])->name('upload.index');
+    Route::put('admin/uploadOndrive/upload_file', [OneDriveController::class, 'uploadFile'])->name('upload.file');
 
     /* Cadastros - Funções - Funcionário */
 
