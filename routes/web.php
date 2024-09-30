@@ -649,7 +649,7 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/veiculo/veiculo_docs_tecnico/update/{id}',               [VeiculosDocsTecnicosController::class, 'update'])->name('veiculo_docs_tecnico.update');
     Route::delete('admin/ativo/veiculo/veiculo_docs_tecnico/delete/{id}',            [VeiculosDocsTecnicosController::class, 'delete'])->name('veiculo_docs_tecnico.delete');
     // Rota para download de arquivos
-    Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/upload/{id}',             [VeiculosDocsTecnicosController::class, 'upload'])->name('veiculo_docs_tecnico.upload');
+    Route::put('admin/ativo/veiculo/veiculo_doc_tecnico/upload/{id}',               [VeiculosDocsTecnicosController::class, 'upload'])->name('veiculo_docs_tecnico.upload');
     Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/download/{id}',             [VeiculosDocsTecnicosController::class, 'download'])->name('veiculo_docs_tecnico.download');
     Route::get('admin/ativo/veiculo/veiculo_doc_tecnico/not_emai',                  [VeiculosDocsTecnicosController::class, 'email'])->name('veiculo_docs_tecnico.email');
 
