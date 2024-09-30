@@ -6,7 +6,11 @@ use App\Interfaces\VeiculosDocsTecnicosRepositoryInterface;
 use App\Interfaces\DocsTecnicosRepositoryInterface;
 use App\Models\DocsTecnicos;
 use App\Models\VeiculosDocsTecnicos;
+
+use App\Helpers\FileUploadHelper;
+
 use Carbon\Carbon;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -130,9 +134,12 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
         if ($arquivos) {
 
             $nome_arquivo = $arquivos->getClientOriginalName();
-            $caminho_arquivo = 'uploads/veiculos/docs_tecnicos/' . $doc_tecnicos->id_veiculo  . "/";
+            $caminho_arquivo = 'veiculos/' . $doc_tecnicos->id_veiculo . 'docs_tecnicos/';
 
-            // Verifica se o arquivo já existe e o exclui antes de salvar o novo
+            // Chame a função global para fazer o upload
+            $result = FileUploadHelper::uploadFilesToFolder($arquivos, $caminho_arquivo);
+
+           /*  // Verifica se o arquivo já existe e o exclui antes de salvar o novo
             if (Storage::disk('public')->exists($caminho_arquivo)) {
                 Storage::disk('public')->delete($caminho_arquivo);
             }
@@ -159,12 +166,12 @@ class VeiculosDocsTecnicosRepository implements VeiculosDocsTecnicosRepositoryIn
             // Armazena o novo arquivo
             $arquivos->storeAs($caminho_arquivo, $nome_arquivo, 'public');
 
-            $doc_tecnicos->save();
+            $doc_tecnicos->save(); */
         }
 
         Log::info('Manutenção atualizada', ['manutencao' => $doc_tecnicos]);
 
-        return $doc_tecnicos;
+        return $result;
     }
 
     public function download(int $id)

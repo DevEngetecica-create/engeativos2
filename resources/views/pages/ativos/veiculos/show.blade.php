@@ -917,8 +917,7 @@
                 buttons.forEach(function(button) {
                     button.addEventListener('click', function() {
                         var manutencaoId = this.getAttribute('data-id');
-                        var url_update_img_man =
-                            "{{ route('ativo.veiculo.manutencao.upload', ['id' => ':id']) }}";
+                        var url_update_img_man = "{{ route('ativo.veiculo.manutencao.upload', ['id' => ':id']) }}";
                         url_update_img_man = url_update_img_man.replace(':id', manutencaoId);
 
                         (async () => {
@@ -930,7 +929,8 @@
                                     '</div>',
                                 html: ` 
                                         <form id="uploadForm" method="POST" class="m-0 p-0" enctype="multipart/form-data">
-                                
+                                            @csrf
+                                            @method('PUT')
                                             <div class="row">
                                                 <input type="hidden" id="manutencao_id" name="manutencao_id" value="${manutencaoId}">
                                                 <div class="col-12 text-start mb-3">
@@ -951,7 +951,7 @@
                                     var formData = new FormData(form);
 
                                     return fetch(url_update_img_man, {
-                                        method: 'POST', // Ou 'PUT' dependendo do que a sua rota espera
+                                        method: 'PUT', // Ou 'PUT' dependendo do que a sua rota espera
                                         headers: {
                                             'X-CSRF-TOKEN': document
                                                 .querySelector(
@@ -1020,10 +1020,16 @@
                                     '</div>',
                                 html: ` 
                                         <form id="uploadForm_docs_tecnicos" method="POST" class="m-0 p-0" enctype="multipart/form-data">
-                                
+                                            @csrf
+                                            @method('PUT')
                                             <div class="row">
                                                 <input type="hidden" id="doc_tecnico_id" name="doc_tecnico_id" value="${doc_tecnico_id}">
                                              
+                                                <div class="col-12 text-start mb-3">
+                                                   <label for="folder_name">Nome da Pasta no Workspace:</label>
+                                                    <input type="text" class="form-control shadow bg-primary-subtle" value="veiculos/{{$veiculo->id}}/docs_tecnicos/" readonly>
+                                                </div>   
+                                                
                                                 <div class="col-12 text-start mb-3">
                                                     <label for="arquivo" class="form-label small">Inserir/ Alterar arquivo</label>
                                                     <input type="file" class="form-control" name="arquivo" id="arquivo">
