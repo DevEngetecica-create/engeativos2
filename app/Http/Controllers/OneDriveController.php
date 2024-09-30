@@ -39,10 +39,11 @@ class OneDriveController extends Controller
         $clientSecret = getenv('AZURE_CLIENT_SECRET'); // O segredo gerado para a sua aplicação
         $scope = getenv('MS_GRAPH_SCOPE'); // Escopo para a API da Microsoft Graph
         $token_url = getenv('TOKEN_URL');
-        $token_file = storage_path(getenv('TOKEN_FILE')); // Arquivo onde o token será armazenado
+        $token_file = $token_file = storage_path('app/' . getenv('TOKEN_FILE'));  // Arquivo onde o token será armazenado
 
         // Verifica se o arquivo de token existe
         if (file_exists($token_file)) {
+
             $token_data = json_decode(file_get_contents($token_file), true);
 
             // Verifica se o token ainda é válido
