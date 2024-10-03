@@ -12,7 +12,7 @@
                         <button class="btn btn-primary">Castrar</button>
                     </a>
                 </div>
-                <table class="table table-bordered table-hover table-sm align-middle table-nowrap mb-0">
+                <table class="excel-filter-table table table-bordered table-hover table-sm align-middle table-nowrap mb-0">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -49,6 +49,10 @@
                         @endforeach
                     </tbody>
                 </table>
+                <!-- Container para a paginação (opcional) -->
+                <div id="meu-container-paginacao" class="d-flex justify-content-end mt-3">
+                    <!-- Os botões de paginação serão inseridos aqui pelo plugin -->
+                </div>
             </div>
         </div>
     </div>

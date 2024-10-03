@@ -14,6 +14,9 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('build/images/favicon.ico') }}">
     @include('head-css')
+
+    <link rel="stylesheet" href="{{ URL::asset('assets/css/excelTableFilter.css') }}">
+
 </head>
 
 <body>
@@ -41,6 +44,7 @@
 
     <!-- JAVASCRIPT -->
     @include('vendor-scripts')
+    <script src="{{ URL::asset('assets/js/excelTableFilter.js') }}"></script>
 </body>
 
 </html>

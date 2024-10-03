@@ -317,13 +317,13 @@ Route::middleware(['auth',])->group(function () {
 
 
 
-    Route::get('admin/cadastro/funcionario/list',    [CadastroFuncionarioController::class, 'index'])->name('admin/cadastro/funcionario/list');
-
+    Route::get('admin/cadastro/funcionario/',    [CadastroFuncionarioController::class, 'index'])->name('admin/cadastro/funcionario/list');
+/* 
     Route::get('admin/cadastro/funcionario', function () {
 
         return view('pages.cadastros.funcionario.index');
     });
-
+ */
     Route::get('admin/cadastro/funcionario/editar/{id?}',                       [CadastroFuncionarioController::class, 'edit'])->name('cadastro.funcionario.editar');
     Route::get('admin/cadastro/funcionario/show/{id?}',                         [CadastroFuncionarioController::class, 'show'])->name('cadastro.funcionario.show');
     Route::get('admin/cadastro/funcionario/adicionar',                          [CadastroFuncionarioController::class, 'create'])->name('cadastro.funcionario.adicionar');

@@ -58,7 +58,7 @@ class CadastroFuncionarioController extends Controller
             return $query->where('id_obra', $id_obra);
         })
         ->orderBy('id', 'desc')
-        ->paginate(10);
+        ->get();
     
         // Inicializa as variáveis de contagem
         $contar_situacao_1 = 0;
@@ -77,7 +77,7 @@ class CadastroFuncionarioController extends Controller
 
 
     
-        return view('pages.cadastros.funcionario.partials.list', compact('lista', 'contar_situacao_1', 'contar_situacao_18'));
+        return view('pages.cadastros.funcionario.index', compact('lista', 'contar_situacao_1', 'contar_situacao_18'));
     }
 
     

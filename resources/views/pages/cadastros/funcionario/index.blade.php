@@ -22,46 +22,129 @@
 
     <hr>
 
-    <form method="post" class="form" enctype="multipart/form-data" id="form">
-        @csrf
-        <div class="row my-4">
-            <div class="col-2">
-                <h3 class="page-title text-left">
-                    <a href="{{ route('cadastro.funcionario.adicionar') }}">
-                        <span class="btn btn-sm btn-success shadow p-2">Novo Registro</span>
-                    </a>
-                </h3>
-            </div>
-            <div class="col-10">
-                <div class="row justify-content-center">
-                    <div class="col-5 m-0 p-0 ">
-                        <input type="text" class="form-control shadow" name="funcionario"
-                            placeholder="Pesquisar categoria" value="{{ request()->funcionario }}">
-                        <input type="hidden" id="page" name="page" value="0">
-                    </div>
-                    <div class="col-2 text-left  m-0 p-0 mb-2 mx-2">
-
-                        <button type="submit" class="btn btn-primary btn-sm py-0 shadow" title="Pesquisar"><i
-                                class="mdi mdi-file-search-outline mdi-24px"></i></button>
-
-                        <a href="{{ url('admin/cadastro/funcionario') }}" title="Limpar pesquisa">
-                            <span class="btn btn-warning btn-sm py-0 shadow"><i
-                                    class="mdi mdi-delete-outline mdi-24px"></i></span>
-                        </a>
-                    </div>
-                    <div class="col-1 text-left m-0">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
-
-
     <div class="row">
         <div class="col-lg-12 grid-margin stretch-card" id="conteudo">
 
-            {{-- Tabela --}}
+            <div class="card">
+                <div class="card-body p-3">
+                    <div >
+                        <table class="excel-filter-table table table-bordered table-hover table-sm align-middle table-nowrap mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" width="8%">ID</th>
+                                    <th>Obra</th>
+                                    <th>Matrícula</th>
+                                    <th>Nome Completo</th>
+                                    <th>Função</th>
+                                    <th>Setor</th>
+                                    
+                                    <th>E-mail</th>
+                                    <th>Status</th>
+                                    <th class="text-center {{ session()->get('usuario_vinculo')->id_nivel <= 2 or (session()->get('usuario_vinculo')->id_nivel == 14 ? 'd-block' : 'd-none') }}"
+                                        width="13%">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($lista as $v)
+                                    <tr>
+                                        <td class="text-center">{{ $v->id }}</span></td>
+                                        <td>{{ $v->obra->codigo_obra ?? 'Obra desativada' }}</td>
+                                        <td>{{ $v->matricula ?? '-' }}</td>
+                                        <td class="text-uppercase">{{ $v->nome }}
+                                            @php
+                                                $count_1 = $v->qualificacoes->where('situacao', 1)->count();
+                                                $count_18 = $v->qualificacoes->where('situacao', 18)->count();
+                                            @endphp
+
+                                            @if ($count_1 > 0 || $count_18 > 0)
+                                                <lord-icon data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Falta  {{ $count_1 }} documento(s)" target="div"
+                                                    loading="interaction" trigger="hover"
+                                                    src="https://media.lordicon.com/icons/wired/outline/1140-error.json">
+                                                    <img alt="" loading="eager"
+                                                        src="https://media.lordicon.com/icons/wired/outline/1140-error.svg">
+                                                </lord-icon>
+                                            @else
+                                            @endif
+                                        </td>
+
+                                        @if ($v->funcao && $v->funcao->funcao)
+                                            <td>
+                                                <p class="text-capital">{{ $v->funcao->funcao }}</p>
+                                            </td>
+                                        @else
+                                            <td class="text-danger">Falta cadastrar a função</td>
+                                        @endif
+
+                                        <td>
+                                            @if ($v->setor && $v->setor->nome_setor)
+                                                {{ $v->setor->nome_setor }}
+                                            @else
+                                                <span class="text-center text-danger">-- Sem reg. --</span>
+                                            @endif
+
+                                        </td>
+                                        
+                                        <td>{{ $v->email }}</td>
+                                        <td>{{ $v->status }} </td>
+
+                                        <td
+                                            class="d-flex text-center {{ session()->get('usuario_vinculo')->id_nivel <= 2 or (session()->get('usuario_vinculo')->id_nivel == 14 ? 'd-block' : 'd-none') }}">
+
+                                            <a class="btn btn-warning  btn-sm mr-2"
+                                                href="{{ route('cadastro.funcionario.editar', $v->id) }}" title="Editar">
+                                                Editar
+                                            </a>
+
+                                            <a class="btn btn-info btn-sm mx-2"
+                                                href="{{ route('cadastro.funcionario.show', $v->id) }}" title="Visualizar">
+                                                Ver
+                                            </a>
+
+                                            @if (session()->get('usuario_vinculo')->id_nivel == 1 or
+                                                    session()->get('usuario_vinculo')->id_nivel == 15 or
+                                                    session()->get('usuario_vinculo')->id_nivel == 10)
+                                                <form action="{{ route('cadastro.funcionario.destroy', $v->id) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button class="btn btn-danger btn-sm" data-toggle="tooltip"
+                                                        data-placement="top" type="submit" title="Excluir"
+                                                        onclick="return confirm('Tem certeza que deseja excluir o registro?')">
+                                                        Ecluir
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            <!-- Botão para gerar a etiqueta -->
+                                            <a class="btn btn-success btn-sm mx-2" id="etiqueta_funcionario"
+                                                data-id="{{ $v->id }}" data-bs-toggle="modal"
+                                                data-bs-target="#modal_funcionario"
+                                                href="{{ route('cadastro.funcionario.show', $v->id) }}"
+                                                title="Imprimir etiqueta">
+                                                Etiqueta
+                                            </a>
+
+                                            <!-- Botão para gerar o cracha -->
+                                            <span class="btn btn-warning btn-sm" id="cracha_funcionario"
+                                                data-id="{{ $v->id }}" data-image="{{ $v->imagem_usuario }}"
+                                                data-bs-toggle="modal" data-bs-target="#modal_cracha" title="Gerar cracha">
+                                                Crachá
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Container para a paginação (opcional) -->
+                <div class="d-flex justify-content-end col-sm-12 col-md-12 col-lg-12 ">
+                    <ul id="meu-container-paginacao">
+
+                    </ul>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -177,7 +260,7 @@
         }
 
         .image_usuario img {
-            width:63.5%
+            width: 63.5%
         }
 
 
@@ -262,52 +345,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/print-js@1.6.0/dist/print.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
     </script>
-    <script></script>
+
+
+
+  
+
     <script>
         $(document).ready(function() {
-            carregarTabela(0);
+            adicionarEventosEtiquetas();
+            adicionarEventosCrachas()
         });
 
-        $(document).on('click', '.paginacao a', function(e) {
-            e.preventDefault();
-            var pagina = $(this).attr('href').split('page=')[1];
-            carregarTabela(pagina);
-        });
+        /*  $(document).on('click', '.paginacao a', function(e) {
+             e.preventDefault();
+             var pagina = $(this).attr('href').split('page=')[1];
+             carregarTabela(pagina);
+         });
 
-        $(document).on('keyup submit', '.form', function(e) {
-            e.preventDefault();
-            carregarTabela(0);
-        });
+         $(document).on('keyup submit', '.form', function(e) {
+             e.preventDefault();
+             carregarTabela(0);
+         });
 
-        function carregarTabela(pagina) {
-            $('.loader').html('<div class="spinner-border m-0 p-0" role="status"><span class="sr-only"></span></div>');
+         function carregarTabela(pagina) {
+             $('.loader').html('<div class="spinner-border m-0 p-0" role="status"><span class="sr-only"></span></div>');
 
-            $('#page').val(pagina);
-            var dados = $('#form').serialize();
-            $.ajax({
-                url: "/admin/cadastro/funcionario/list",
-                method: 'GET',
-                data: dados
-            }).done(function(data) {
+             $('#page').val(pagina);
+             var dados = $('#form').serialize();
+             $.ajax({
+                 url: "/admin/cadastro/funcionario/list",
+                 method: 'GET',
+                 data: dados
+             }).done(function(data) {
 
-                $('#conteudo').html(data);
+                 $('#conteudo').html(data);
 
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl)
-                })
+                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                 var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                     return new bootstrap.Tooltip(tooltipTriggerEl)
+                 })
 
-                // Adicionar eventos após carregar a tabela
+                 // Adicionar eventos após carregar a tabela
 
-                adicionarEventosEtiquetas();
-                adicionarEventosCrachas()
+                 adicionarEventosEtiquetas();
+                 adicionarEventosCrachas()
 
-                
-            });
-        }
+                 
+             });
+         } */
 
         function adicionarEventosEtiquetas() {
             $('.btn-success[id="etiqueta_funcionario"]').off('click').on('click', function() {
@@ -449,7 +536,7 @@
 
                     var funcao_funcionario_cracha = document.getElementById('cracha_funcao');
                     funcao_funcionario_cracha.textContent = funcao_cracha;
-                   
+
 
                 });
             });
@@ -521,8 +608,6 @@
 
             return namePart;
         }
-
-        
     </script>
 
 @endsection

@@ -27,12 +27,7 @@ class FuncaoFuncionarioController extends Controller
 {
     public function index()
     {
-        $funcoes = FuncaoFuncionario::when(request('funcao') != null, function ($query) {
-            return  $query->where('funcao', 'like', '%' . request('funcao') . '%');
-        })
-            ->with('funcionarios')
-            ->orderBy('id', 'desc')
-            ->paginate(7);
+        $funcoes = FuncaoFuncionario::all();
         return view('pages.cadastros.funcionario.funcoes.index', compact('funcoes'));
     }
 

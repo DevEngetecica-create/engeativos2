@@ -1,3 +1,6 @@
+
+<script src="{{ URL::asset('assets/js/Xlsx-export/browser/xlsx-populate.min.js') }}"></script>
+
 <script src="{{ URL::asset('build/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/simplebar/simplebar.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/node-waves/waves.min.js') }}"></script>
@@ -30,11 +33,21 @@
 <script src="{{ URL::asset('build/js/pages/notifications.init.js') }}"></script>
 
 
-
 <script>
     $(document).ready(function() {
 
         listarNotificacoes();
+
+        $('.excel-filter-table').excelTableFilter({
+            pagination: true,
+            rowsPerPage: 10,
+            paginationContainer: '#meu-container-paginacao', // Opcional: Define onde os botões de paginação serão inseridos
+            captions: {
+                prevPaginateBtn: 'Anterior',
+                nextPaginateBtn: 'Próximo'
+                // Outros captions podem ser adicionados conforme necessário
+            }
+        });
 
         /*  var motivoReprovacaoModal = new bootstrap.Modal(document.getElementById('motivoReprovacaoModal'), {
             keyboard: false
@@ -983,8 +996,8 @@
 <script>
     @if (Session::has('message'))
 
-    var type = "{{ Session::has('type') ? session('type') : 'info' }}";
-    var menssagem = "{{ session('message') }}"
+        var type = "{{ Session::has('type') ? session('type') : 'info' }}";
+        var menssagem = "{{ session('message') }}"
 
         const Toast = Swal.mixin({
             toast: true,
@@ -1002,8 +1015,6 @@
             icon: type,
             title: menssagem
         });
-
-     
     @endif
 </script>
 
