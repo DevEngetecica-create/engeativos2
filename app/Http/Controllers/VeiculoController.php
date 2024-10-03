@@ -265,6 +265,7 @@ class VeiculoController extends Controller
             $media_emissao_carbono = 0;
         }
 
+        //calcular a data de validade dos documentos técnicos
         foreach ($docs_tecnicos as $doc) {
             if (!empty($doc->data_documento) && !empty($doc->data_validade)) {
                 // Só faz o parse se os campos não estiverem vazios
