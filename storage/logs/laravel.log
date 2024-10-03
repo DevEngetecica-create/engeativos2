@@ -1,0 +1,5 @@
+[2024-10-03 13:42:35] development.INFO: Função verificarDocumentos foi chamada.  
+[2024-10-03 13:42:36] development.INFO: Documento ID: 6, Diferença de dias: 91  
+[2024-10-03 13:42:36] development.INFO: Enviando e-mail de alerta (Verde).  
+[2024-10-03 13:42:41] development.INFO: Documento ID: 7, Diferença de dias: 30  
+[2024-10-03 13:42:41] development.INFO: Enviando e-mail de alerta (Amarelo).  
