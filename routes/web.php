@@ -113,6 +113,7 @@ use App\Http\Controllers\Formularios\Veiculos\CheckListManutPreventivaController
 use App\Http\Controllers\VeiculosDocsLegaisController;
 use App\Http\Controllers\DocsLegaisController;
 use App\Http\Controllers\DocsTecnicosController;
+use App\Http\Controllers\NotificacoesCalenadriosController;
 use App\Http\Controllers\TiposVeiculosController;
 use App\Http\Controllers\VeiculosDocsTecnicosController;
 use App\Models\Api\ApiRequisicao;
@@ -201,6 +202,14 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/notificacoes',             [NotificacoesController::class, 'index'])->name('notificacoes');
     Route::get('admin/notificacoes/read/{id}',   [NotificacoesController::class, 'read'])->name('notificacoes.read');
     Route::get('admin/notificacoes/show/{id}',   [NotificacoesController::class, 'show'])->name('notificacoes.show');
+
+    //Calendarios
+    Route::get('admin/calendarios',                                             [NotificacoesCalenadriosController::class, 'index'])->name('calendarios.show');
+    Route::get('admin/events',                                                       [NotificacoesCalenadriosController::class, 'getEvents'])->name('calendarios.getEvents');
+    Route::post('admin/events',                                                 [NotificacoesCalenadriosController::class, 'store'])->name('calendarios.store');
+    Route::put('admin/events/update/{id}',                                      [NotificacoesCalenadriosController::class, 'update'])->name('calendarios.update');
+    Route::delete('admin/events/destroy/{id}',                                  [NotificacoesCalenadriosController::class, 'destroy'])->name('calendarios.destroy');
+
 
 
     /* Configurações - Dashboard */
@@ -359,8 +368,8 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/cadastro/funcionario/funcao/ajax',                       [FuncaoFuncionarioController::class, 'storeFuncao'])->name('cadastro.funcionario.funcoes.ajax');
     Route::get('admin/cadastro/funcionario/funcoes/delete_epi/{id}',            [FuncaoFuncionarioController::class, 'delete_epi'])->name('cadastro.funcionario.funcoes.delete_epi');
     Route::post('admin/cadastro/funcionario/funcoes/delete_funcao/{id}',        [FuncaoFuncionarioController::class, 'delete_funcao'])->name('cadastro.funcionario.funcoes.delete_funcao');
-    
-    
+
+
     /* Cadastros - Setores - Funcionário */
 
     Route::get('admin/cadastro/funcionario/setores',                            [CadastroFuncionarioSetorController::class, 'index'])->name('cadastro.funcionario.setores.index');
@@ -506,11 +515,11 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/veiculo/anexo/{id}',                                    [AtivoExternoController::class, 'anexo'])->name('ativo.externo.veiculo');
     Route::get('admin/ativo/externo/anexoRelatorioDescarte/{id}',                   [AtivoExternoController::class, 'anexoRelatorioDescarte'])->name('ativo.externo.anexoRelatorioDescarte');
     Route::get('admin/ativo/externo/detalhes/anexo/{id}',                           [AtivoExternoController::class, 'anexoDocsAtivos'])->name('ativo/externo/detalhes/anexoDocsAtivos');
-    
-    /*qrcode*/  
+
+    /*qrcode*/
     Route::get('gerar-qrcode/{id}',                                                 [QRCodeController::class, 'gerarQRCode'])->name('qrCode');
     Route::get('gerar-qrcode/interno/{id}',                                         [QRCodeController::class, 'gerarQRCodeAtvInt'])->name('qrCodeInterno');
-    
+
     //CONTROLE DE ESTOQUE - MARCAS  
     Route::get('admin/ativo/estoque/marcas',                                        [EstoqueMarcasController::class, 'index'])->name('ativo.estoque.marcas.index');
     Route::get('admin/ativo/estoque/marcas/create',                                 [EstoqueMarcasController::class, 'create'])->name('ativo.estoque.marcas.create');
@@ -519,8 +528,8 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/estoque/marcas/edit/{ativo}',                           [EstoqueMarcasController::class, 'edit'])->name('ativo.estoque.marcas.edit');
     Route::put('admin/ativo/estoque/marcas/{ativo}',                                [EstoqueMarcasController::class, 'update'])->name('ativo.estoque.marcas.update');
     Route::delete('admin/ativo/estoque/marcas/destroy/{ativo}',                     [EstoqueMarcasController::class, 'destroy'])->name('ativo.estoque.marcas.destroy');
-    
-    
+
+
     //CONTROLE DE ESTOQUE - CATEGORIAS  
     Route::get('admin/ativo/estoque/categorias',                                    [EstoqueCategoriaController::class, 'index'])->name('ativo.estoque.categorias.index');
     Route::get('admin/ativo/estoque/categorias/create',                             [EstoqueCategoriaController::class, 'create'])->name('ativo.estoque.categorias.create');
@@ -530,8 +539,8 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/estoque/categorias/{ativo}',                            [EstoqueCategoriaController::class, 'update'])->name('ativo.estoque.categorias.update');
     Route::delete('admin/ativo/estoque/categorias/destroy/{ativo}',                 [EstoqueCategoriaController::class, 'destroy'])->name('ativo.estoque.categorias.destroy');
     Route::get('admin/anexo/estoque/entrada/pesquisar_categoria',                   [EstoqueCategoriaController::class, 'pesquisar_categoria'])->name('anexo.estoque.categorias.pesquisar_categoria');
-    
-    
+
+
     //CONTROLE DE ESTOQUE - SUBCATEGORIAS   
     Route::get('admin/ativo/estoque/subcategorias',                                 [EstoqueSubCategoriaController::class, 'index'])->name('ativo.estoque.subcategorias.index');
     Route::get('admin/ativo/estoque/subcategorias/create',                          [EstoqueSubCategoriaController::class, 'create'])->name('ativo.estoque.subcategorias.create');
@@ -596,7 +605,7 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/ativo/veiculo/tipos_veiculos/store',                         [TiposVeiculosController::class, 'store'])->name('tipos_veiculos.store');
     Route::put('admin/ativo/veiculo/tipos_veiculos/update/{id}',                    [TiposVeiculosController::class, 'update'])->name('tipos_veiculos.update');
     Route::delete('admin/ativo/veiculo/tipos_veiculos/delete/{id}',                 [TiposVeiculosController::class, 'delete'])->name('tipos_veiculos.delete');
-    
+
 
     //consultar tabela fipe
     Route::get('admin/ativo/veiculo/consultar-marcas',                             [FipeController::class, 'consultarMarcas'])->name('consultar-marcas');
@@ -630,7 +639,7 @@ Route::middleware(['auth',])->group(function () {
     Route::post('admin/ativo/veiculo/manut_preventiva/store',                       [VeiculoPreventivaController::class, 'store'])->name('veiculo.manut_preventiva.store');
     Route::put('admin/ativo/veiculo/manut_preventiva/update',                       [VeiculoPreventivaController::class, 'update'])->name('veiculo.manut_preventiva.update');
     Route::delete('admin/ativo/veiculo/manut_preventivadelete/{id}',                [VeiculoPreventivaController::class, 'delete'])->name('veiculo.manut_preventiva.delete');
-    
+
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/{tipo_veiculo_id}',        [VeiculosDocsLegaisController::class, 'index'])->name('veiculos_docs_legais.index');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/create/{tipo_veiculo_id}', [VeiculosDocsLegaisController::class, 'create'])->name('veiculos_docs_legais.create');
     Route::get('admin/ativo/veiculo/veiculos_docs_legais/edit/{tipo_veiculo_id}',   [VeiculosDocsLegaisController::class, 'edit'])->name('veiculos_docs_legais.edit');
@@ -796,15 +805,15 @@ Route::middleware(['auth',])->group(function () {
     Route::get('admin/ativo/veiculo/manutencao/download/{id}',                  [VeiculoManutencaoController::class, 'download'])->name('ativo.veiculo.manutencao.download');
     Route::post('admin/ativo/veiculo/manutencao/updateArquivo/{id}',           [VeiculoManutencaoController::class, 'upload'])->name('ativo.veiculo.manutencao.upload');
 
-    
+
     //Imagens da Manutenca do veículo
     Route::post('admin/ativo/veiculo/manutencao/storeImagem/{id}',             [VeiculoManutencaoController::class, 'storeImage'])->name('ativo.veiculo.manutencao.storeimagem');
     Route::get('admin/ativo/veiculo/manutencao/detalhes/{id}',                 [VeiculoManutencaoController::class, 'show'])->name('ativo.veiculo.manutencao.detalhes');
     Route::post('admin/ativo/veiculo/manutencao/updateImagem/{id}',            [VeiculoManutencaoController::class, 'updateImage'])->name('ativo.veiculo.manutencao.updateImagem');
     Route::post('admin/ativo/veiculo/manutencao/deleteImagem/{id}',            [VeiculoManutencaoController::class, 'deleteImage'])->name('ativo.veiculo.manutencao.deleteImagem');
-   
 
-  
+
+
 
     /* Ativo - Veículos - Quilometragem */
     Route::get('admin/ativo/veiculo/quilometragem/{veiculo}',                   [VeiculoQuilometragemController::class, 'index'])->name('ativo.veiculo.quilometragem.index');
@@ -814,7 +823,7 @@ Route::middleware(['auth',])->group(function () {
     Route::put('admin/ativo/veiculo/quilometragem/{id}',                        [VeiculoQuilometragemController::class, 'update'])->name('ativo.veiculo.quilometragem.update');
     Route::delete('admin/ativo/veiculo/quilometragem/delete/{id}',              [VeiculoQuilometragemController::class, 'delete'])->name('ativo.veiculo.quilometragem.delete');
     Route::get('admin/ativo/veiculo/quilometragem/download/{id}',               [VeiculoQuilometragemController::class, 'download'])->name('ativo.veiculo.quilometragem.download');
-//
+    //
 
     /* Ativo - Veículos - Seguro */
     Route::get('admin/ativo/veiculo/seguro/{veiculo}',                          [VeiculoSeguroController::class, 'index'])->name('ativo.veiculo.seguro.index');
