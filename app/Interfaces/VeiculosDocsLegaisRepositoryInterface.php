@@ -13,6 +13,6 @@ interface VeiculosDocsLegaisRepositoryInterface
     public function delete(int $id);
     public function search(string $query);
     public function paginate(int $perPage);
-    public function anexo(int $id);
+    public function upload(int $id);
     public function download(int $id);
 }

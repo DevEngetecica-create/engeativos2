@@ -94,7 +94,7 @@ class VeiculosDocsLegaisController extends Controller
     }
 
 
-    public function upload(Request $request, $id)
+    public function uploads(Request $request, $id)
     {
       
         try {

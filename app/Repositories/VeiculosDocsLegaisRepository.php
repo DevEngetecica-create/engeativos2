@@ -114,13 +114,15 @@ class VeiculosDocsLegaisRepository implements VeiculosDocsLegaisRepositoryInterf
         return VeiculosDocsLegais::paginate($perPage);
     }
 
-    public function anexo(int $id)
+    public function upload(int $id)
     {
         $doc = VeiculosDocsLegais::findOrFail($id);
-        // Logica para manipular o anexo
+       
+         // Armazena o novo arquivo
+         $arquivos->storeAs('uploads/veiculos/docs_tecnicos/' . $doc->id_veiculo, $nome_arquivo, 'public');
     }
 
-    public function download(int $id)
+    public function downloads(int $id)
     {
         try {
             
