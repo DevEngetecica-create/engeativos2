@@ -143,7 +143,7 @@
 
 
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="form-label" for="matricula">Matrícula</label><span
                                                 class="text-danger" title="Campo obrigatório">*</span>
                                             <input class="form-control" id="matricula" name="matricula" type="text"
@@ -151,7 +151,7 @@
 
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <label class="form-label" for="id_obra">Obra</label>
                                             <select class="form-select select2" id="id_obra" name="id_obra">
 
@@ -200,6 +200,17 @@
                                             </select>
                                         </div>
 
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="estado_civil">Setor</label>
+                                            <select class="form-control" id="id_setor" name="id_setor">
+                                                <option value="">Selecione um setor</option>
+                                                    @foreach($setores as $setor)
+                                                        <option value="{{ $setor->id }}" {{ (isset($store) && $store->id_setor == $setor->id ? 'selected' : '') }}>
+                                                            {{ $setor->nome_setor }}
+                                                        </option>
+                                                    @endforeach
+                                            </select>                                            
+                                        </div>
                                     </div>
 
 
@@ -609,7 +620,7 @@
                                                                                                 session()->get('usuario_vinculo')->id_nivel == 15 ||
                                                                                                 session()->get('usuario_vinculo')->id_nivel == 10) d-block @else d-none @endif">
                                                                                     <div class="form-group">
-                                                                                        <select class="form-select situacao-select" name="situacao_doc" id="situacao_doc{{ $qualificacao->id_anexos ?? $qualificacao->id }}" data-id="{{ $qualificacao->id_anexos ?? $qualificacao->id }}">
+                                                                                        <select class="form-select situacao-select" name="situacao_doc" id="situacao_doc{{ $qualificacao->id_anexos ?? $qualificacao->id }}" data-id_qualificacao="{{$qualificacao->id }}" data-id="{{ $qualificacao->id_anexos ?? $qualificacao->id }}">
                                                                                             <option value="">Selecione</option>
                                                                                             <option value="1" @if($qualificacao->situacao_doc == 1) selected @endif>Pendente</option>
                                                                                             <option value="2" @if($qualificacao->situacao_doc == 2) selected @endif>Sim</option>
@@ -805,6 +816,7 @@
                 <div class="modal-body">
                     <form method="post" id="form_editar_qualificacao_modal" enctype="multipart/form-data">
                         @csrf
+                        @method('PUT')
 
                         <div class="row mt-2" id="consultar_anexo">
 
@@ -1068,9 +1080,7 @@
         
         
 
-        $('#salvar_alteracoes').on('click', function() {
-
-        
+        $('#salvar_alteracoes').on('click', function() {        
 
             var url_editat_quali =  "{{ route('cadastro.funcionario.editar_anexos_funcionarios', ['id' => ':id']) }}".replace(':id', id_editat_quali);
 

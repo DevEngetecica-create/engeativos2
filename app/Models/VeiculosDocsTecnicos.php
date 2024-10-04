@@ -28,7 +28,7 @@ class VeiculosDocsTecnicos extends Model
         return $this->belongsTo(Veiculo::class, 'id_tipo_veiculo');
     }
    
-    public function tipo_doc_legal()
+    public function tipo_doc_tecnico()
     {
         return $this->belongsTo(DocsTecnicos::class, 'id_doc_tecnico');
     }

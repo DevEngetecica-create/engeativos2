@@ -6,6 +6,8 @@ use App\Interfaces\VeiculosDocsLegaisRepositoryInterface;
 use App\Interfaces\DocsLegaisRepositoryInterface;
 use App\Models\DocsLegais;
 use App\Models\VeiculosDocsLegais;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -114,12 +116,57 @@ class VeiculosDocsLegaisRepository implements VeiculosDocsLegaisRepositoryInterf
         return VeiculosDocsLegais::paginate($perPage);
     }
 
+<<<<<<< HEAD
     public function upload(int $id)
     {
         $doc = VeiculosDocsLegais::findOrFail($id);
        
          // Armazena o novo arquivo
          $arquivos->storeAs('uploads/veiculos/docs_tecnicos/' . $doc->id_veiculo, $nome_arquivo, 'public');
+=======
+    public function upload($id, array $data, $arquivos)
+    {
+        $docs_legais = VeiculosDocsLegais::findOrFail($id);
+
+        if ($arquivos) {
+
+            $nome_arquivo = $arquivos->getClientOriginalName();
+            $caminho_arquivo = 'uploads/veiculos/docs_legais/' . $docs_legais->id_veiculo  . "/";
+
+            // Verifica se o arquivo já existe e o exclui antes de salvar o novo
+            if (Storage::disk('public')->exists($caminho_arquivo)) {
+                Storage::disk('public')->delete($caminho_arquivo);
+            }
+            // Atualiza o campo de nome de arquivo no banco de dados
+            $docs_legais->user_edit = Auth::user()->email;
+            $docs_legais->arquivo = $nome_arquivo;
+
+
+            $docs_legais->data_documento = $data['data_documento'];
+
+            if (isset($data['data_documento']) && isset($docs_legais->validade)) {
+                // Parseando a data do documento
+                $data_documento = Carbon::parse($data['data_documento']);
+
+                // Adicionando os meses de validade à data do documento
+                $data_calculado = $data_documento->addMonths($docs_legais->validade);
+
+                // Atribuindo a data calculada ao campo data_validade
+                $docs_legais->data_validade = $data_calculado;
+            }
+
+
+            $caminho_arquivo = 'uploads/veiculos/docs_legais/' . $docs_legais->id_veiculo  . "/";
+            // Armazena o novo arquivo
+            $arquivos->storeAs($caminho_arquivo, $nome_arquivo, 'public');
+
+            $docs_legais->save();
+        }
+
+        Log::info('Manutenção atualizada', ['manutencao' => $docs_legais]);
+
+        return $docs_legais;
+>>>>>>> 9f303e6dee0ad8ab3bba4885151daaa61259c12d
     }
 
     public function downloads(int $id)

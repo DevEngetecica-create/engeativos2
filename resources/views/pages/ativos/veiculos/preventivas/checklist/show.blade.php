@@ -41,7 +41,7 @@
                                            $situacaoPreventiva = $situacoesPreventivas[$key] ?? 0;                                                
                                             $situacao = $situacao_checklist[$key] ?? '';
 
-                                            //$situacao = $situacoes[$index] ?? 0;
+                                         
                                             $observacaoAtual = $observacao[$key] ?? '';
                                             $fileAtual = $file[$key] ?? null;
 
@@ -72,7 +72,7 @@
 
                                                             echo '<td class="py-1" style="width: 15%;">
                                                                     <div class="form-check text-center">
-                                                                        <input style="width:40px; height:20px" type="checkbox" id="obgr_' . $key . '_' . $situacaoPreventiva . '" class="form-check-input checklist-checkbox" name="checklist[]" value="1" ' . ($situacao == 1 ? "checked" : ""). '>
+                                                                        <input style="width:40px; height:20px; pointer-events: none;" type="checkbox" id="obgr_' . $key . '_' . $situacaoPreventiva . '" class="form-check-input checklist-checkbox" name="checklist[]" value="1" ' . ($situacao == 1 ? "checked" : ""). '>
                                                                       
                                                                     </div>
                                                                 </td>
@@ -81,7 +81,12 @@
                                                                 
                                                                 <div class="upload-btn-wrapper ms-2">'.
 
-                                                                     ($fileAtual != 'null' ? '<a id="download' . $index . '" href="' . asset('storage/' . $fileAtual) . '" target="_blank"> <span class="btn btn-outline-success btn-sm btn-border px-4 py-0 mt-2 mb-0"> <i class="mdi mdi-download" title="Baixar anexo"></i></span></a>' :  '<span class="btn btn-outline-danger btn-sm btn-border px-4 py-0 mt-2 mb-0"  title="Não há arquivo anexado"><i class="mdi mdi-download mdi-18px"></i></span>')
+                                                                     ($fileAtual != 'null' ? '<a id="download' . $key . '" href="' . route('checklist.download', ['id' => $checklist->id, 'fileIndex' => $key]) . '">
+                                                                                                <span class="btn btn-outline-success btn-sm btn-border px-4 py-0 mt-2 mb-0"> 
+                                                                                                    <i class="mdi mdi-download" title="Baixar anexo"></i>
+                                                                                                </span>
+                                                                                            </a>' :  
+                                                                                            '<span class="btn btn-outline-danger btn-sm btn-border px-4 py-0 mt-2 mb-0"  title="Não há arquivo anexado"><i class="mdi mdi-download mdi-18px"></i></span>')
                                                                      .'                                                                                                                                  
                                                                 </div> 
                                                             </td>

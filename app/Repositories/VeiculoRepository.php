@@ -9,6 +9,7 @@ use App\Interfaces\VeiculoQuilometragemRepositoryInterface;
 use App\Models\Veiculo;
 use App\Models\VeiculoImagens;
 use App\Model\Log;
+use App\Models\VeiculosDocsTecnicos;
 use App\Models\VeiculoSubCategoria;
 use Flasher\Laravel\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,8 +24,8 @@ class VeiculoRepository implements VeiculoRepositoryInterface
     public function __construct(
         VeiculosDocsLegaisRepositoryInterface $docs_legais,
         VeiculosDocsTecnicosRepositoryInterface $docs_tecnicos,
-        VeiculoQuilometragemRepositoryInterface $km)
-    {
+        VeiculoQuilometragemRepositoryInterface $km
+    ) {
         $this->docs_legais = $docs_legais;
         $this->docs_tecnicos = $docs_tecnicos;
         $this->km = $km;
@@ -59,7 +60,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         $veiculo->idSubCategoria = $data['idSubCategoria'];
         $veiculo->id_preventiva = $data['id_preventiva'];
         $veiculo->user_create = Auth::user()->email;
-        $veiculo->tipo = $data['tipo'];
+        $veiculo->tipos = $data['tipo'];
         $veiculo->marca = $data['marca_nome'];
         $veiculo->modelo = $data['modelo_nome'];
         $veiculo->ano = $data['ano'];
@@ -79,6 +80,7 @@ class VeiculoRepository implements VeiculoRepositoryInterface
 
         //Passar o array $veiculo com os dados salvos
         $this->docs_legais->store($veiculo->toArray());
+        $this->docs_tecnicos->store($veiculo->toArray());
         $this->km->create($veiculo->toArray());
 
 
@@ -95,29 +97,35 @@ class VeiculoRepository implements VeiculoRepositoryInterface
     {
         $veiculo = Veiculo::findOrFail($id);
 
-        $imagem = $data['imagem'];
 
-        if ($imagem != "") {
+        $imagem = $data['imagem'] ?? null;
 
-            $image_name = $imagem->getClientOriginalName();
+        // Verifica se uma nova imagem foi enviada
+        $imagem = $data['imagem'] ?? null; // Verifica se o campo 'imagem' está presente
 
-            $nome_arquivo = $imagem->getClientOriginalName() ?? $veiculo->imagem;
-            $imagePath = 'uploads/veiculos/' . $id .'/'.$veiculo->imagem;
+        // Define $image_name como a imagem existente por padrão
+        $image_name = $veiculo->imagem;
 
-            // Verifique se o arquivo existe e, se sim, exclua-o
+        if ($imagem) { // Verifica se o arquivo foi enviado
+            $image_name = $imagem->getClientOriginalName(); // Obtém o nome da nova imagem
+
+            // Define o caminho completo da imagem antiga
+            $imagePath = 'imagens/veiculos/' . $id . '/' . $veiculo->imagem;
+
+            // Verifica se o arquivo existe e, se sim, exclui-o
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
 
             // Armazena o novo arquivo
-            $imagem->move(public_path("imagens/veiculos/" . $id), $nome_arquivo);
-
+            $imagem->move(public_path("imagens/veiculos/" . $id), $image_name);
         }
 
         // Converte '126.173,00' para '126173.00'
         $data['valor_fipe'] = str_replace(['.', ','], ['', '.'], $data['valor_fipe']);
         $data['valor_aquisicao'] = str_replace(['.', ','], ['', '.'], $data['valor_aquisicao']);
 
+        // Atualiza os dados do veículo
         $veiculo->obra_id = $data['obra_id'];
         $veiculo->idCategoria = $data['idCategoria'];
         $veiculo->idSubCategoria = $data['idSubCategoria'];
@@ -137,15 +145,34 @@ class VeiculoRepository implements VeiculoRepositoryInterface
         $veiculo->quilometragem_inicial = $data['quilometragem_inicial'];
         $veiculo->observacao = $data['observacao'];
         $veiculo->situacao = $data['situacao'];
+
+        // Atualiza a imagem do veículo
         $veiculo->imagem = $image_name;
 
+        // Salva as alterações no banco de dados
         $veiculo->save();
+
+        //verificar se o veiculo já possui docs legais. cadastrado //se tiver não faz nada       //se não tiver cadastra
+        $this->docs_legais->store($veiculo->toArray());
+
+        //verificar se o veiculo já possui docs cadastrado //se tiver não faz nada       //se não tiver cadastra
+        if (!$this->docs_tecnicos->pesquisa_veiculo($veiculo->id)->exists()) {
+            $this->docs_tecnicos->store($veiculo->toArray());
+        }
 
         return true;
     }
 
+
     public function delete($id)
     {
+
+        // Verificar se o veículo possui docs cadastrados
+        if ($this->docs_tecnicos->pesquisa_veiculo($id)->exists()) {
+            // Deletar todos os documentos relacionados ao id_veiculo
+            VeiculosDocsTecnicos::where('id_veiculo', $id)->delete();
+        }
+
         return Veiculo::destroy($id);
     }
 
@@ -197,43 +224,42 @@ class VeiculoRepository implements VeiculoRepositoryInterface
     {
         // Encontra o registro da imagem no banco de dados
         $veiculoImagem = VeiculoImagens::findOrFail($data['id_imagem']);
-    
+
         if ($imagem) {
-            
+
             // Defina o caminho completo da imagem antiga
             $imagePath = public_path("imagens/veiculos/" . $data['veiculo_id'] . "/" . $veiculoImagem->imagens);
-    
+
             // Verifique se o arquivo existe e, se sim, exclua-o
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
-    
+
             // Salva a nova imagem
             $imageName = $imagem->getClientOriginalName();
             $imagem->move(public_path("imagens/veiculos/" . $data['veiculo_id'] . "/"), $imageName);
-    
+
             // Atualiza o nome da imagem e a descrição no banco de dados
             $veiculoImagem->imagens = $imageName;
             $veiculoImagem->descricao = $data['descricao'];
-
         } else {
             // Se não houver nova imagem, apenas atualize a descrição
             $veiculoImagem->descricao = $data['descricao'];
         }
-    
+
         // Salva as mudanças no banco de dados
         $veiculoImagem->save();
-    
+
         return true;
     }
-    
+
 
     public function deleteImage($id)
     {
         $veiculoImagem = VeiculoImagens::findOrFail($id);
 
         // Defina o caminho completo da imagem
-        $imagePath =public_path("imagens/veiculos/" . $veiculoImagem->veiculo_id . "/" . $veiculoImagem->imagens);
+        $imagePath = public_path("imagens/veiculos/" . $veiculoImagem->veiculo_id . "/" . $veiculoImagem->imagens);
 
         // Verifique se o arquivo existe e, se sim, exclua-o
         if (file_exists($imagePath)) {
