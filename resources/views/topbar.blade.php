@@ -8,26 +8,8 @@
 <header id="page-topbar">
     <div class="layout-width">
         <div class="navbar-header">
-            <div class="d-flex">
-                <!-- LOGO -->
-                <div class="navbar-brand-box horizontal-logo">
-                    <a href="index" class="logo logo-dark">
-                        <span class="logo-sm">
-                            <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ URL::asset('build/images/logo-dark.png') }}" alt="" height="17">
-                        </span>
-                    </a>
-                    <a href="index" class="logo logo-light">
-                        <span class="logo-sm">
-                            <img src="{{ URL::asset('build/images/logo-sm.png') }}" alt="" height="22">
-                        </span>
-                        <span class="logo-lg">
-                            <img src="{{ URL::asset('build/images/logo-light.png') }}" alt="" height="17">
-                        </span>
-                    </a>
-                </div>
+            <div class="d-flex">              
+                
 
                 <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
                     <span class="hamburger-icon">
@@ -194,6 +176,81 @@
             </div>
             
         </div>
+
+        <div class="dropdown topbar-head-dropdown ms-1 header-item" id="calendarDropdown" title="Atenção! As notificações ficarão disponíveis por três dias.">
+            <button type="button" class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle p-3" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                <i class='mdi mdi-calendar-month-outline mdi-24px'></i>
+                <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger" id="totalEventos">{{ $eventos->count() }}<span class="visually-hidden">Vencimentos</span></span>
+                <i class="mdi mdi-chevron-down text-black mx-2 mdi-18px"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
+        
+                <div class="dropdown-head bg-primary bg-pattern rounded-top">
+                    <div class="p-3">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h6 class="m-0 fs-16 fw-semibold text-white"> Eventos </h6>
+                            </div>
+                            <div class="col-auto dropdown-tabs">
+                                <span class="badge bg-light text-body fs-13" id="totalEventos2">{{ $eventos->count() }}</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="px-2 pt-2">
+                        <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true" id="notificationItemsTab" role="tablist">
+                            <li class="nav-item waves-effect waves-light">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab" role="tab" aria-selected="true">
+                                    Todas (<span id="totalEventos3">{{ $eventos->count() }}</span>)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+        
+                </div>
+        
+                <div class="tab-content position-relative" id="notificationItemsTabContent">
+                    <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
+                        <div data-simplebar class="pe-2" id="listnotificacoesCalendario" style="max-height: 500px; overflow-y: auto;">
+                            @forelse ($eventos as $evento)
+                            <a href="{{'/'.$evento->url}}">
+                                <div class="text-reset notification-item d-block dropdown-item position-relative">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <a href="{{$evento->url}}" class="stretched-link">
+                                                <h6 class="mt-0 mb-1 fs-13 fw-semibold">{{ $evento->title }}</h6>
+                                            </a>
+                                            <div class="fs-13 text-muted">
+                                                <p class="mb-1">{{ \Carbon\Carbon::parse($evento->end)->format('d/m/Y') }}</p>
+                                            </div>
+                                            <p class="mb-0 fs-11 fw-medium text-uppercase text-muted"></p>
+                                        </div>
+                                        <div class="px-2 fs-15">
+                                            <div class="form-check notification-check">
+                                                <input class="form-check-input" type="checkbox" value="read" id="notification-check-{{ $evento->id }}">
+                                                <label class="form-check-label" for="notification-check-{{ $evento->id }}"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            @empty
+                                <div class="text-reset notification-item d-block dropdown-item position-relative">
+                                    <p class="text-muted text-center">Não há eventos neste mês.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="my-3 text-center view-all">
+                        <a href="{{ route('calendarios.show') }}" class="btn btn-soft-success waves-effect waves-light">
+                            Ver todos
+                            <i class="ri-arrow-right-line align-middle"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
 
         <div class="dropdown ms-sm-3 header-item topbar-user bg-white">
             <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

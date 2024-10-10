@@ -4260,7 +4260,7 @@ var FullCalendar = (function (exports) {
         };
     }
     function getEventClassNames(props) {
-        let classNames = ['fc-event'];
+        let classNames = ['fc-event bg-success'];
         if (props.isMirror) {
             classNames.push('fc-event-mirror');
         }
@@ -12058,7 +12058,7 @@ var FullCalendar = (function (exports) {
                 y("div", { className: "fc-daygrid-day-events", ref: props.fgContentElRef },
                     props.fgContent,
                     y("div", { className: "fc-daygrid-day-bottom", style: { marginTop: props.moreMarginTop } },
-                        y(TableCellMoreLink, { allDayDate: date, singlePlacements: props.singlePlacements, moreCnt: props.moreCnt, alignmentElRef: rootElRef, alignGridTop: !props.showDayNumber, extraDateSpan: props.extraDateSpan, dateProfile: props.dateProfile, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, todayRange: props.todayRange }))),
+                        y({ allDayDate: date, singlePlacements: props.singlePlacements, moreCnt: props.moreCnt, alignmentElRef: rootElRef, alignGridTop: !props.showDayNumber, extraDateSpan: props.extraDateSpan, dateProfile: props.dateProfile, eventSelection: props.eventSelection, eventDrag: props.eventDrag, eventResize: props.eventResize, todayRange: props.todayRange }))),
                 y("div", { className: "fc-daygrid-day-bg" }, props.bgContent)))));
         }
     }

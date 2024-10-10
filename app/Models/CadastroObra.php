@@ -41,4 +41,9 @@ class CadastroObra extends Model
     {
         return $this->hasMany(CadastroFuncionario::class, 'id_obra', 'id');
     }
+
+    public function notificacoesCalendarios()
+    {
+        return $this->hasMany(NotificacoesCalenadrios::class, 'id_obra'); // Ajuste conforme a chave estrangeira
+    }
 }

@@ -84,5 +84,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
         Schema::defaultStringLength(191);
+      //  \Carbon\Carbon::setLocale('pt_BR');
     }
 }

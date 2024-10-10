@@ -205,10 +205,11 @@ Route::middleware(['auth',])->group(function () {
 
     //Calendarios
     Route::get('admin/calendarios',                                             [NotificacoesCalenadriosController::class, 'index'])->name('calendarios.show');
-    Route::get('admin/events',                                                       [NotificacoesCalenadriosController::class, 'getEvents'])->name('calendarios.getEvents');
+    Route::get('admin/events',                                                  [NotificacoesCalenadriosController::class, 'getEvents'])->name('calendarios.getEvents');
     Route::post('admin/events',                                                 [NotificacoesCalenadriosController::class, 'store'])->name('calendarios.store');
     Route::put('admin/events/update/{id}',                                      [NotificacoesCalenadriosController::class, 'update'])->name('calendarios.update');
     Route::delete('admin/events/destroy/{id}',                                  [NotificacoesCalenadriosController::class, 'destroy'])->name('calendarios.destroy');
+    Route::post('admin/events/alert',                                       [NotificacoesCalenadriosController::class, 'alert_email'])->name('calendarios.alert_email');
 
 
 

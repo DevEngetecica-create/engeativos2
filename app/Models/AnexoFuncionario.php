@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AnexoFuncionario extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $table = "anexos_funcionarios";
@@ -41,6 +43,11 @@ class AnexoFuncionario extends Model
     
     public function qualificacao()
     {
-        return $this->belongsTo(FuncaoQualificacao::class, 'id_qualificacao');
+        return $this->belongsTo(FuncionarioQualificacao::class, 'id_qualificacao');
+    
+    }
+    public function funcionario()
+    {
+        return $this->belongsTo(CadastroFuncionario::class, 'id_funcionario');
     }
 }

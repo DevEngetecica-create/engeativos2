@@ -1,44 +1,39 @@
 @extends('dashboard')
 @section('title')
-    @lang('translation.month-grid')
+    Controle de Venci. de Docs
 @endsection
+<style>
+.fc-event{
+    background-color: aquamarine !important;
+}
+
+.fc-h-event .fc-event-main{
+    color: black !important
+}
+</style>
 @section('content')
-   
- <!-- CSS e JS do flatpickr -->
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- CSS e JS do flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <div class="row">
         <div class="col-12">
             <div class="row">
+                <div class="col-xl-9">
+                    <div class="card card-h-100">
+                        <div class="card-body">
+                            <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div><!-- end col -->
                 <div class="col-xl-3">
                     <div class="card card-h-100">
                         <div class="card-body">
-                            <button class="btn btn-primary w-100" id="btn-new-event"><i class="mdi mdi-plus"></i> Create New Event</button>
-
-                            <div id="external-events">
-                                <br>
-                                <p class="text-muted">Drag and drop your event or click in the calendar</p>
-                                <div class="external-event fc-event bg-success-subtle text-success" data-class="bg-success-subtle">
-                                    <i class="mdi mdi-checkbox-blank-circle me-2"></i>New Event Planning
-                                </div>
-                                <div class="external-event fc-event bg-info-subtle text-info" data-class="bg-info-subtle">
-                                    <i class="mdi mdi-checkbox-blank-circle me-2"></i>Meeting
-                                </div>
-                                <div class="external-event fc-event bg-warning-subtle text-warning" data-class="bg-warning-subtle">
-                                    <i class="mdi mdi-checkbox-blank-circle me-2"></i>Generating Reports
-                                </div>
-                                <div class="external-event fc-event bg-danger-subtle text-danger" data-class="bg-danger-subtle">
-                                    <i class="mdi mdi-checkbox-blank-circle me-2"></i>Create New theme
-                                </div>
-                            </div>
-
+                            <button class="btn btn-success w-100" id="btn-new-event1"> Eventos deste mês</button>
                         </div>
                     </div>
-                    <div>
-                        <h5 class="mb-1">Upcoming Events</h5>
-                        <p class="text-muted">Don't miss scheduled events</p>
-                        <div class="pe-2 me-n1 mb-3" data-simplebar style="height: 400px">
+                    <div>                      
+                        <div class="pe-2 me-n1 mb-3" data-simplebar style="height: 700px">
                             <div id="upcoming-event-list"></div>
                         </div>
                     </div>
@@ -49,23 +44,12 @@
                                 <div class="flex-shrink-0">
                                     <i data-feather="calendar" class="text-info icon-dual-info"></i>
                                 </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6 class="fs-15">Welcome to your Calendar!</h6>
-                                    <p class="text-muted mb-0">Event that applications book will appear here. Click on an event to see the details and manage applicants event.</p>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
                     <!--end card-->
                 </div> <!-- end col-->
-
-                <div class="col-xl-9">
-                    <div class="card card-h-100">
-                        <div class="card-body">
-                            <div id="calendar"></div>
-                        </div>
-                    </div>
-                </div><!-- end col -->
             </div>
             <!--end row-->
 
@@ -82,7 +66,8 @@
                         <div class="modal-body p-4">
                             <form class="needs-validation" name="event-form" id="form-event" novalidate>
                                 <div class="text-end">
-                                    <a href="#" class="btn btn-sm btn-soft-primary" id="edit-event-btn" data-id="edit-event" onclick="editEvent(this)" role="button">Edit</a>
+                                    <a href="#" class="btn btn-sm btn-soft-primary" id="edit-event-btn"
+                                        data-id="edit-event" onclick="editEvent(this)" role="button">Edit</a>
                                 </div>
                                 <div class="event-details">
                                     <div class="d-flex mb-2">
@@ -100,7 +85,8 @@
                                             <i class="ri-time-line text-muted fs-16"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <h6 class="d-block fw-semibold mb-0"><span id="event-timepicker1-tag"></span> - <span id="event-timepicker2-tag"></span></h6>
+                                            <h6 class="d-block fw-semibold mb-0"><span id="event-timepicker1-tag"></span> -
+                                                <span id="event-timepicker2-tag"></span></h6>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
@@ -121,10 +107,11 @@
                                     </div>
                                 </div>
                                 <div class="row event-form">
-                                    <div class="col-12">
+                                    <div class="col-">
                                         <div class="mb-3">
                                             <label class="form-label">Type</label>
-                                            <select class="form-select d-none" name="category" id="event-category" required>
+                                            <select class="form-select d-none" name="category" id="event-category"
+                                                required>
                                                 <option value="bg-danger-subtle">Danger</option>
                                                 <option value="bg-success-subtle">Success</option>
                                                 <option value="bg-primary-subtle">Primary</option>
@@ -139,7 +126,9 @@
                                     <div class="col-12">
                                         <div class="mb-3">
                                             <label class="form-label">Event Name</label>
-                                            <input class="form-control d-none" placeholder="Enter event name" type="text" name="title" id="event-title" required value="" />
+                                            <input class="form-control d-none" placeholder="Enter event name"
+                                                type="text" name="title" id="event-title" required
+                                                value="" />
                                             <div class="invalid-feedback">Please provide a valid event name</div>
                                         </div>
                                     </div>
@@ -148,8 +137,11 @@
                                         <div class="mb-3">
                                             <label>Event Date</label>
                                             <div class="input-group d-none">
-                                                <input type="text" id="event-start-date" class="form-control flatpickr flatpickr-input" placeholder="Select date" readonly required>
-                                                <span class="input-group-text"><i class="ri-calendar-event-line"></i></span>
+                                                <input type="text" id="event-start-date"
+                                                    class="form-control flatpickr flatpickr-input"
+                                                    placeholder="Select date" readonly required>
+                                                <span class="input-group-text"><i
+                                                        class="ri-calendar-event-line"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -160,7 +152,9 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Start Time</label>
                                                     <div class="input-group d-none">
-                                                        <input id="timepicker1" type="text" class="form-control flatpickr flatpickr-input" placeholder="Select start time" readonly>
+                                                        <input id="timepicker1" type="text"
+                                                            class="form-control flatpickr flatpickr-input"
+                                                            placeholder="Select start time" readonly>
                                                         <span class="input-group-text"><i class="ri-time-line"></i></span>
                                                     </div>
                                                 </div>
@@ -169,7 +163,9 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">End Time</label>
                                                     <div class="input-group d-none">
-                                                        <input id="timepicker2" type="text" class="form-control flatpickr flatpickr-input" placeholder="Select end time" readonly>
+                                                        <input id="timepicker2" type="text"
+                                                            class="form-control flatpickr flatpickr-input"
+                                                            placeholder="Select end time" readonly>
                                                         <span class="input-group-text"><i class="ri-time-line"></i></span>
                                                     </div>
                                                 </div>
@@ -181,7 +177,8 @@
                                         <div class="mb-3">
                                             <label for="event-location">Location</label>
                                             <div>
-                                                <input type="text" class="form-control d-none" name="event-location" id="event-location" placeholder="Event location">
+                                                <input type="text" class="form-control d-none" name="event-location"
+                                                    id="event-location" placeholder="Event location">
                                             </div>
                                         </div>
                                     </div>
@@ -190,14 +187,16 @@
                                     <div class="col-12">
                                         <div class="mb-3">
                                             <label class="form-label">Description</label>
-                                            <textarea class="form-control d-none" id="event-description" placeholder="Enter a description" rows="3" spellcheck="false"></textarea>
+                                            <textarea class="form-control d-none" id="event-description" placeholder="Enter a description" rows="3"
+                                                spellcheck="false"></textarea>
                                         </div>
                                     </div>
                                     <!--end col-->
                                 </div>
                                 <!--end row-->
                                 <div class="hstack gap-2 justify-content-end">
-                                    <button type="button" class="btn btn-soft-danger" id="btn-delete-event"><i class="ri-close-line align-bottom"></i> Delete</button>
+                                    <button type="button" class="btn btn-soft-danger" id="btn-delete-event"><i
+                                            class="ri-close-line align-bottom"></i> Delete</button>
                                     <button type="submit" class="btn btn-success" id="btn-save-event">Add Event</button>
                                 </div>
                             </form>
@@ -209,31 +208,23 @@
         </div>
     </div> <!-- end row-->
 
- <!-- CSS e JS do Choices.js -->
+    <!-- CSS e JS do Choices.js -->
 
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
- <!-- include moment and one of the moment-timezone builds -->
-<script src='https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/moment-timezone@0.5.40/builds/moment-timezone-with-data.min.js'></script>
+    <!-- jQuery (se necessário para suas chamadas AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <!-- the connector. must go AFTER moment-timezone -->
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment-timezone@6.1.15/index.global.min.js'></script>
 
-<!-- jQuery (se necessário para suas chamadas AJAX) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Script de localização do FullCalendar para Português Brasileiro -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/pt-br.js"></script>
 
+    <!-- FullCalendar -->
+    <script src="{{ URL::asset('build/libs/fullcalendar/index.global.min.js') }}"></script>
 
-
-<!-- FullCalendar -->
-<script src="{{ URL::asset('build/libs/fullcalendar/index.global.min.js') }}"></script>
-
-<!-- Seu script que utiliza o flatpickr e outras bibliotecas -->
-<script src="{{ URL::asset('build/js/pages/calendar-month-grid.init.js') }}"></script>
-
-<!-- the connector. must go AFTER moment-timezone -->
-<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment-timezone@6.1.15/index.global.min.js'></script>
-
-<!-- Script de localização do FullCalendar para Português Brasileiro -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/pt-br.js"></script>
-    
+    <!-- Seu script que utiliza o flatpickr e outras bibliotecas -->
+    <script src="{{ URL::asset('build/js/pages/calendar-month-grid.init.js') }}"></script>
 @endsection

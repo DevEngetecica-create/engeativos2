@@ -5,10 +5,10 @@ var date_range = null;
 var T_check = null;
 
 document.addEventListener("DOMContentLoaded", function () {
-    flatPickrInit();
-    var addEvent = new bootstrap.Modal(document.getElementById('event-modal'), {
-        keyboard: false
-    });
+    //flatPickrInit();
+    /*  var addEvent = new bootstrap.Modal(document.getElementById('event-modal'), {
+         keyboard: false
+     }); */
     document.getElementById('event-modal');
     var modalTitle = document.getElementById('modal-title');
     var formEvent = document.getElementById('form-event');
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // var defaultEvents = [ ... ]; // Removido
 
     // init draggable
-    new Draggable(externalEventContainerEl, {
+    /* new Draggable(externalEventContainerEl, {
         itemSelector: '.external-event',
         eventData: function (eventEl) {
             return {
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
         }
     });
-
+ */
     var calendarEl = document.getElementById('calendar');
 
     function addNewEvent(info) {
@@ -56,9 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var eventCategoryChoice = new Choices("#event-category", {
         searchEnabled: false
     });
-
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        
         timeZone: 'America/Sao_Paulo', // Define o fuso horário para São Paulo
         locale: 'pt-br', // Define o idioma para Português Brasileiro
         editable: true,
@@ -72,6 +70,62 @@ document.addEventListener("DOMContentLoaded", function () {
             center: 'title',
             right: 'multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },
+        buttonText: {
+            today: 'Hoje',
+            multiMonthYear: 'Ano',
+            dayGridMonth: 'Mês',
+            timeGridWeek: 'Semana',
+            timeGridDay: 'Dia',
+            listMonth: 'Lista Mensal'
+        },
+        buttonHints: {
+            prev: 'Ano anterior',
+            next: 'Próximo ano',
+            today(buttonText, unit) {
+                return (unit === 'day') ? 'Dia' : `Este ${buttonText}`;
+            },
+        },
+        viewHint: 'Ver',
+        navLinkHint: 'Ir para $0',
+        moreLinkHint(eventCnt) {
+            return `Há mais ${eventCnt} evento${eventCnt === 1 ? '' : 's'}`;
+        },
+        moreLinkText: 'mais',
+        displayEventTime: false, // Ocultar o horário na exibição do evento
+    
+        // Personalização da Renderização dos Eventos
+        eventContent: function(arg) {
+            console.log(arg)
+            var event = arg.event;
+            var eventTitle = event.title;
+            var eventDate = new Date(event.end);
+            var formattedDate = eventDate.toLocaleDateString('pt-BR');
+    
+            // Verificar se o evento possui uma URL definida
+            var eventUrl = arg.event.url; // Define '#' como fallback
+    
+            // Criar o elemento de link
+            var linkEl = document.createElement('a');
+            linkEl.href = eventUrl;
+            linkEl.style.color = 'inherit'; // Herda a cor do evento
+            linkEl.style.textDecoration = 'none'; // Remove o sublinhado
+    
+            // Criar o conteúdo HTML do evento
+            var innerHtml = `
+                <div class="fc-daygrid-event-harness">
+                    <div class="fc-event-main">
+                        <div class="fc-event-title">${eventTitle}</div>
+                        <div class="fc-event-date">${formattedDate}</div>
+                    </div>
+                </div>
+            `;
+    
+            // Inserir o conteúdo no link
+            linkEl.innerHTML = innerHtml;
+    
+            return { domNodes: [linkEl] };
+        },
+    
         events: function (fetchInfo, successCallback, failureCallback) {
             // Fazer uma chamada AJAX para obter os eventos
             $.ajax({
@@ -79,11 +133,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 type: 'GET',
                 dataType: 'json',
                 success: function (response) {
-                    // Chamar o successCallback com os eventos
-                    successCallback(response);
+                    // Processar os eventos para definir 'start' igual a 'end'
+                    var events = response.map(function(event) {
+                        return {
+                            id: event.id,
+                            title: event.title,
+                            start: event.end, // Define 'start' igual a 'end'
+                            end: event.end,
+                            url: event.url,
+                            // Inclua outros campos necessários
+                            extendedProps: event.extendedProps || {},
+                            classNames: event.classNames || [],
+                            allDay: true // Define como evento de dia inteiro, se aplicável
+                        };
+                    });
+                    // Chamar o successCallback com os eventos processados
+                    successCallback(events);
                     // Atualizar o upcomingEvent com os eventos carregados
-                    upcomingEvent(response);
-
+                    upcomingEvent(events);
                 },
                 error: function (xhr) {
                     // Chamar o failureCallback se houver um erro
@@ -110,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         },
-        eventClick: function (info) {
+     /*    eventClick: function (info) {
             document.getElementById("edit-event-btn").removeAttribute("hidden");
             document.getElementById('btn-save-event').setAttribute("hidden", true);
             document.getElementById("edit-event-btn").setAttribute("data-id", "edit-event");
@@ -149,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
             modalTitle.innerText = selectedEvent.title;
 
             document.getElementById('btn-delete-event').removeAttribute('hidden');
-        },
+        }, */
         dateClick: function (info) {
             addNewEvent(info);
         },
@@ -304,14 +371,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    document.getElementById("btn-new-event").addEventListener("click", function (e) {
-        flatpicekrValueClear();
-        flatPickrInit();
-        addNewEvent();
-        document.getElementById("edit-event-btn").setAttribute("data-id", "new-event");
-        document.getElementById('edit-event-btn').click();
-        document.getElementById("edit-event-btn").setAttribute("hidden", true);
-    });
+    /*  document.getElementById("btn-new-event").addEventListener("click", function (e) {
+         flatpicekrValueClear();
+         flatPickrInit();
+         addNewEvent();
+         document.getElementById("edit-event-btn").setAttribute("data-id", "new-event");
+         document.getElementById('edit-event-btn').click();
+         document.getElementById("edit-event-btn").setAttribute("hidden", true);
+     }); */
 });
 
 function flatPickrInit() {
@@ -410,27 +477,68 @@ function eventTyped() {
     document.getElementById('btn-save-event').removeAttribute("hidden");
 }
 
+// Função para formatar datas no formato DD/MM/AAAA
+function formatDate(dateString) {
+    var date = new Date(dateString);
+    var day = ('0' + date.getDate()).slice(-2);
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var year = date.getFullYear();
+    return day + '/' + month + '/' + year;
+}
+
+// Função para formatar horas no formato HH:MM (24 horas)
+function formatTime(dateString) {
+    var date = new Date(dateString);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    // Adicionar zero à esquerda, se necessário
+    hours = ('0' + hours).slice(-2);
+    minutes = ('0' + minutes).slice(-2);
+    return hours + ':' + minutes;
+}
+
+
 // Função para atualizar a lista de próximos eventos
 function upcomingEvent(events) {
-    events.sort(function (o1, o2) {
-        return (new Date(o1.start)) - (new Date(o2.start));
-    });
-    document.getElementById("upcoming-event-list").innerHTML = null;
-    Array.from(events).forEach(function (element) {
-        var title = element.title;
-        var st_date = element.start ? str_dt(element.start) : null;
-        var ed_date = element.end ? str_dt(element.end) : null;
-        var end_dt = (ed_date) ? " até " + ed_date : '';
-        var category = (element.className).split("-");
-        var description = (element.description) ? element.description : "";
-        var e_time_s = tConvert(getTime(element.start));
-        var e_time_e = tConvert(getTime(element.end));
 
-        if (e_time_s == e_time_e) {
+    // Obter a data atual
+    var today = new Date();
+    var currentMonth = today.getMonth(); // Janeiro é 0, Fevereiro é 1, etc.
+    var currentYear = today.getFullYear();
+
+    // Filtrar os eventos para incluir apenas os do mês e ano atuais
+    var eventsThisMonth = events.filter(function (event) {
+        var eventDate = new Date(event.start); // Usamos 'start' pois definimos 'start' igual a 'end'
+        return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+    });
+
+    // Ordenar os eventos por data
+    eventsThisMonth.sort(function (a, b) {
+        var dateA = new Date(a.start);
+        var dateB = new Date(b.start);
+        return dateA - dateB; // Ordena em ordem crescente
+    });
+
+    // Limpar o conteúdo anterior da div
+    document.getElementById("upcoming-event-list").innerHTML = '';
+
+    // Iterar sobre os eventos filtrados
+    eventsThisMonth.forEach(function (element) {
+        var title = element.title;
+        var st_date = element.start ? formatDate(element.start) : null;
+        var ed_date = element.end ? formatDate(element.end) : null;
+        var end_dt = (ed_date && ed_date !== st_date) ? " até " + ed_date : '';
+        var category = (element.classNames && element.classNames.length > 0) ? element.classNames[0].split("-") : ['text', 'warning'];
+        var description = (element.extendedProps && element.extendedProps.description) ? element.extendedProps.description : "";
+        var e_time_s = element.start ? formatTime(element.start) : '';
+        var e_time_e = element.end ? formatTime(element.end) : '';
+
+        if (e_time_s === e_time_e || (!e_time_s && !e_time_e)) {
             e_time_s = "Evento de dia inteiro";
-            e_time_e = null;
+            e_time_e = "";
+        } else {
+            e_time_e = e_time_e ? " até " + e_time_e : "";
         }
-        var e_time_e = (e_time_e) ? " até " + e_time_e : "";
 
         var u_event = "<div class='card mb-3'>\
                             <div class='card-body'>\
@@ -444,7 +552,13 @@ function upcomingEvent(events) {
                         </div>";
         document.getElementById("upcoming-event-list").innerHTML += u_event;
     });
-};
+
+    // Se não houver eventos, exibir uma mensagem
+    if (eventsThisMonth.length === 0) {
+        document.getElementById("upcoming-event-list").innerHTML = '<p>Não há eventos neste mês.</p>';
+    }
+}
+
 
 function getTime(date) {
     date = new Date(date);
@@ -511,3 +625,13 @@ var eventData = {
     end: endDate ? endDate.toISOString() : null,
     // ... outros dados ...
 };
+
+
+function getEventClassNames(props) {
+    let classNames = ['fc-event bg-success'];
+    if (props.isMirror) {
+        classNames.push('fc-event-mirror');
+    }
+
+    return classNames;
+}

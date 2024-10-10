@@ -22,5 +22,5 @@ class FuncaoQualificacao extends Model
     public function funcao()
     {
         return $this->belongsTo(FuncaoFuncionario::class, 'id_funcao');
-    }
+    }    
 }

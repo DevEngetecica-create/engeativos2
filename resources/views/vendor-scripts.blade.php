@@ -34,12 +34,32 @@
 <script>
     $(document).ready(function() {
 
-        listarNotificacoes();
+    
 
         /*  var motivoReprovacaoModal = new bootstrap.Modal(document.getElementById('motivoReprovacaoModal'), {
             keyboard: false
         });
  */
+        /* function alertVenciDocs(id_obra) {
+            $.ajax({
+                url: "{{ route('calendarios.alert_email') }}",
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",                   
+                },
+                dataType: 'json',
+                success: function(response) {
+                    // Limpe a área onde você deseja exibir as notificações
+                }
+            });
+        }
+
+
+
+        setInterval(() => {
+           alertVenciDocs()
+        }, 10000); */
+
         var currentId = null;
         var currentSelectValue = null;
         var currentIDqualificacao = null;
@@ -47,17 +67,18 @@
         $('.situacao-select').change(function() {
             var id = $(this).data('id');
             var id_qualificacao = $(this).data('id_qualificacao');
-            var selectValue = $(this).val(); 
+            var selectValue = $(this).val();
 
             if (selectValue == 18) {
                 // Armazenar o ID e o valor selecionado
                 currentId = id;
                 currentSelectValue = selectValue;
-                
+
 
                 // Fazer uma solicitação AJAX para obter o motivo existente
                 $.ajax({
-                    url: "{{ route('cadastro.funcionario.obter_motivo', ['id' => ':id']) }}".replace(':id', id),
+                    url: "{{ route('cadastro.funcionario.obter_motivo', ['id' => ':id']) }}"
+                        .replace(':id', id),
                     method: 'get',
                     success: function(data) {
                         // Exibir o motivo existente na modal
@@ -987,8 +1008,8 @@
 <script>
     @if (Session::has('message'))
 
-    var type = "{{ Session::has('type') ? session('type') : 'info' }}";
-    var menssagem = "{{ session('message') }}"
+        var type = "{{ Session::has('type') ? session('type') : 'info' }}";
+        var menssagem = "{{ session('message') }}"
 
         const Toast = Swal.mixin({
             toast: true,
@@ -1006,8 +1027,6 @@
             icon: type,
             title: menssagem
         });
-
-     
     @endif
 </script>
 
