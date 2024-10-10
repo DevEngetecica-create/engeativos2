@@ -185,4 +185,43 @@ class Tratamento
         return Carbon::now();
     }
 
+     // function para formatar a string do nome para "Samuel Ferreira de Melo"
+     public static function capitalizeProperly($string) {
+        // Lista de preposições que não devem ser capitalizadas
+        $exceptions = ['da', 'de', 'do', 'das', 'dos', 'e'];
+    
+        // Converter tudo para minúsculas
+        $string = strtolower($string);
+    
+        // Dividir a string em palavras
+        $words = explode(' ', $string);
+    
+        // Capitalizar cada palavra, exceto preposições
+        $capitalizedWords = array_map(function($word, $index) use ($exceptions) {
+            if (in_array($word, $exceptions) && $index !== 0) {
+                return $word; // Retorna a preposição em minúsculo se não for a primeira palavra
+            } else {
+                return ucfirst($word); // Capitaliza a primeira letra
+            }
+        }, $words, array_keys($words));
+    
+        // Rejuntar as palavras em uma string
+        return implode(' ', $capitalizedWords);
+    }
+    
+
+    //function para converter emai em nome do usuario
+    public static function formatEmailName($email) {
+        // Separar a parte antes do @
+        $namePart = explode('@', $email)[0];
+    
+        // Substituir os pontos por espaços
+        $namePart = str_replace('.', ' ', $namePart);
+    
+        // Converter a primeira letra de cada palavra para maiúscula
+        $namePart = ucwords(strtolower($namePart));
+    
+        return $namePart;
+    }
+    
 }

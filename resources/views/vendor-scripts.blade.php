@@ -60,6 +60,27 @@
            alertVenciDocs()
         }, 10000); */
 
+
+        /* function email_venci_doc(id_obra) {
+
+            console.log('dados atualizados')
+
+            $.ajax({
+                url: "{{ route('cadastro.funcionario.venci_doc') }}",
+                method: 'get',
+                data: {
+                    "_token": "{{ csrf_token() }}",                   
+                },                
+                success: function(response) {
+                  
+                }
+            });
+        }
+
+        setInterval(() => {
+            email_venci_doc()
+        }, 30000); */
+
         var currentId = null;
         var currentSelectValue = null;
         var currentIDqualificacao = null;

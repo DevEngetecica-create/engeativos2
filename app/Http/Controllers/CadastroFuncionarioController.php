@@ -11,6 +11,7 @@ use App\Models\{
     CadastroFuncao,
     CadastroFuncionarioSetor,
     ConfiguracaoNotificacaoEmail,
+    ConfiguracaoNotificacaoEmailJob,
     FerramentalRetirada,
     FuncaoEpi,
     FuncaoFuncionario,
@@ -18,7 +19,9 @@ use App\Models\{
     FuncionarioQualificacao,
     User
 };
-use App\Notifications\NotificaManutencao;
+
+use App\Mail\NotificationDocVencDiario;
+
 use App\Notifications\NotificationCadFuncionario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +31,7 @@ use Carbon\Carbon;
 
 use App\Traits\Configuracao;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use PhpParser\Node\Stmt\Foreach_;
@@ -359,9 +363,6 @@ class CadastroFuncionarioController extends Controller
             ->where('funcionarios_qualificacoes.id_qualificacao', '!=', 0)
             ->select('funcionarios_qualificacoes.*', 'anexos_funcionarios.id as id_anexos', 'anexos_funcionarios.nome_arquivo', 'anexos_funcionarios.data_conclusao', 'anexos_funcionarios.data_validade_doc', 'anexos_funcionarios.situacao_doc', 'anexos_funcionarios.usuario_cad', 'anexos_funcionarios.usuario_aprov', 'anexos_funcionarios.data_aprovacao', 'anexos_funcionarios.observacoes')
             ->get();
-
-
-        //dd($qualificacao_funcoes);                                              
 
         $qualificacao_epis = FuncaoEpi::where('id_funcao', $store->id_funcao)->get();
 
@@ -978,11 +979,75 @@ class CadastroFuncionarioController extends Controller
         }
     }
 
+
+    public function venci_doc(Request $request)
+    {
+        // Obtém a data e hora atuais
+        $dataHoraAtual = Carbon::now();
+
+        /* // Atualiza todos os registros em que a data de vencimento é menor ou igual a hoje
+        AnexoFuncionario::where('data_validade_doc', '<=', $dataHoraAtual)
+            ->update(['doc_vencido' => 'Sim']);
+
+        // Atualiza todos os registros em que a data de vencimento é maior que hoje
+        AnexoFuncionario::where('data_validade_doc', '>', $dataHoraAtual)
+            ->update(['doc_vencido' => 'Não']); */
+            
+        $anexos = AnexoFuncionario::with('qualificacao', 'funcionario')->where('doc_vencido', '=', 'Sim')->get();
+
+        $this->enviarEmail($anexos);
+    }
+
+    protected function enviarEmail($anexos)
+    {
+        // Buscar todas as configurações do grupo LEC
+        $conta_usuarios = ConfiguracaoNotificacaoEmail::where('id', 35)->get(); // grupo LEC
+
+        foreach ($conta_usuarios as $configuracao) {
+            $send_email = new ConfiguracaoNotificacaoEmailJob();
+
+            // Acessa os campos de cada configuração individualmente
+            $send_email->id_grupo = $configuracao->id;
+
+            // Converte o array de IDs em uma string separada por vírgulas
+            if (is_array($configuracao->id_usuario)) {
+                $send_email->id_usuarios = implode(',', $configuracao->id_usuario);
+            } else {
+                $send_email->id_usuarios = $configuracao->id_usuario; // Se for uma string ou número simples
+            }
+
+            $send_email->status = "send";
+
+            $send_email->descricao = "Alerta de vencimento documento: mês vigente";
+
+            // Salvar a nova configuração de envio de e-mail
+            $send_email->save();
+        }
+
+        // Iterar sobre as configurações e pegar os IDs dos usuários
+        foreach ($conta_usuarios as $configuracao) {
+            // Verifica se id_usuario já é um array
+            $usuarios_ids = is_array($configuracao->id_usuario) ? $configuracao->id_usuario : json_decode($configuracao->id_usuario, true);
+
+            // Verificar se é um array
+            if (is_array($usuarios_ids)) {
+                // Buscar todos os usuários cujos IDs estão no array $usuarios_ids
+                $usuarios = User::whereIn('id', $usuarios_ids)->get();
+
+                // Iterar sobre cada usuário encontrado
+                foreach ($usuarios as $usuario) {
+                    $emails = $usuario->email; // E-mail do destinatário
+                    Mail::to($emails)->send(new NotificationDocVencDiario($anexos, $emails));
+                }
+            }
+        }
+    }
+
+
     // Função para salvar um anexo de funcionário quando for editar os dados
     public function editar_anexos_funcionarios(Request $request)
 
     {
-        dd($request->all());
 
         $dataHoraAtual = Carbon::now();
         $dataFormatada = $dataHoraAtual->format('Y-m-d H:i:s');
@@ -1004,16 +1069,12 @@ class CadastroFuncionarioController extends Controller
                 ]);
             }
 
-
-
             $editar_anexo_funcionario = AnexoFuncionario::find($request->id_anexo);
 
             if ($request->file) {
 
                 $file = $request->file;
             }
-
-
 
             $editar_anexo_funcionario->update([
                 'usuario_cad'       => Auth::user()->email,
@@ -1095,9 +1156,6 @@ class CadastroFuncionarioController extends Controller
     public function consultar_qualificacao(Request $request)
     {
         $consulta = [];
-
-        //dd($request->all());
-
 
         $id_qualificacao = $request->id_qualificacao;
         $data_conclusao = $request->data_conclusao;

@@ -101,25 +101,11 @@ INNER JOIN
             ->get()
             ->groupBy('obra.codigo_obra');
 
-        /* foreach ($eventsCurrentMonth as $key => $docsCurrentMonth) {
-            
-            
-        }
-            $docsCurrentMonth = AnexoFuncionario::whereYear('end', $currentDate->year)
-            ->whereMonth('end', $currentDate->month)
-            ->get();
-
-            $docaNextMonth = AnexoFuncionario::whereYear('end', $currentDate->copy()->addMonth()->year)
-            ->whereMonth('end', $currentDate->copy()->addMonth()->month)
-            ->with('obra') // Carrega a relação 'obra'
-            ->get();
- */
         // Verificar se há eventos para enviar
         if ($eventsCurrentMonth->isEmpty() && $eventsNextMonth->isEmpty()) {
             $this->info('Nenhum evento encontrado para o relatório mensal.');
             return 0;
         }
-
 
         $this->enviarEmail($eventsCurrentMonth, $eventsNextMonth);
     }
